@@ -13,6 +13,9 @@ The project combines:
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
 
+<img src="tram-test-run.png" alt="TRAM screenshot of test run" />
+
+
 ## Project goals
 
 TRAM is designed around several principles:
