@@ -90,7 +90,6 @@ function assertHeader(assertion, headers) {
   if (Object.prototype.hasOwnProperty.call(assertion, 'contains')) {
     const expected = assertion.contains;
     const passed = typeof actual === 'string' && actual.includes(expected);
-
     return {
       passed,
       type: 'contains',
@@ -159,23 +158,6 @@ function assertJson(assertion, body, basePath = '$') {
       message: passed
         ? `${absolutePath} contains ${formatValue(expected)}.`
         : `Expected ${absolutePath} to contain ${formatValue(expected)}, got ${formatValue(actual)}.`
-    });
-  }
-
-  if (Array.isArray(assertion.oneOf)) {
-    const expected = assertion.oneOf;
-    const actual = value.value;
-    const passed = value.exists && expected.some((item) => deepEqual(item, actual));
-    results.push({
-      passed,
-      type: 'oneOf',
-      target: 'json',
-      path: absolutePath,
-      expected,
-      actual,
-      message: passed
-        ? `${absolutePath} is one of ${expected.map(formatValue).join(', ')}.`
-        : `Expected ${absolutePath} to be one of ${expected.map(formatValue).join(', ')}, got ${formatValue(actual)}.`
     });
   }
 
@@ -302,22 +284,6 @@ function assertEach(eachAssertion, item, itemPath) {
           : `Expected ${propertyPath} to contain ${formatValue(expected)}, got ${formatValue(actual)}.`
       });
     }
-
-    if (Array.isArray(eachAssertion.oneOf)) {
-      const expected = eachAssertion.oneOf;
-      const passed = exists && expected.some((value) => deepEqual(value, actual));
-      results.push({
-        passed,
-        type: 'each.property.oneOf',
-        target: 'json',
-        path: propertyPath,
-        expected,
-        actual,
-        message: passed
-          ? `${propertyPath} is one of ${expected.map(formatValue).join(', ')}.`
-          : `Expected ${propertyPath} to be one of ${expected.map(formatValue).join(', ')}, got ${formatValue(actual)}.`
-      });
-    }
   }
 
   if (eachAssertion.path) {
@@ -332,9 +298,10 @@ function assertEach(eachAssertion, item, itemPath) {
 }
 
 function assertHasProperties({ actual, expected, path, type }) {
-  const missing = expected.filter((property) => {
-    return !Object.prototype.hasOwnProperty.call(Object(actual || {}), property);
-  });
+  const actualKeys = actual && typeof actual === 'object' && !Array.isArray(actual)
+    ? Object.keys(actual)
+    : [];
+  const missing = expected.filter((property) => !Object.prototype.hasOwnProperty.call(actual || {}, property));
   const passed = missing.length === 0;
 
   return {

@@ -34,7 +34,7 @@ async function main() {
     const manifest = loadManifest(args.manifestPath);
     validateManifest(manifest);
 
-    const suiteResult = await runSuite(manifest);
+    const suiteResult = await runSuite(manifest, args);
 
     printConsoleReport(suiteResult, { verbose: args.verbose });
 
@@ -66,7 +66,9 @@ function parseArgs(argv) {
 
     if (arg === '--report') {
       const reportPath = argv[i + 1];
-      if (!reportPath) throw new Error('--report requires a file path.');
+      if (!reportPath) {
+        throw new Error('--report requires a file path.');
+      }
       args.reportPath = reportPath;
       i += 1;
       continue;
@@ -133,7 +135,7 @@ function validateManifest(manifest) {
   }
 }
 
-async function runSuite(manifest) {
+async function runSuite(manifest, args) {
   const results = [];
   const tests = manifest.tests || [];
 
@@ -142,6 +144,8 @@ async function runSuite(manifest) {
     const testResult = await runTest({ manifest, test, index });
     results.push(testResult);
   }
+
+  const summary = summarize(results);
 
   return {
     name: manifest.name || 'HTTP API Tests',
@@ -152,7 +156,7 @@ async function runSuite(manifest) {
     created: manifest.created || null,
     updated: manifest.updated || null,
     tags: Array.isArray(manifest.tags) ? manifest.tags : [],
-    summary: summarize(results),
+    summary,
     results
   };
 }
@@ -241,9 +245,18 @@ async function runTest({ manifest, test, index }) {
 function validateTest(test, index) {
   const label = test.name || `test at index ${index}`;
 
-  if (!test.name) throw new Error(`Test at index ${index} requires name.`);
-  if (!test.method) throw new Error(`${label} requires method.`);
-  if (!test.path) throw new Error(`${label} requires path.`);
+  if (!test.name) {
+    throw new Error(`Test at index ${index} requires name.`);
+  }
+
+  if (!test.method) {
+    throw new Error(`${label} requires method.`);
+  }
+
+  if (!test.path) {
+    throw new Error(`${label} requires path.`);
+  }
+
   if (!test.expect || typeof test.expect !== 'object') {
     throw new Error(`${label} requires expect object.`);
   }
@@ -266,59 +279,19 @@ function buildRequest({ manifest, test }) {
     method,
     url,
     headers,
-    body: undefined,
-    bodyType: null
+    body: undefined
   };
 
   if (Object.prototype.hasOwnProperty.call(test, 'body')) {
-    const bodyType = test.bodyType || 'json';
-    const resolvedBody = resolveTokens(resolveValue(test.body, data));
+    const resolvedBody = resolveValue(test.body, data);
+    request.body = JSON.stringify(resolveTokens(resolvedBody));
 
-    request.bodyType = bodyType;
-    request.body = encodeBody(resolvedBody, bodyType, request.headers);
+    if (!hasHeader(headers, 'content-type')) {
+      request.headers['content-type'] = 'application/json';
+    }
   }
 
   return request;
-}
-
-function encodeBody(body, bodyType, headers) {
-  switch (bodyType) {
-    case 'json':
-      if (!hasHeader(headers, 'content-type')) {
-        headers['content-type'] = 'application/json';
-      }
-      return JSON.stringify(body);
-
-    case 'form':
-      if (!hasHeader(headers, 'content-type')) {
-        headers['content-type'] = 'application/x-www-form-urlencoded';
-      }
-      return encodeFormBody(body);
-
-    case 'text':
-      if (!hasHeader(headers, 'content-type')) {
-        headers['content-type'] = 'text/plain';
-      }
-      return typeof body === 'string' ? body : String(body);
-
-    default:
-      throw new Error(`Unsupported bodyType: ${bodyType}`);
-  }
-}
-
-function encodeFormBody(body) {
-  if (!body || typeof body !== 'object' || Array.isArray(body)) {
-    throw new Error('bodyType "form" requires body to be an object.');
-  }
-
-  const params = new URLSearchParams();
-
-  for (const [key, value] of Object.entries(body)) {
-    if (value === undefined || value === null) continue;
-    params.set(key, String(value));
-  }
-
-  return params.toString();
 }
 
 function buildUrl(baseUrl, requestPath, query) {
@@ -469,9 +442,13 @@ function summarize(results) {
   };
 
   for (const result of results) {
-    if (result.skipped) summary.skipped += 1;
-    else if (result.passed) summary.passed += 1;
-    else summary.failed += 1;
+    if (result.skipped) {
+      summary.skipped += 1;
+    } else if (result.passed) {
+      summary.passed += 1;
+    } else {
+      summary.failed += 1;
+    }
   }
 
   return summary;
@@ -525,25 +502,8 @@ function requestForReport(request) {
     method: request.method,
     url: request.url,
     headers: request.headers,
-    bodyType: request.bodyType,
-    body: request.body ? safeParseRequestBody(request.body, request.bodyType) : null
+    body: request.body ? safeJsonParse(request.body) : null
   };
-}
-
-function safeParseRequestBody(value, bodyType) {
-  if (bodyType === 'json') {
-    try {
-      return JSON.parse(value);
-    } catch (_error) {
-      return value;
-    }
-  }
-
-  if (bodyType === 'form') {
-    return Object.fromEntries(new URLSearchParams(value));
-  }
-
-  return value;
 }
 
 function responseForReport(response) {
@@ -553,6 +513,14 @@ function responseForReport(response) {
     body: response.body,
     rawBody: response.rawBody
   };
+}
+
+function safeJsonParse(value) {
+  try {
+    return JSON.parse(value);
+  } catch (_error) {
+    return value;
+  }
 }
 
 function hasHeader(headers, name) {
