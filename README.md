@@ -1,4 +1,4 @@
-<img src="tram-logo.png" width=200" alt="TRAM (Test Runner for Assertion Manifests) ">
+<img src="tram-logo.png" width=200" alt="TRAM (Test Runner for Assertion Manifests)" />
 
 # TRAM
 
