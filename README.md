@@ -4,7 +4,7 @@
 
 <img src="tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
 
-The project combines:
+TRAM combines:
 
 * a manifest-driven test format
 * a reusable assertion engine
@@ -15,6 +15,58 @@ TRAM treats API testing as behavioral modeling rather than framework scripting.
 
 <img src="tram-test-run.png" alt="TRAM screenshot of test run" />
 
+## Why TRAM exists
+
+Modern API systems already have strong tooling around structure and implementation:
+
+* OpenAPI generation
+* schema validation
+* SDK generation
+* monitoring
+* scaffolding
+* AI-assisted code generation
+
+At the same time, distributed systems often fail behaviorally rather than structurally.
+
+A response may validate correctly while:
+
+* workflows drift
+* affordances disappear
+* assumptions diverge
+* state transitions become inconsistent
+* operational expectations become fragmented across teams and tools
+
+TRAM explores a narrower problem:
+
+```text
+How do we make behavioral expectations directly visible,
+portable, executable, and reviewable?
+```
+
+The core artifact is the manifest:
+
+```text
+api-tests.json
+```
+
+The manifest defines:
+
+* requests
+* request bodies
+* assertions
+* expected behaviors
+* shared test data
+
+Assertions become directly inspectable operational statements.
+
+Example:
+
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
+```
 
 ## Project goals
 
@@ -23,23 +75,24 @@ TRAM is designed around several principles:
 * behavioral tests over implementation tests
 * portable manifests over framework lock-in
 * readable intent over clever abstractions
+* explicitness over hidden runtime behavior
 * low-noise reporting
-* explicitness over hidden magic
 * augmentation and learning over one-shot generation
 
 The long-term direction is an AI Coach that helps users learn behavioral API testing while collaboratively constructing executable manifests.
 
-## Current status
+## Current implementation
 
 Current implementation includes:
 
 * manifest specification (`api-tests.json`)
 * dependency-free assertion engine
 * dependency-free HTTP runner
-* JSON/body/header assertions
+* body/header/status assertions
 * collection assertions (`each`)
+* range assertions (`range`)
 * happy-path and sad-path testing
-* JSON, form, and text body support
+* JSON, form, and text request body support
 * machine-readable reporting
 * real API validation against a sample CRUD-style task API
 
@@ -67,7 +120,13 @@ Tests are defined declaratively in a manifest:
   "path": "/tasks",
   "body": "$data.task.valid",
   "expect": {
-    "status": 201
+    "status": 201,
+    "body": [
+      {
+        "path": "$.status",
+        "equals": "active"
+      }
+    ]
   }
 }
 ```
@@ -75,7 +134,7 @@ Tests are defined declaratively in a manifest:
 The manifest acts as both:
 
 * executable configuration
-* human-readable behavioral documentation
+* behavioral operational artifact
 
 ### Assertion engine
 
@@ -93,7 +152,7 @@ minLength
 each
 ```
 
-Example:
+Example collection assertion:
 
 ```json
 {
@@ -105,15 +164,9 @@ Example:
 }
 ```
 
-### Body encoding support
+### Request body support
 
-TRAM supports multiple request body formats:
-
-```json
-"bodyType": "json"
-```
-
-Supported values:
+TRAM supports multiple request body encodings:
 
 ```text
 json
@@ -132,7 +185,7 @@ Example:
 }
 ```
 
-## Running tests
+## Running the sample project
 
 Start the sample API:
 
@@ -152,11 +205,45 @@ Verbose mode:
 node api-test-runner.js api-tests.json --verbose
 ```
 
-Write a machine-readable report:
+Generate a machine-readable report:
 
 ```bash
 node api-test-runner.js api-tests.json --report results.json
 ```
+
+## Documentation
+
+### Quick Start
+
+Practical walkthrough for:
+
+* running the sample project
+* inspecting manifests
+* understanding assertions
+* exploring behavioral API testing workflows
+
+### Manifest Specification
+
+Authoritative executable manifest model.
+
+Defines:
+
+* manifest structure
+* request configuration
+* assertion syntax
+* traversal behavior
+* collection assertions
+* body handling
+
+### Explainer
+
+Architectural discussion of:
+
+* behavioral assertions
+* operational artifacts
+* hypermedia-oriented testing
+* generated systems
+* AI-assisted workflows
 
 ## Reporting philosophy
 
@@ -179,7 +266,7 @@ v0.1 avoids:
 * custom scripting
 * setup/teardown orchestration
 * schema engines
-* test inheritance systems
+* plugin systems
 * hidden runtime behavior
 
 The current emphasis is:
@@ -189,6 +276,7 @@ clarity
 predictability
 behavior visibility
 manifest ergonomics
+reviewability
 ```
 
 ## AI Coaching direction
@@ -199,21 +287,21 @@ The eventual AI Coach layer will:
 2. identify API behaviors
 3. propose candidate tests
 4. distinguish happy and sad paths
-5. review data shapes and assertions with the user
+5. review assertions collaboratively
 6. generate plausible first-pass manifests
 
 The goal is not automatic test generation alone.
 
-The goal is helping users understand behavioral API testing while constructing executable manifests.
+The goal is helping users understand behavioral API testing while collaboratively constructing executable manifests.
 
 ## Related ideas
 
 TRAM draws inspiration from:
 
 * behavioral testing
+* executable specifications
 * hypermedia-oriented design
 * affordance-centric APIs
-* executable specifications
 * augmentation-oriented AI systems
 * coaching-based human/machine collaboration
 
@@ -225,4 +313,7 @@ Interfaces and manifest formats will evolve during v0.x development.
 
 Project repository:
 
-[TRAM on GitHub](https://github.com/mamund/2026-05-tram)
+```text
+https://github.com/mamund/2026-05-tram
+```
+

@@ -1,13 +1,16 @@
 # TRAM Quick Start
 
-This guide walks through running the TRAM sample project and executing the included behavioral API tests.
+This guide walks through running the TRAM sample project and inspecting the behavioral testing workflow.
 
-The goal is not only to run the tests, but to understand the relationship between:
+The goal is not only to execute the sample tests, but to understand the relationship between:
 
 * the sample API
 * the manifest
 * the assertions
-* the runner output
+* the runner
+* the resulting behavioral model
+
+TRAM treats API testing as behavioral modeling rather than framework scripting.
 
 ## Requirements
 
@@ -25,6 +28,36 @@ No external libraries or framework dependencies are required.
 git clone https://github.com/mamund/2026-05-tram.git
 cd 2026-05-tram
 ```
+
+## Understand the sample workflow
+
+The sample project follows a simple execution model:
+
+```text
+sample API
+        ↓
+TRAM manifest
+        ↓
+TRAM runner
+        ↓
+assertion results
+```
+
+The important artifact is the manifest:
+
+```text
+api-tests.json
+```
+
+The manifest contains:
+
+* requests
+* request bodies
+* assertions
+* expected behavior
+* shared test data
+
+The runner executes the manifest directly.
 
 ## Start the sample API
 
@@ -68,33 +101,12 @@ Task Management API Tests
 Summary: 9 passed, 0 failed, 0 skipped, 9 total
 ```
 
-## Run in verbose mode
+At this point, TRAM has:
 
-Verbose mode prints all assertion results.
-
-```bash
-node api-test-runner.js api-tests.json --verbose
-```
-
-This helps reveal:
-
-* assertion evaluation
-* JSON path behavior
-* collection assertions
-* failure messages
-
-## Generate a machine-readable report
-
-```bash
-node api-test-runner.js api-tests.json --report results.json
-```
-
-This generates a detailed JSON report containing:
-
-* request details
-* response details
-* assertion results
-* pass/fail summaries
+* loaded the manifest
+* executed each request
+* evaluated assertions
+* generated behavioral results
 
 ## Inspect the manifest
 
@@ -104,22 +116,44 @@ Open:
 api-tests.json
 ```
 
-The manifest defines:
+A typical test looks like this:
 
-* test cases
-* request configuration
-* test data
-* assertions
-* expected behavior
-
-Key sections:
-
-```text
-config
-data
-tests
-expect
+```json
+{
+  "name": "Create task",
+  "method": "POST",
+  "path": "/tasks",
+  "body": "$data.task.valid",
+  "expect": {
+    "status": 201,
+    "body": [
+      {
+        "path": "$.status",
+        "equals": "active"
+      }
+    ]
+  }
+}
 ```
+
+This test defines:
+
+* an HTTP request
+* request data
+* expected response behavior
+
+The important distinction is that assertions are directly inspectable.
+
+Example:
+
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
+```
+
+This assertion is an explicit operational expectation.
 
 ## Inspect the assertion model
 
@@ -155,7 +189,13 @@ Example collection assertion:
 }
 ```
 
-## Inspect body encoding behavior
+This assertion verifies:
+
+```text
+all returned tasks expose valid status values
+```
+
+## Inspect request body handling
 
 TRAM currently supports:
 
@@ -176,11 +216,40 @@ Example:
 }
 ```
 
-## Try modifying a test
+This allows the runner to work with APIs that expect different request encodings.
 
-One of the fastest ways to understand TRAM is to intentionally break something.
+## Run in verbose mode
 
-Suggested experiments:
+Verbose mode prints detailed assertion results.
+
+```bash
+node api-test-runner.js api-tests.json --verbose
+```
+
+Verbose mode helps reveal:
+
+* assertion evaluation
+* JSON path traversal
+* collection assertions
+* failure messages
+* behavioral expectations
+
+## Generate a machine-readable report
+
+```bash
+node api-test-runner.js api-tests.json --report results.json
+```
+
+This generates a detailed JSON report containing:
+
+* request details
+* response details
+* assertion results
+* pass/fail summaries
+
+## Try intentionally breaking a test
+
+One of the fastest ways to understand TRAM is to intentionally introduce a failure.
 
 ### Change an expected value
 
@@ -216,35 +285,76 @@ Remove a required property from a POST request body.
 
 Then rerun the suite.
 
+### Break a range assertion
+
+Change:
+
+```json
+"range": {
+  "min": 1,
+  "max": 5
+}
+```
+
+to:
+
+```json
+"range": {
+  "min": 100
+}
+```
+
+Then rerun the suite.
+
 These experiments help reveal:
 
 * behavioral expectations
 * assertion failures
 * request construction
 * manifest ergonomics
+* failure readability
 
-## Project philosophy
+## Understand the current philosophy
 
-TRAM emphasizes:
+TRAM currently emphasizes:
 
 * behavioral API testing
-* readable manifests
+* explicit manifests
+* readable assertions
 * low-noise reporting
-* explicit configuration
-* minimal hidden behavior
+* predictable execution
+* framework independence
 * augmentation over automation
 
-The long-term direction includes an AI Coaching layer that helps users:
+The current design intentionally avoids:
 
-* discover API behaviors
-* identify test candidates
-* reason about happy and sad paths
-* construct manifests collaboratively
-* understand behavioral API testing concepts
+```text
+custom scripting
+schema engines
+setup/teardown orchestration
+hidden runtime behavior
+```
 
-## Next steps
+## AI Coaching direction
 
-Recommended files to explore:
+The long-term direction includes an AI Coaching layer.
+
+The AI Coach is intended to:
+
+* inspect `server.js` and/or API Story documents
+* identify API behaviors
+* suggest candidate tests
+* distinguish happy and sad paths
+* review assertions collaboratively
+* generate executable manifests
+
+The goal is not one-shot generation alone.
+
+The goal is helping users understand behavioral API testing while collaboratively constructing executable manifests.
+
+## Recommended next steps
+
+Recommended files to inspect:
 
 ```text
 README.md
@@ -256,7 +366,10 @@ api-test-runner.js
 Recommended next experiments:
 
 * add new sad-path tests
+* add new range assertions
 * add filtering tests
-* add new assertions
+* add collection assertions
 * improve reporting
 * explore manifest ergonomics
+* experiment with hypermedia assertions
+
