@@ -86,32 +86,6 @@ Goals:
 * support correlated test flows
 * avoid runtime mutation complexity
 
-## `expect.json[]` rename
-
-Current manifests use:
-
-```json
-"expect": {
-  "json": []
-}
-```
-
-Planned direction:
-
-```json
-"expect": {
-  "body": []
-}
-```
-
-Reasoning:
-
-* assertions target response bodies, not JSON specifically
-* prepares for additional media types
-* improves terminology clarity
-
-The underlying assertion model will still support JSONPath-like selection for parsed JSON responses.
-
 ## `eachProperty` assertions
 
 Current support:

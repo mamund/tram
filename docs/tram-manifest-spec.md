@@ -80,7 +80,7 @@ Example:
         "contains": "application/json"
       }
     ],
-    "json": [
+    "body": [
       {
         "path": "$.status",
         "equals": "active"
@@ -207,7 +207,7 @@ Structure:
 "expect": {
   "status": 200,
   "headers": [],
-  "json": []
+  "body": []
 }
 ```
 
@@ -240,12 +240,12 @@ Example:
 
 Array of JSON body assertions.
 
-Assertions operate against the parsed response body using JSONPath-like traversal.
+Body assertions operate on parsed JSON responses using JSONPath-like paths.
 
 Example:
 
 ```json
-"json": [
+"body": [
   {
     "path": "$.status",
     "equals": "active"

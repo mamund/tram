@@ -31,7 +31,7 @@ const expect = {
     { name: 'content-type', contains: 'application/json' },
     { name: 'content-language', contains: 'en' }
   ],
-  json: [
+  body: [
     { path: '$', isArray: true },
     { path: '$', minLength: 1 },
     {

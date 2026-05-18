@@ -72,7 +72,7 @@
             "contains": "application/json"
           }
         ],
-        "json": [
+        "body": [
           {
             "path": "$._links",
             "exists": true
@@ -104,7 +104,7 @@
             "contains": "application/json"
           }
         ],
-        "json": [
+        "body": [
           {
             "path": "$",
             "isArray": true
@@ -152,7 +152,7 @@
       "path": "/tasks/c3e59224-93d5-4b07-9317-6dc24eb586b3",
       "expect": {
         "status": 200,
-        "json": [
+        "body": [
           {
             "path": "$.id",
             "equals": "c3e59224-93d5-4b07-9317-6dc24eb586b3"
@@ -192,7 +192,7 @@
       "path": "/tasks/no-such-task",
       "expect": {
         "status": 404,
-        "json": [
+        "body": [
           {
             "path": "$.error",
             "contains": "not found"
@@ -217,7 +217,7 @@
       "body": "$data.task.valid",
       "expect": {
         "status": 201,
-        "json": [
+        "body": [
           {
             "path": "$",
             "hasProperties": [
@@ -258,7 +258,7 @@
       "body": "$data.task.missingTitle",
       "expect": {
         "status": 400,
-        "json": [
+        "body": [
           {
             "path": "$.error",
             "contains": "title"
@@ -284,7 +284,7 @@
       "body": "$data.task.invalidStatus",
       "expect": {
         "status": 400,
-        "json": [
+        "body": [
           {
             "path": "$.error",
             "contains": "status"
@@ -308,7 +308,7 @@
       "body": "$data.task.updateStatus",
       "expect": {
         "status": 200,
-        "json": [
+        "body": [
           {
             "path": "$.id",
             "equals": "c3e59224-93d5-4b07-9317-6dc24eb586b3"
@@ -333,7 +333,7 @@
       "query": "$data.filters.active",
       "expect": {
         "status": 200,
-        "json": [
+        "body": [
           {
             "path": "$",
             "isArray": true

@@ -86,6 +86,7 @@ exists
 equals
 contains
 oneOf
+range
 isArray
 hasProperties
 minLength

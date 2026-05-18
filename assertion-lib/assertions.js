@@ -27,8 +27,8 @@ function evaluateExpectations({ expect = {}, response = {} }) {
     }
   }
 
-  if (Array.isArray(expect.json)) {
-    for (const assertion of expect.json) {
+  if (Array.isArray(expect.body)) {
+    for (const assertion of expect.body) {
       results.push(...assertJson(assertion, response.body));
     }
   }
