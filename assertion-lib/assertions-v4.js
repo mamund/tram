@@ -179,18 +179,6 @@ function assertJson(assertion, body, basePath = '$') {
     });
   }
 
-  if (isRangeAssertion(assertion.range)) {
-    const expected = normalizeRange(assertion.range);
-    const actual = value.value;
-    results.push(assertRange({
-      actual,
-      expected,
-      exists: value.exists,
-      path: absolutePath,
-      type: 'range'
-    }));
-  }
-
   if (assertion.isArray === true) {
     const actual = value.value;
     const passed = Array.isArray(actual);
@@ -330,17 +318,6 @@ function assertEach(eachAssertion, item, itemPath) {
           : `Expected ${propertyPath} to be one of ${expected.map(formatValue).join(', ')}, got ${formatValue(actual)}.`
       });
     }
-
-    if (isRangeAssertion(eachAssertion.range)) {
-      const expected = normalizeRange(eachAssertion.range);
-      results.push(assertRange({
-        actual,
-        expected,
-        exists,
-        path: propertyPath,
-        type: 'each.property.range'
-      }));
-    }
   }
 
   if (eachAssertion.path) {
@@ -352,85 +329,6 @@ function assertEach(eachAssertion, item, itemPath) {
   }
 
   return results;
-}
-
-function assertRange({ actual, expected, exists, path, type }) {
-  const isNumber = typeof actual === 'number' && Number.isFinite(actual);
-  const hasMin = Object.prototype.hasOwnProperty.call(expected, 'min');
-  const hasMax = Object.prototype.hasOwnProperty.call(expected, 'max');
-
-  let passed = exists && isNumber;
-
-  if (passed && hasMin) {
-    passed = actual >= expected.min;
-  }
-
-  if (passed && hasMax) {
-    passed = actual <= expected.max;
-  }
-
-  return {
-    passed,
-    type,
-    target: 'json',
-    path,
-    expected,
-    actual,
-    message: passed
-      ? `${path} is ${rangeDescription(expected)}.`
-      : rangeFailureMessage({ actual, expected, exists, isNumber, path })
-  };
-}
-
-function isRangeAssertion(range) {
-  return range && typeof range === 'object' && !Array.isArray(range)
-    && (Object.prototype.hasOwnProperty.call(range, 'min')
-      || Object.prototype.hasOwnProperty.call(range, 'max'));
-}
-
-function normalizeRange(range) {
-  const normalized = {};
-
-  if (Object.prototype.hasOwnProperty.call(range, 'min')) {
-    normalized.min = range.min;
-  }
-
-  if (Object.prototype.hasOwnProperty.call(range, 'max')) {
-    normalized.max = range.max;
-  }
-
-  return normalized;
-}
-
-function rangeDescription(range) {
-  const hasMin = Object.prototype.hasOwnProperty.call(range, 'min');
-  const hasMax = Object.prototype.hasOwnProperty.call(range, 'max');
-
-  if (hasMin && hasMax) {
-    return `between ${range.min} and ${range.max}`;
-  }
-
-  if (hasMin) {
-    return `at least ${range.min}`;
-  }
-
-  if (hasMax) {
-    return `at most ${range.max}`;
-  }
-
-  return 'within range';
-}
-
-function rangeFailureMessage({ actual, expected, exists, isNumber, path }) {
-  if (!exists) {
-    return `Expected ${path} to be ${rangeDescription(expected)}, but the path does not exist.`;
-  }
-
-  if (!isNumber) {
-    return `Expected ${path} to be numeric and ${rangeDescription(expected)}, got ${formatValue(actual)}.`;
-  }
-
-  return `Expected ${path} to be ${rangeDescription(expected)}, got ${formatValue(actual)}.`;
 }
 
 function assertHasProperties({ actual, expected, path, type }) {

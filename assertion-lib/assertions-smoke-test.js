@@ -1,7 +1,7 @@
 // assertions-smoke-test.js
 'use strict';
 
-const { evaluateExpectations } = require('./assertions-v2');
+const { evaluateExpectations } = require('./assertions');
 
 const fakeListResponse = {
   status: 200,
@@ -15,6 +15,7 @@ const fakeListResponse = {
       title: 'Initial Task',
       status: 'active',
       priority: 3,
+      amount: -10,
       assignedUser: 'alice',
       _links: {
         self: { href: '/tasks/task-1', method: 'GET' },
@@ -49,6 +50,16 @@ const expect = {
       each: {
         property: 'priority',
         oneOf: [1,2,3,4]
+      },
+      path: '$',
+      each: {
+        property: 'priority',
+        range: {min:1, max:5}
+      },
+      path: '$',
+      each: {
+        property: 'amount',
+        range: {min: -100}
       }
     }
   ]
