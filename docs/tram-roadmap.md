@@ -56,37 +56,6 @@ The eventual AI Coach should help users understand behavioral API testing while 
 
 ## Near-term roadmap
 
-## Assertion improvements
-
-### Range assertions
-
-Add numeric range support.
-
-Example:
-
-```json
-{
-  "path": "$.priority",
-  "range": {
-    "min": 1,
-    "max": 5
-  }
-}
-```
-
-Goals:
-
-* bounded numeric validation
-* cleaner behavioral constraints
-* avoid proliferation of comparison operators
-
-Planned behavior:
-
-* `min` optional
-* `max` optional
-* inclusive bounds
-* negative values supported
-
 ## Stable run-scoped variables
 
 Support generated values resolved once per test run.
