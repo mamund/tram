@@ -26,6 +26,7 @@ TRAM currently includes:
 * machine-readable reporting
 * collection assertions (`each`)
 * object assertions (`hasProperties`)
+* range assertions (`range`)
 * sample CRUD-style task API
 
 The current implementation has been validated against a real Node.js HTTP API.
@@ -56,7 +57,9 @@ The eventual AI Coach should help users understand behavioral API testing while 
 
 ## Near-term roadmap
 
-## Stable run-scoped variables
+## Assertion improvements
+
+### Stable run-scoped variables
 
 Support generated values resolved once per test run.
 
@@ -86,7 +89,7 @@ Goals:
 * support correlated test flows
 * avoid runtime mutation complexity
 
-## `eachProperty` assertions
+### eachProperty assertions
 
 Current support:
 
@@ -119,7 +122,52 @@ Goals:
 * support object maps cleanly
 * preserve distinction between arrays and objects
 
-## Traversal and recursion hardening
+### Primitive type assertions
+
+Add support for basic JSON/native value type assertions.
+
+Example:
+
+```json
+{
+  "path": "$.priority",
+  "type": "number"
+}
+```
+
+Supported initial values:
+
+```text
+string
+number
+boolean
+array
+object
+null
+```
+
+Purpose:
+
+* confirm basic representation shape
+* avoid overusing `equals`, `oneOf`, or `range`
+* support fields with generated or variable values
+* remain lighter than schema validation
+
+Deferred semantic assertions:
+
+```text
+uuid
+email
+uri
+date-time
+slug
+hostname
+regex
+```
+
+These semantic format assertions are intentionally outside the current scope.
+
+### Traversal and recursion hardening
 
 As manifests and response bodies become more complex, recursive traversal behavior will require additional validation and stabilization.
 
@@ -192,25 +240,41 @@ The goal is not one-shot test generation.
 
 The goal is collaborative construction of behavioral API tests.
 
-## Possible future authoring model
+## Review document generation
 
-One explored direction is a Markdown-based behavioral authoring layer.
+A future utility may generate human-readable review documents directly from manifests.
 
 Possible flow:
 
 ```text
-Markdown test stories
-        ↓
-manifest builder
-        ↓
 api-tests.json
         ↓
-TRAM runner
+tram-review.js
+        ↓
+TRAM Test Review Document
 ```
 
-This remains exploratory.
+Purpose:
 
-The current focus is stabilizing the executable manifest and runner model.
+* inspect coverage
+* review behaviors
+* identify weak assertions
+* review happy/sad path balance
+* support coaching/reflection loops
+
+Important architectural rule:
+
+```text
+The manifest is authoritative.
+The review document is explanatory.
+```
+
+The review document is intentionally:
+
+* generated
+* read-only
+* regenerable
+* non-authoritative
 
 ## Deferred from current scope
 
@@ -227,8 +291,6 @@ framework adapters
 browser automation
 capture-variable mutation systems
 ```
-
-These may eventually become useful, but they are currently outside the project’s primary focus.
 
 ## Current development philosophy
 
@@ -251,3 +313,4 @@ predictability
 reviewability
 human understanding
 ```
+
