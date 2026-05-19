@@ -89,7 +89,20 @@
             "hasProperties": [
               "taskList"
             ]
-          }
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "hasProperties": ["href", "method"]
+            }
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "path": "$.method",
+              "oneOf": ["GET", "POST", "PUT", "DELETE"]
+            }
+          }          
         ]
       }
     },
@@ -133,6 +146,25 @@
               ]
             }
           },
+          {
+            "path": "$",
+            "each": {
+              "path": "$._links",
+              "eachProperty": {
+                "hasProperties": ["href", "method"]
+              }
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "path": "$._links",
+              "eachProperty": {
+                "path": "$.method",
+                "oneOf": ["GET", "POST", "PUT", "PATCH", "DELETE"]
+              }
+            }
+          },          
           {
             "path": "$",
             "each": {

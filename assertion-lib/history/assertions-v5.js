@@ -259,39 +259,6 @@ function assertJson(assertion, body, basePath = '$') {
     }
   }
 
-  if (assertion.eachProperty) {
-    const actual = value.value;
-
-    const isObjectMap =
-      actual &&
-      typeof actual === 'object' &&
-      !Array.isArray(actual);
-
-    if (!isObjectMap) {
-      results.push({
-        passed: false,
-        type: 'eachProperty',
-        target: 'json',
-        path: absolutePath,
-        expected: 'object',
-        actual,
-        message: `Expected ${absolutePath} to be an object for eachProperty assertion.`
-      });
-    } else {
-      for (const [propertyName, propertyValue] of Object.entries(actual)) {
-        const propertyPath = `${absolutePath}.${propertyName}`;
-
-        results.push(
-          ...assertJson(
-            assertion.eachProperty,
-            propertyValue,
-            propertyPath
-          )
-        );
-      }
-    }
-  }
-
   if (results.length === 0) {
     results.push(unsupportedAssertion('json', assertion, `Unsupported JSON assertion at ${absolutePath}.`));
   }
