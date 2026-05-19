@@ -1,130 +1,127 @@
-# TRAM Quick Start
+# TRAM
 
-This guide walks through running the TRAM sample project and inspecting the behavioral testing workflow.
+**TRAM** (Test Runner for Assertion Manifests) is a lightweight, dependency-free HTTP API behavioral testing platform for Node.js.
 
-The goal is not only to execute the sample tests, but to understand the relationship between:
+<img src="tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
 
-* the sample API
-* the manifest
-* the assertions
-* the runner
-* the resulting behavioral model
+TRAM combines:
+
+* a manifest-driven test format
+* a reusable assertion engine
+* a portable HTTP test runner
+* stable runtime interpolation support
+* an eventual AI Coaching workflow focused on learning and augmentation rather than pure automation
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
 
-## Requirements
+<img src="tram-test-run.png" alt="TRAM screenshot of test run" />
 
-TRAM currently requires:
+## Why TRAM exists
+
+Modern API systems already have strong tooling around structure and implementation:
+
+* OpenAPI generation
+* schema validation
+* SDK generation
+* monitoring
+* scaffolding
+* AI-assisted code generation
+
+At the same time, distributed systems often fail behaviorally rather than structurally.
+
+A response may validate correctly while:
+
+* workflows drift
+* affordances disappear
+* assumptions diverge
+* state transitions become inconsistent
+* operational expectations become fragmented across teams and tools
+
+TRAM explores a narrower problem:
 
 ```text
-Node.js 18+
+How do we make behavioral expectations directly visible,
+portable, executable, and reviewable?
 ```
 
-No external libraries or framework dependencies are required.
-
-## Clone the repository
-
-```bash
-git clone https://github.com/mamund/2026-05-tram.git
-cd 2026-05-tram
-```
-
-## Understand the sample workflow
-
-The sample project follows a simple execution model:
-
-```text
-sample API
-        ↓
-TRAM manifest
-        ↓
-TRAM runner
-        ↓
-assertion results
-```
-
-The important artifact is the manifest:
+The core artifact is the manifest:
 
 ```text
 api-tests.json
 ```
 
-The manifest contains:
+The manifest defines:
 
 * requests
 * request bodies
 * assertions
-* expected behavior
+* expected behaviors
 * shared test data
 * runtime interpolation values
 
-The runner executes the manifest directly.
+Assertions become directly inspectable operational statements.
 
-## Start the sample API
+Example:
 
-In one terminal window:
-
-```bash
-node index.js
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
 ```
 
-Expected output:
+## Project goals
+
+TRAM is designed around several principles:
+
+* behavioral tests over implementation tests
+* portable manifests over framework lock-in
+* readable intent over clever abstractions
+* explicitness over hidden runtime behavior
+* low-noise reporting
+* augmentation and learning over one-shot generation
+
+The long-term direction is an AI Coach that helps users learn behavioral API testing while collaboratively constructing executable manifests.
+
+## Current implementation
+
+Current implementation includes:
+
+* manifest specification (`api-tests.json`)
+* dependency-free assertion engine
+* dependency-free HTTP runner
+* body/header/status assertions
+* collection assertions (`each`)
+* range assertions (`range`)
+* stable run-scoped variables
+* runtime interpolation (`${data.*}`)
+* happy-path and sad-path testing
+* JSON, form, and text request body support
+* machine-readable reporting
+* real API validation against a sample CRUD-style task API
+
+## Project structure
 
 ```text
-Listening on port 3000
+.
+├── assertions.js
+├── api-test-runner.js
+├── api-tests.json
+├── index.js
+└── docs/
 ```
 
-The sample API should now be running locally.
+## Core concepts
 
-## Run the sample test suite
+### Manifest-driven testing
 
-In another terminal window:
-
-```bash
-node api-test-runner.js api-tests.json
-```
-
-Expected output:
-
-```text
-Task Management API Tests
-
-✓ Get API root
-✓ List tasks
-✓ Get single task
-✓ Reject unknown task lookup
-✓ Create task
-✓ Reject task creation without title
-✓ Reject invalid task status
-✓ Update task status
-✓ Filter tasks by active status
-
-Summary: 9 passed, 0 failed, 0 skipped, 9 total
-```
-
-At this point, TRAM has:
-
-* loaded the manifest
-* initialized shared runtime data
-* executed each request
-* evaluated assertions
-* generated behavioral results
-
-## Inspect the manifest
-
-Open:
-
-```text
-api-tests.json
-```
-
-A typical test looks like this:
+Tests are defined declaratively in a manifest:
 
 ```json
 {
   "name": "Create task",
   "method": "POST",
-  "path": "/tasks",
+  "path": "/tasks/${data.stableId}",
   "body": "$data.task.valid",
   "expect": {
     "status": 201,
@@ -138,114 +135,40 @@ A typical test looks like this:
 }
 ```
 
-This test defines:
+The manifest acts as both:
 
-* an HTTP request
-* request data
-* expected response behavior
+* executable configuration
+* behavioral operational artifact
 
-The important distinction is that assertions are directly inspectable.
+### Shared runtime data
 
-Example:
-
-```json
-{
-  "path": "$.status",
-  "equals": "active"
-}
-```
-
-This assertion is an explicit operational expectation.
-
-## Understand path and reference syntax
-
-TRAM currently uses several related traversal/reference systems.
-
-### Assertion traversal
-
-Assertion paths operate on response bodies.
+The `data` section stores reusable request and runtime values.
 
 Example:
 
 ```json
 {
-  "path": "$.status",
-  "equals": "active"
-}
-```
-
-### Manifest data lookup
-
-Manifest data references retrieve reusable manifest-defined data.
-
-Example:
-
-```json
-"body": "$data.task.valid"
-```
-
-### Runtime interpolation
-
-Runtime interpolation inserts values into runtime request construction.
-
-Example:
-
-```json
-"path": "/tasks/${data.stableId}"
-```
-
-## Shared data and runtime interpolation
-
-The `data` section stores reusable manifest-defined values.
-
-Example:
-
-```json
-"data": {
-  "stableId": "${randomId}",
-  "filters": {
-    "status": "active"
+  "data": {
+    "stableId": "${randomId}"
   }
 }
 ```
 
-The value:
+The generated value remains stable throughout the current test run.
+
+Later requests can reference the same value:
 
 ```json
-"${randomId}"
-```
-
-is resolved once when the manifest loads.
-
-Later requests can reuse the stable value throughout the test run.
-
-Example:
-
-```json
-"path": "/tasks/${data.stableId}"
-```
-
-Nested traversal is also supported.
-
-Example:
-
-```json
-"query": {
-  "status": "${data.filters.status}"
+{
+  "path": "/tasks/${data.stableId}"
 }
 ```
 
 This enables coordinated multi-step behavioral flows without introducing custom scripting.
 
-## Inspect the assertion model
+### Assertion engine
 
-Open:
-
-```text
-assertions.js
-```
-
-Current assertion support includes:
+The assertion library currently supports:
 
 ```text
 exists
@@ -271,15 +194,9 @@ Example collection assertion:
 }
 ```
 
-This assertion verifies:
+### Request body support
 
-```text
-all returned tasks expose valid status values
-```
-
-## Inspect request body handling
-
-TRAM currently supports:
+TRAM supports multiple request body encodings:
 
 ```text
 json
@@ -298,178 +215,138 @@ Example:
 }
 ```
 
-This allows the runner to work with APIs that expect different request encodings.
+## Running the sample project
 
-## Run in verbose mode
+Start the sample API:
 
-Verbose mode prints detailed assertion results.
+```bash
+node index.js
+```
+
+Run the test suite:
+
+```bash
+node api-test-runner.js api-tests.json
+```
+
+Verbose mode:
 
 ```bash
 node api-test-runner.js api-tests.json --verbose
 ```
 
-Verbose mode helps reveal:
-
-* assertion evaluation
-* JSON path traversal
-* collection assertions
-* failure messages
-* behavioral expectations
-
-## Generate a machine-readable report
+Generate a machine-readable report:
 
 ```bash
 node api-test-runner.js api-tests.json --report results.json
 ```
 
-This generates a detailed JSON report containing:
+## Documentation
 
-* request details
-* response details
-* assertion results
-* pass/fail summaries
+### Quick Start
 
-## Try intentionally breaking a test
+Practical walkthrough for:
 
-One of the fastest ways to understand TRAM is to intentionally introduce a failure.
+* running the sample project
+* inspecting manifests
+* understanding assertions
+* understanding runtime interpolation
+* exploring behavioral API testing workflows
 
-### Change an expected value
+### Manifest Specification
 
-Change:
+Authoritative executable manifest model.
 
-```json
-"equals": "active"
-```
+Defines:
 
-to:
+* manifest structure
+* request configuration
+* assertion syntax
+* traversal behavior
+* runtime interpolation
+* stable run-scoped variables
+* collection assertions
+* body handling
 
-```json
-"equals": "closed"
-```
+### Explainer
 
-Then rerun the suite.
+Architectural discussion of:
 
-### Disable a test
+* behavioral assertions
+* operational artifacts
+* hypermedia-oriented testing
+* generated systems
+* AI-assisted workflows
 
-Add:
+## Reporting philosophy
 
-```json
-"enabled": false
-```
+TRAM emphasizes:
 
-to a test.
+* low-noise console output
+* readable failures
+* behavior visibility
+* detailed machine-readable reports
 
-Then rerun the suite.
+The console output is intentionally concise by default.
 
-### Break a request body
+## Design philosophy
 
-Remove a required property from a POST request body.
+TRAM is intentionally conservative.
 
-Then rerun the suite.
+v0.1 avoids:
 
-### Break a range assertion
+* framework dependencies
+* custom scripting
+* setup/teardown orchestration
+* schema engines
+* plugin systems
+* hidden runtime behavior
 
-Change:
-
-```json
-"range": {
-  "min": 1,
-  "max": 5
-}
-```
-
-to:
-
-```json
-"range": {
-  "min": 100
-}
-```
-
-Then rerun the suite.
-
-### Break a runtime reference
-
-Change:
-
-```json
-"${data.stableId}"
-```
-
-to:
-
-```json
-"${data.noSuchValue}"
-```
-
-Then rerun the suite.
-
-These experiments help reveal:
-
-* behavioral expectations
-* assertion failures
-* request construction
-* manifest ergonomics
-* runtime interpolation behavior
-* failure readability
-
-## Understand the current philosophy
-
-TRAM currently emphasizes:
-
-* behavioral API testing
-* explicit manifests
-* readable assertions
-* low-noise reporting
-* predictable execution
-* framework independence
-* augmentation over automation
-
-The current design intentionally avoids:
+The current emphasis is:
 
 ```text
-custom scripting
-schema engines
-setup/teardown orchestration
-hidden runtime behavior
+clarity
+predictability
+behavior visibility
+manifest ergonomics
+reviewability
 ```
 
 ## AI Coaching direction
 
-The long-term direction includes an AI Coaching layer.
+The eventual AI Coach layer will:
 
-The AI Coach is intended to:
+1. inspect `server.js` and/or API Story documents
+2. identify API behaviors
+3. propose candidate tests
+4. distinguish happy and sad paths
+5. review assertions collaboratively
+6. generate plausible first-pass manifests
 
-* inspect `server.js` and/or API Story documents
-* identify API behaviors
-* suggest candidate tests
-* distinguish happy and sad paths
-* review assertions collaboratively
-* generate executable manifests
-
-The goal is not one-shot generation alone.
+The goal is not automatic test generation alone.
 
 The goal is helping users understand behavioral API testing while collaboratively constructing executable manifests.
 
-## Recommended next steps
+## Related ideas
 
-Recommended files to inspect:
+TRAM draws inspiration from:
+
+* behavioral testing
+* executable specifications
+* hypermedia-oriented design
+* affordance-centric APIs
+* augmentation-oriented AI systems
+* coaching-based human/machine collaboration
+
+## Status
+
+Early experimental project.
+
+Interfaces and manifest formats will evolve during v0.x development.
+
+Project repository:
 
 ```text
-README.md
-api-tests.json
-assertions.js
-api-test-runner.js
+https://github.com/mamund/2026-05-tram
 ```
-
-Recommended next experiments:
-
-* add new sad-path tests
-* add new range assertions
-* add filtering tests
-* add collection assertions
-* improve reporting
-* explore manifest ergonomics
-* experiment with hypermedia assertions
-* experiment with stable run-scoped variables
 
