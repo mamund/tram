@@ -185,7 +185,8 @@ async function runTest({ manifest, runtimeData, test, index }) {
   try {
     const response = await executeRequest(request, manifest.config.timeoutMs);
     const durationMs = Date.now() - started;
-    const assertions = evaluateExpectations({ expect: test.expect, response });
+    const resolvedExpect = resolveRuntimeTokens(clone(test.expect),runtimeData);
+    const assertions = evaluateExpectations({expect: resolvedExpect,response});
     const passed = assertions.every((assertion) => assertion.passed);
 
     return {
@@ -424,23 +425,6 @@ function resolveValue(value, runtimeData) {
 
   return clone(value);
 }
-
-/*
-function resolveValue(value, runtimeData) {
-  if (typeof value === 'string' && value.startsWith('$data.')) {
-    const key = value.slice('$data.'.length);
-    const resolved = getByPath(runtimeData, key);
-
-    if (!resolved.exists) {
-      throw new Error(`Data reference not found: ${value}`);
-    }
-
-    return clone(resolved.value);
-  }
-
-  return clone(value);
-}
-*/
 
 function resolveRuntimeTokens(value, runtimeData) {
   if (typeof value === 'string') {
