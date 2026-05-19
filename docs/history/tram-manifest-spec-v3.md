@@ -237,7 +237,6 @@ Runtime interpolation supports inserting values into:
 * request paths
 * query values
 * request bodies
-* expectations
 
 Example:
 
@@ -266,17 +265,6 @@ Then:
 ```json
 "query": {
   "status": "${data.filters.status}"
-}
-```
-
-Interpolation is also supported inside assertions.
-
-Example:
-
-```json
-{
-  "path": "$.id",
-  "equals": "${data.stableId}"
 }
 ```
 
@@ -440,7 +428,6 @@ isArray
 hasProperties
 minLength
 each
-eachProperty
 ```
 
 ## Assertion reference
@@ -653,83 +640,6 @@ Example:
     }
   }
 }
-```
-
-### eachProperty
-
-Iterates over all properties in an object map and applies assertions to each property value.
-
-Example:
-
-```json
-{
-  "path": "$._links",
-  "eachProperty": {
-    "hasProperties": [
-      "href",
-      "method"
-    ]
-  }
-}
-```
-
-Rules:
-
-```text
-eachProperty only operates on object maps
-arrays fail the assertion
-primitive values fail the assertion
-```
-
-### Nested eachProperty assertions
-
-Nested assertions are supported inside `eachProperty`.
-
-Example:
-
-```json
-{
-  "path": "$._links",
-  "eachProperty": {
-    "path": "$.method",
-    "oneOf": [
-      "GET",
-      "POST",
-      "PUT",
-      "PATCH",
-      "DELETE"
-    ]
-  }
-}
-```
-
-### Nested collection + object-map assertions
-
-`each` and `eachProperty` can be combined.
-
-Example:
-
-```json
-{
-  "path": "$",
-  "each": {
-    "path": "$._links",
-    "eachProperty": {
-      "hasProperties": [
-        "href",
-        "method"
-      ]
-    }
-  }
-}
-```
-
-This assertion verifies:
-
-```text
-for each record
-  for each link relation
-    ensure href and method exist
 ```
 
 ## Nested assertions

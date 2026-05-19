@@ -59,39 +59,6 @@ The eventual AI Coach should help users understand behavioral API testing while 
 
 ## Assertion improvements
 
-### eachProperty assertions
-
-Current support:
-
-```text
-each
-→ array iteration
-```
-
-Planned support:
-
-```text
-eachProperty
-→ object/map iteration
-```
-
-Example:
-
-```json
-{
-  "path": "$._links",
-  "eachProperty": {
-    "hasProperties": ["href", "method"]
-  }
-}
-```
-
-Goals:
-
-* improve support for hypermedia formats
-* support object maps cleanly
-* preserve distinction between arrays and objects
-
 ### Primitive type assertions
 
 Add support for basic JSON/native value type assertions.

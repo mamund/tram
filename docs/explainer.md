@@ -1,6 +1,6 @@
 # Behavioral assertions as operational artifacts
 
-_From scenarios to assertions in distributed and AI-assisted systems_
+*From scenarios to assertions in distributed and AI-assisted systems*
 
 ## APIs already have strong structural tooling
 
@@ -10,11 +10,11 @@ At the same time, distributed systems continue to fail in ways that are not prim
 
 Behavioral expectations are often scattered across several places:
 
-- prose documentation
-- automated test suites
-- monitoring dashboards
-- client-side assumptions
-- tribal knowledge within teams
+* prose documentation
+* automated test suites
+* monitoring dashboards
+* client-side assumptions
+* tribal knowledge within teams
 
 The result is fragmentation. The system may expose a formally valid interface while the operational meaning of the system becomes harder to inspect directly.
 
@@ -45,13 +45,13 @@ The important distinction is not the use of JSON instead of prose. The larger sh
 
 In this model, the manifest becomes a place where operational expectations are expressed explicitly. Assertions may describe:
 
-- valid state transitions
-- expected response structures
-- affordance presence
-- collection invariants
-- validation rules
-- error semantics
-- behavioral constraints
+* valid state transitions
+* expected response structures
+* affordance presence
+* collection invariants
+* validation rules
+* error semantics
+* behavioral constraints
 
 This changes the role of verification. Instead of merely asking whether a test passes, the system begins to expose the operational assumptions that govern expected behavior.
 
@@ -59,20 +59,35 @@ This changes the role of verification. Instead of merely asking whether a test p
 
 The distinction becomes more visible in hypermedia-oriented systems. Many API testing approaches assume a relatively static environment:
 
-- known endpoints
-- predefined workflows
-- fixed sequences of operations
+* known endpoints
+* predefined workflows
+* fixed sequences of operations
 
 Hypermedia systems operate differently. Clients discover available actions dynamically through links, forms, and embedded controls. In these systems, behavior is exposed at runtime through affordances rather than being fully predetermined in client code.
 
 That broadens the definition of testing. Verification now includes questions such as:
 
-- Are expected affordances present?
-- Can clients discover valid transitions?
-- Are navigation surfaces exposed consistently?
-- Do runtime constraints appear correctly?
+* Are expected affordances present?
+* Can clients discover valid transitions?
+* Are navigation surfaces exposed consistently?
+* Do runtime constraints appear correctly?
 
 The attached TRAM manifest already reflects this orientation. One assertion verifies the presence of a `_links` object at the API root along with a discoverable `taskList` affordance. Another verifies that task collections expose valid state values across all returned items.
+
+Recent additions to the assertion model also support object-map traversal (`eachProperty`), allowing manifests to validate affordance-oriented structures such as hypermedia link maps without introducing scripting or custom matcher code.
+
+For example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "hasProperties": ["href", "method"]
+  }
+}
+```
+
+This keeps nested behavioral expectations explicit, reviewable, and executable while preserving the declarative structure of the manifest.
 
 These checks move beyond endpoint availability. They verify aspects of runtime coordination and discoverability that are especially important in adaptive or agent-oriented systems.
 
@@ -84,11 +99,11 @@ As implementation becomes easier to generate, operational behavior becomes more 
 
 Assertion manifests offer one possible stabilizing layer. They provide a shared behavioral reference point that can be inspected by:
 
-- developers
-- architects
-- CI systems
-- monitoring tools
-- AI assistants
+* developers
+* architects
+* CI systems
+* monitoring tools
+* AI assistants
 
 This is not primarily about replacing human judgment with automation. The manifest creates a visible representation of expected operational behavior that humans and machines can collaborate around. Assertions become reviewable objects rather than hidden details buried inside application code or testing frameworks.
 
@@ -103,3 +118,4 @@ TRAM also supports stable run-scoped interpolation values, allowing related beha
 This approach does not replace existing testing or observability systems. Unit tests, schema validation, monitoring, and contract testing each address important concerns. TRAM explores a narrower but increasingly important space: the explicit expression of operational behavior itself.
 
 As distributed systems continue to evolve toward more adaptive, generated, and agent-assisted environments, the ability to define and verify observable behavior directly may become more valuable. The implementation underneath a system may change rapidly over time. The operational expectations governing that system still need to remain understandable, inspectable, and stable enough for humans and machines to coordinate around them.
+

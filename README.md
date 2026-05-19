@@ -10,6 +10,7 @@ TRAM combines:
 * a reusable assertion engine
 * a portable HTTP test runner
 * stable runtime interpolation support
+* object-map and collection assertions
 * an eventual AI Coaching workflow focused on learning and augmentation rather than pure automation
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
@@ -92,6 +93,7 @@ Current implementation includes:
 * dependency-free HTTP runner
 * body/header/status assertions
 * collection assertions (`each`)
+* object-map assertions (`eachProperty`)
 * range assertions (`range`)
 * stable run-scoped variables
 * runtime interpolation (`${data.*}`)
@@ -180,19 +182,39 @@ isArray
 hasProperties
 minLength
 each
+eachProperty
 ```
 
-Example collection assertion:
+Example nested collection + object-map assertion:
 
 ```json
 {
   "path": "$",
   "each": {
-    "property": "status",
-    "oneOf": ["active", "pending", "completed"]
+    "path": "$._links",
+    "eachProperty": {
+      "hasProperties": ["href", "method"]
+    }
   }
 }
 ```
+
+This assertion verifies:
+
+```text
+for each record
+  for each link relation
+    ensure href and method exist
+```
+
+The assertion model supports:
+
+* collection traversal
+* nested traversal
+* object-map iteration
+* hypermedia affordance validation
+
+while remaining declarative and inspectable.
 
 ### Request body support
 
@@ -266,6 +288,7 @@ Defines:
 * runtime interpolation
 * stable run-scoped variables
 * collection assertions
+* object-map assertions
 * body handling
 
 ### Explainer

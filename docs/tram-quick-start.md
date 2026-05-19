@@ -235,6 +235,17 @@ Example:
 }
 ```
 
+Interpolation is also supported inside assertions.
+
+Example:
+
+```json
+{
+  "path": "$.id",
+  "equals": "${data.stableId}"
+}
+```
+
 This enables coordinated multi-step behavioral flows without introducing custom scripting.
 
 ## Inspect the assertion model
@@ -257,6 +268,7 @@ isArray
 hasProperties
 minLength
 each
+eachProperty
 ```
 
 Example collection assertion:
@@ -276,6 +288,58 @@ This assertion verifies:
 ```text
 all returned tasks expose valid status values
 ```
+
+TRAM also supports object-map assertions.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "hasProperties": ["href", "method"]
+  }
+}
+```
+
+This assertion verifies:
+
+```text
+all link relations expose href and method properties
+```
+
+Nested collection + object-map assertions are also supported.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "path": "$._links",
+    "eachProperty": {
+      "hasProperties": ["href", "method"]
+    }
+  }
+}
+```
+
+This assertion verifies:
+
+```text
+for each record
+  for each link relation
+    ensure href and method exist
+```
+
+The assertion model now supports:
+
+* collection traversal
+* nested traversal
+* object-map iteration
+* hypermedia affordance validation
+
+while remaining declarative and inspectable.
 
 ## Inspect request body handling
 
@@ -313,6 +377,7 @@ Verbose mode helps reveal:
 * assertion evaluation
 * JSON path traversal
 * collection assertions
+* object-map assertions
 * failure messages
 * behavioral expectations
 
@@ -404,6 +469,22 @@ to:
 
 Then rerun the suite.
 
+### Break an object-map assertion
+
+Change:
+
+```json
+"hasProperties": ["href", "method"]
+```
+
+to:
+
+```json
+"hasProperties": ["href", "verb"]
+```
+
+Then rerun the suite.
+
 These experiments help reveal:
 
 * behavioral expectations
@@ -411,6 +492,7 @@ These experiments help reveal:
 * request construction
 * manifest ergonomics
 * runtime interpolation behavior
+* nested traversal behavior
 * failure readability
 
 ## Understand the current philosophy
@@ -468,6 +550,7 @@ Recommended next experiments:
 * add new range assertions
 * add filtering tests
 * add collection assertions
+* add object-map assertions
 * improve reporting
 * explore manifest ergonomics
 * experiment with hypermedia assertions
