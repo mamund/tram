@@ -15,7 +15,7 @@ The manifest is intentionally:
 The manifest acts as both:
 
 * executable configuration
-* behavioral operational artifact
+* behavioral documentation
 
 ## File format
 
@@ -36,9 +36,7 @@ api-tests.json
   "name": "Task Management API Tests",
   "description": "Defines a set of behavioral tests for a task-management API.",
   "author": "Mike Amundsen",
-  "config": {
-    "baseUrl": "http://localhost:3000"
-  },
+  "baseUrl": "http://localhost:3000",
   "data": {},
   "tests": []
 }
@@ -53,31 +51,9 @@ api-tests.json
 | `name`            | Yes      | Human-readable test collection name        |
 | `description`     | No       | Description of the collection              |
 | `author`          | No       | Manifest author                            |
-| `config`          | Yes      | Runner configuration                       |
+| `baseUrl`         | Yes      | Base URL for all requests                  |
 | `data`            | No       | Shared request/test data                   |
 | `tests`           | Yes      | Array of test definitions                  |
-
-## Config structure
-
-Example:
-
-```json
-"config": {
-  "baseUrl": "http://localhost:3000",
-  "timeoutMs": 5000,
-  "defaultHeaders": {
-    "accept": "application/json"
-  }
-}
-```
-
-### Config properties
-
-| Property         | Required | Description                     |
-| ---------------- | -------- | ------------------------------- |
-| `baseUrl`        | Yes      | Base URL for all requests       |
-| `timeoutMs`      | No       | Request timeout in milliseconds |
-| `defaultHeaders` | No       | Headers added to all requests   |
 
 ## Test structure
 
@@ -125,7 +101,6 @@ Example:
 | `method`      | Yes      | HTTP method                                    |
 | `path`        | Yes      | Request path                                   |
 | `headers`     | No       | Request headers                                |
-| `query`       | No       | Query parameter object                         |
 | `bodyType`    | No       | Request body encoding                          |
 | `body`        | No       | Request body or `$data` reference              |
 | `expect`      | Yes      | Expected response assertions                   |
@@ -208,75 +183,12 @@ Referenced using:
 "body": "$data.task.valid"
 ```
 
-## Stable run-scoped variables
-
-TRAM supports stable run-scoped values initialized once per test run.
-
-Example:
-
-```json
-"data": {
-  "stableId": "${randomId}"
-}
-```
-
-Then referenced later:
-
-```json
-"path": "/tasks/${data.stableId}"
-```
-
-The value remains stable throughout the current test run.
-
-A new value is generated on the next execution.
-
-## Runtime interpolation
-
-Runtime interpolation supports inserting values into:
-
-* request paths
-* query values
-* request bodies
-
-Example:
-
-```json
-"path": "/tasks/${data.stableId}"
-```
-
-Nested references are supported:
-
-```json
-"${data.filters.status}"
-```
-
-Example:
-
-```json
-"data": {
-  "filters": {
-    "status": "active"
-  }
-}
-```
-
-Then:
-
-```json
-"query": {
-  "status": "${data.filters.status}"
-}
-```
-
 ## Runtime tokens
 
 Current runtime token support:
 
 ```text
 ${randomId}
-${timestamp}
-${uuid}
-${randomEmail}
 ```
 
 Example:
@@ -285,81 +197,6 @@ Example:
 {
   "id": "${randomId}"
 }
-```
-
-## Runtime token behavior
-
-Runtime tokens behave differently depending on usage location.
-
-### Direct usage
-
-Tokens used directly inside requests are generated per encounter.
-
-Example:
-
-```json
-{
-  "id": "${randomId}"
-}
-```
-
-Each occurrence generates a new value.
-
-### Run-scoped initialization
-
-Tokens inside `data` initialize once per test run.
-
-Example:
-
-```json
-"data": {
-  "stableId": "${randomId}"
-}
-```
-
-All later references to:
-
-```json
-"${data.stableId}"
-```
-
-reuse the same generated value.
-
-## Path and reference syntax
-
-TRAM currently uses several related traversal/reference systems.
-
-### Assertion traversal
-
-Assertion paths operate on response bodies using JSONPath-like traversal.
-
-Example:
-
-```json
-{
-  "path": "$.status",
-  "equals": "active"
-}
-```
-
-### Manifest data lookup
-
-Manifest data references retrieve reusable manifest-defined values.
-
-Example:
-
-```json
-"body": "$data.task.valid"
-```
-
-### Runtime interpolation
-
-Runtime interpolation inserts values into runtime request construction.
-
-Example:
-
-```json
-"path": "/tasks/${data.stableId}"
 ```
 
 ## Expectations
@@ -399,11 +236,11 @@ Example:
 ]
 ```
 
-### body
+### json
 
-Array of response body assertions.
+Array of JSON body assertions.
 
-Body assertions operate on parsed JSON responses using JSONPath-like traversal.
+Body assertions operate on parsed JSON responses using JSONPath-like paths.
 
 Example:
 
@@ -416,7 +253,7 @@ Example:
 ]
 ```
 
-## Supported assertions
+## Supported JSON assertions
 
 ```text
 exists

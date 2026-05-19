@@ -59,36 +59,6 @@ The eventual AI Coach should help users understand behavioral API testing while 
 
 ## Assertion improvements
 
-### Stable run-scoped variables
-
-Support generated values resolved once per test run.
-
-Example:
-
-```json
-"data": {
-  "stableId": "${randomId}"
-}
-```
-
-This enables behavioral sequences such as:
-
-```text
-create
-retrieve
-update
-delete
-verify missing
-```
-
-without introducing scripting support.
-
-Goals:
-
-* preserve declarative manifests
-* support correlated test flows
-* avoid runtime mutation complexity
-
 ### eachProperty assertions
 
 Current support:

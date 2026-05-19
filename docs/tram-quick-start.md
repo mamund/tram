@@ -56,6 +56,7 @@ The manifest contains:
 * assertions
 * expected behavior
 * shared test data
+* runtime interpolation values
 
 The runner executes the manifest directly.
 
@@ -104,6 +105,7 @@ Summary: 9 passed, 0 failed, 0 skipped, 9 total
 At this point, TRAM has:
 
 * loaded the manifest
+* initialized shared runtime data
 * executed each request
 * evaluated assertions
 * generated behavioral results
@@ -154,6 +156,86 @@ Example:
 ```
 
 This assertion is an explicit operational expectation.
+
+## Understand path and reference syntax
+
+TRAM currently uses several related traversal/reference systems.
+
+### Assertion traversal
+
+Assertion paths operate on response bodies.
+
+Example:
+
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
+```
+
+### Manifest data lookup
+
+Manifest data references retrieve reusable manifest-defined data.
+
+Example:
+
+```json
+"body": "$data.task.valid"
+```
+
+### Runtime interpolation
+
+Runtime interpolation inserts values into runtime request construction.
+
+Example:
+
+```json
+"path": "/tasks/${data.stableId}"
+```
+
+## Shared data and runtime interpolation
+
+The `data` section stores reusable manifest-defined values.
+
+Example:
+
+```json
+"data": {
+  "stableId": "${randomId}",
+  "filters": {
+    "status": "active"
+  }
+}
+```
+
+The value:
+
+```json
+"${randomId}"
+```
+
+is resolved once when the manifest loads.
+
+Later requests can reuse the stable value throughout the test run.
+
+Example:
+
+```json
+"path": "/tasks/${data.stableId}"
+```
+
+Nested traversal is also supported.
+
+Example:
+
+```json
+"query": {
+  "status": "${data.filters.status}"
+}
+```
+
+This enables coordinated multi-step behavioral flows without introducing custom scripting.
 
 ## Inspect the assertion model
 
@@ -306,12 +388,29 @@ to:
 
 Then rerun the suite.
 
+### Break a runtime reference
+
+Change:
+
+```json
+"${data.stableId}"
+```
+
+to:
+
+```json
+"${data.noSuchValue}"
+```
+
+Then rerun the suite.
+
 These experiments help reveal:
 
 * behavioral expectations
 * assertion failures
 * request construction
 * manifest ergonomics
+* runtime interpolation behavior
 * failure readability
 
 ## Understand the current philosophy
@@ -372,4 +471,5 @@ Recommended next experiments:
 * improve reporting
 * explore manifest ergonomics
 * experiment with hypermedia assertions
+* experiment with stable run-scoped variables
 

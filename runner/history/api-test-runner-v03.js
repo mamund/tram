@@ -136,11 +136,10 @@ function validateManifest(manifest) {
 async function runSuite(manifest) {
   const results = [];
   const tests = manifest.tests || [];
-  const runtimeData = initializeRuntimeData(manifest.data || {});
 
   for (let index = 0; index < tests.length; index += 1) {
     const test = tests[index];
-    const testResult = await runTest({ manifest, runtimeData, test, index });
+    const testResult = await runTest({ manifest, test, index });
     results.push(testResult);
   }
 
@@ -158,7 +157,7 @@ async function runSuite(manifest) {
   };
 }
 
-async function runTest({ manifest, runtimeData, test, index }) {
+async function runTest({ manifest, test, index }) {
   const id = test.id || `test-${index + 1}`;
   const enabled = test.enabled !== false;
 
@@ -179,7 +178,7 @@ async function runTest({ manifest, runtimeData, test, index }) {
 
   validateTest(test, index);
 
-  const request = buildRequest({ manifest, runtimeData, test });
+  const request = buildRequest({ manifest, test });
   const started = Date.now();
 
   try {
@@ -198,7 +197,7 @@ async function runTest({ manifest, runtimeData, test, index }) {
       tags: Array.isArray(test.tags) ? test.tags : [],
       rationale: test.rationale || null,
       method: request.method,
-      path: request.path,
+      path: test.path,
       url: request.url,
       status: response.status,
       durationMs,
@@ -219,7 +218,7 @@ async function runTest({ manifest, runtimeData, test, index }) {
       tags: Array.isArray(test.tags) ? test.tags : [],
       rationale: test.rationale || null,
       method: request.method,
-      path: request.path,
+      path: test.path,
       url: request.url,
       status: null,
       durationMs,
@@ -250,8 +249,9 @@ function validateTest(test, index) {
   }
 }
 
-function buildRequest({ manifest, runtimeData, test }) {
+function buildRequest({ manifest, test }) {
   const config = manifest.config || {};
+  const data = manifest.data || {};
 
   const method = String(test.method || 'GET').toUpperCase();
   const headers = {
@@ -259,13 +259,11 @@ function buildRequest({ manifest, runtimeData, test }) {
     ...(test.headers || {})
   };
 
-  const query = resolveRuntimeTokens(resolveValue(test.query, runtimeData), runtimeData);
-  const requestPath = resolveRuntimeTokens(test.path, runtimeData);
-  const url = buildUrl(config.baseUrl, requestPath, query, runtimeData);
+  const query = resolveValue(test.query, data);
+  const url = buildUrl(config.baseUrl, test.path, query);
 
   const request = {
     method,
-    path: requestPath,
     url,
     headers,
     body: undefined,
@@ -274,7 +272,7 @@ function buildRequest({ manifest, runtimeData, test }) {
 
   if (Object.prototype.hasOwnProperty.call(test, 'body')) {
     const bodyType = test.bodyType || 'json';
-    const resolvedBody = resolveRuntimeTokens(resolveValue(test.body, runtimeData), runtimeData);
+    const resolvedBody = resolveTokens(resolveValue(test.body, data));
 
     request.bodyType = bodyType;
     request.body = encodeBody(resolvedBody, bodyType, request.headers);
@@ -323,13 +321,13 @@ function encodeFormBody(body) {
   return params.toString();
 }
 
-function buildUrl(baseUrl, requestPath, query, runtimeData) {
+function buildUrl(baseUrl, requestPath, query) {
   const url = new URL(requestPath, ensureTrailingSlash(baseUrl));
 
   if (query && typeof query === 'object') {
     for (const [key, value] of Object.entries(query)) {
       if (value === undefined || value === null) continue;
-      url.searchParams.set(key, String(resolveRuntimeTokens(value, runtimeData)));
+      url.searchParams.set(key, String(resolveTokens(value)));
     }
   }
 
@@ -401,127 +399,38 @@ function headersToObject(headers) {
   return result;
 }
 
-function initializeRuntimeData(data) {
-  return resolveBuiltInTokens(clone(data));
-}
-
-function resolveValue(value, runtimeData) {
+function resolveValue(value, data) {
   if (typeof value === 'string' && value.startsWith('$data.')) {
     const key = value.slice('$data.'.length);
 
-    if (Object.prototype.hasOwnProperty.call(runtimeData, key)) {
-      return clone(runtimeData[key]);
-    }
-
-    const resolved = getByPath(runtimeData, key);
-
-    if (!resolved.exists) {
+    if (!Object.prototype.hasOwnProperty.call(data, key)) {
       throw new Error(`Data reference not found: ${value}`);
     }
 
-    return clone(resolved.value);
+    return clone(data[key]);
   }
 
   return clone(value);
 }
 
-/*
-function resolveValue(value, runtimeData) {
-  if (typeof value === 'string' && value.startsWith('$data.')) {
-    const key = value.slice('$data.'.length);
-    const resolved = getByPath(runtimeData, key);
-
-    if (!resolved.exists) {
-      throw new Error(`Data reference not found: ${value}`);
-    }
-
-    return clone(resolved.value);
-  }
-
-  return clone(value);
-}
-*/
-
-function resolveRuntimeTokens(value, runtimeData) {
+function resolveTokens(value) {
   if (typeof value === 'string') {
-    return value.replace(/\$\{([^}]+)\}/g, (_match, tokenName) => {
-      if (tokenName.startsWith('data.')) {
-        const dataPath = tokenName.slice('data.'.length);
-        const resolved = getByPath(runtimeData, dataPath);
-
-        if (!resolved.exists) {
-          throw new Error(`Data reference not found: ${tokenName}`);
-        }
-
-        return String(resolved.value);
-      }
-
-      return generateToken(tokenName);
-    });
+    return value.replace(/\$\{([^}]+)\}/g, (_match, tokenName) => generateToken(tokenName));
   }
 
   if (Array.isArray(value)) {
-    return value.map((item) => resolveRuntimeTokens(item, runtimeData));
+    return value.map((item) => resolveTokens(item));
   }
 
   if (value && typeof value === 'object') {
     const result = {};
     for (const [key, child] of Object.entries(value)) {
-      result[key] = resolveRuntimeTokens(child, runtimeData);
+      result[key] = resolveTokens(child);
     }
     return result;
   }
 
   return value;
-}
-
-function resolveBuiltInTokens(value) {
-  if (typeof value === 'string') {
-    return value.replace(/\$\{([^}]+)\}/g, (_match, tokenName) => {
-      if (tokenName.startsWith('data.')) {
-        return `\${${tokenName}}`;
-      }
-
-      return generateToken(tokenName);
-    });
-  }
-
-  if (Array.isArray(value)) {
-    return value.map((item) => resolveBuiltInTokens(item));
-  }
-
-  if (value && typeof value === 'object') {
-    const result = {};
-    for (const [key, child] of Object.entries(value)) {
-      result[key] = resolveBuiltInTokens(child);
-    }
-    return result;
-  }
-
-  return value;
-}
-
-function getByPath(source, dotPath) {
-  if (!dotPath) {
-    return { exists: true, value: source };
-  }
-
-  const parts = String(dotPath).split('.');
-  let current = source;
-
-  for (const part of parts) {
-    if (current === null || current === undefined) {
-      return { exists: false, value: undefined };
-    }
-
-    if (!Object.prototype.hasOwnProperty.call(Object(current), part)) {
-      return { exists: false, value: undefined };
-    }
-
-    current = current[part];
-  }
-
-  return { exists: true, value: current };
 }
 
 function generateToken(tokenName) {

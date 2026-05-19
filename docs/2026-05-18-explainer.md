@@ -98,6 +98,8 @@ That collaborative aspect matters. Many software artifacts are optimized either 
 
 The broader architectural question underneath TRAM is whether behavior itself should become a first-class operational layer in distributed systems. APIs already expose structural contracts through schemas and interface descriptions. Hypermedia systems expose runtime affordances through messages. Assertion manifests extend this progression by exposing behavioral expectations as portable, inspectable artifacts independent of implementation details.
 
+TRAM also supports stable run-scoped interpolation values, allowing related behavioral interactions to share state across requests without introducing custom scripting. This keeps multi-step workflows explicit, reviewable, and manifest-driven.
+
 This approach does not replace existing testing or observability systems. Unit tests, schema validation, monitoring, and contract testing each address important concerns. TRAM explores a narrower but increasingly important space: the explicit expression of operational behavior itself.
 
 As distributed systems continue to evolve toward more adaptive, generated, and agent-assisted environments, the ability to define and verify observable behavior directly may become more valuable. The implementation underneath a system may change rapidly over time. The operational expectations governing that system still need to remain understandable, inspectable, and stable enough for humans and machines to coordinate around them.

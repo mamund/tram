@@ -20,6 +20,10 @@
     }
   },
   "data": {
+    "stable": {
+      "id": "${randomId}",
+      "guid": "c3e59224-93d5-4b07-9317-6dc24eb586b3"
+    },
     "task.valid": {
       "task": {
         "id": "${randomId}",
@@ -46,7 +50,7 @@
     },
     "task.updateStatus": {
       "task" : {
-        "id": "c3e59224-93d5-4b07-9317-6dc24eb586b3",
+        "id": "${data.stable.guid}",
         "status": "completed"
       }
     },
@@ -149,7 +153,7 @@
         "happy-path"
       ],
       "method": "GET",
-      "path": "/tasks/c3e59224-93d5-4b07-9317-6dc24eb586b3",
+      "path": "/tasks/${data.stable.guid}",
       "expect": {
         "status": 200,
         "body": [
@@ -189,7 +193,7 @@
       ],
       "type": "sad-path",
       "method": "GET",
-      "path": "/tasks/no-such-task",
+      "path": "/tasks/${data.stable.id}",
       "expect": {
         "status": 404,
         "body": [
