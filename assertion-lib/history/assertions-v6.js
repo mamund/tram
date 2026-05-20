@@ -179,16 +179,6 @@ function assertJson(assertion, body, basePath = '$') {
     });
   }
 
-  if (Object.prototype.hasOwnProperty.call(assertion, 'type')) {
-    results.push(assertType({
-      actual: value.value,
-      expected: assertion.type,
-      exists: value.exists,
-      path: absolutePath,
-      type: 'type'
-    }));
-  }
-
   if (isRangeAssertion(assertion.range)) {
     const expected = normalizeRange(assertion.range);
     const actual = value.value;
@@ -374,16 +364,6 @@ function assertEach(eachAssertion, item, itemPath) {
       });
     }
 
-    if (Object.prototype.hasOwnProperty.call(eachAssertion, 'type')) {
-      results.push(assertType({
-        actual,
-        expected: eachAssertion.type,
-        exists,
-        path: propertyPath,
-        type: 'each.property.type'
-      }));
-    }
-
     if (isRangeAssertion(eachAssertion.range)) {
       const expected = normalizeRange(eachAssertion.range);
       results.push(assertRange({
@@ -484,53 +464,6 @@ function rangeFailureMessage({ actual, expected, exists, isNumber, path }) {
   }
 
   return `Expected ${path} to be ${rangeDescription(expected)}, got ${formatValue(actual)}.`;
-}
-
-function assertType({ actual, expected, exists, path, type }) {
-  const actualType = getValueType(actual);
-  const supported = isSupportedType(expected);
-  const passed = exists && supported && actualType === expected;
-
-  return {
-    passed,
-    type,
-    target: 'json',
-    path,
-    expected,
-    actual: actualType,
-    message: passed
-      ? `${path} is type ${expected}.`
-      : typeFailureMessage({ expected, actualType, exists, supported, path })
-  };
-}
-
-function getValueType(value) {
-  if (value === null) return 'null';
-  if (Array.isArray(value)) return 'array';
-  return typeof value;
-}
-
-function isSupportedType(value) {
-  return [
-    'string',
-    'number',
-    'boolean',
-    'array',
-    'object',
-    'null'
-  ].includes(value);
-}
-
-function typeFailureMessage({ expected, actualType, exists, supported, path }) {
-  if (!exists) {
-    return `Expected ${path} to be type ${expected}, but the path does not exist.`;
-  }
-
-  if (!supported) {
-    return `Unsupported type assertion "${expected}" at ${path}.`;
-  }
-
-  return `Expected ${path} to be type ${expected}, got ${actualType}.`;
 }
 
 function assertHasProperties({ actual, expected, path, type }) {

@@ -164,7 +164,14 @@
                 "oneOf": ["GET", "POST", "PUT", "PATCH", "DELETE"]
               }
             }
-          },          
+          },     
+          {
+            "path": "$",
+            "each": {
+              "property": "priority",
+              "type": "number"
+            }
+          },     
           {
             "path": "$",
             "each": {
@@ -213,6 +220,21 @@
               "assignedUser",
               "_links"
             ]
+          },
+                    {
+            "path": "$._links",
+            "eachProperty": {
+              "path": "$.href",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$.id",
+            "type": "string"
+          },
+          {
+            "path": "$.priority",
+            "type": "number"
           },
           {
             "path": "$.status",
