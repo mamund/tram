@@ -10,6 +10,7 @@ TRAM combines:
 * a reusable assertion engine
 * a portable HTTP test runner
 * stable runtime interpolation support
+* native type assertions
 * object-map and collection assertions
 * an eventual AI Coaching workflow focused on learning and augmentation rather than pure automation
 
@@ -94,6 +95,7 @@ Current implementation includes:
 * body/header/status assertions
 * collection assertions (`each`)
 * object-map assertions (`eachProperty`)
+* native type assertions (`type`)
 * range assertions (`range`)
 * stable run-scoped variables
 * runtime interpolation (`${data.*}`)
@@ -177,12 +179,33 @@ exists
 equals
 contains
 oneOf
+type
 range
 isArray
 hasProperties
 minLength
 each
 eachProperty
+```
+
+Native type assertions support:
+
+```text
+string
+number
+boolean
+array
+object
+null
+```
+
+Example native type assertion:
+
+```json
+{
+  "path": "$.priority",
+  "type": "number"
+}
 ```
 
 Example nested collection + object-map assertion:
@@ -212,9 +235,22 @@ The assertion model supports:
 * collection traversal
 * nested traversal
 * object-map iteration
+* native value validation
 * hypermedia affordance validation
 
 while remaining declarative and inspectable.
+
+TRAM intentionally limits type assertions to native value categories.
+
+The following are currently out of scope:
+
+```text
+uuid
+email
+uri
+date-time
+schema validation
+```
 
 ### Request body support
 
@@ -289,6 +325,7 @@ Defines:
 * stable run-scoped variables
 * collection assertions
 * object-map assertions
+* native type assertions
 * body handling
 
 ### Explainer
@@ -372,4 +409,3 @@ Project repository:
 ```text
 https://github.com/mamund/2026-05-tram
 ```
-

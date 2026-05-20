@@ -263,12 +263,35 @@ exists
 equals
 contains
 oneOf
+type
 range
 isArray
 hasProperties
 minLength
 each
 eachProperty
+```
+
+TRAM supports native type assertions.
+
+Supported values:
+
+```text
+string
+number
+boolean
+array
+object
+null
+```
+
+Example native type assertion:
+
+```json
+{
+  "path": "$.priority",
+  "type": "number"
+}
 ```
 
 Example collection assertion:
@@ -332,14 +355,41 @@ for each record
     ensure href and method exist
 ```
 
+Type assertions also work inside nested object-map traversal.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.href",
+    "type": "string"
+  }
+}
+```
+
 The assertion model now supports:
 
 * collection traversal
 * nested traversal
 * object-map iteration
+* native value validation
 * hypermedia affordance validation
 
 while remaining declarative and inspectable.
+
+TRAM intentionally limits type assertions to native value categories.
+
+The following are currently out of scope:
+
+```text
+uuid
+email
+uri
+date-time
+schema validation
+```
 
 ## Inspect request body handling
 
@@ -378,6 +428,7 @@ Verbose mode helps reveal:
 * JSON path traversal
 * collection assertions
 * object-map assertions
+* native type assertions
 * failure messages
 * behavioral expectations
 
@@ -453,6 +504,22 @@ to:
 
 Then rerun the suite.
 
+### Break a type assertion
+
+Change:
+
+```json
+"type": "number"
+```
+
+to:
+
+```json
+"type": "string"
+```
+
+Then rerun the suite.
+
 ### Break a runtime reference
 
 Change:
@@ -493,6 +560,7 @@ These experiments help reveal:
 * manifest ergonomics
 * runtime interpolation behavior
 * nested traversal behavior
+* native type validation
 * failure readability
 
 ## Understand the current philosophy
@@ -548,6 +616,7 @@ Recommended next experiments:
 
 * add new sad-path tests
 * add new range assertions
+* add new type assertions
 * add filtering tests
 * add collection assertions
 * add object-map assertions
@@ -555,4 +624,3 @@ Recommended next experiments:
 * explore manifest ergonomics
 * experiment with hypermedia assertions
 * experiment with stable run-scoped variables
-

@@ -26,7 +26,11 @@ TRAM currently includes:
 * machine-readable reporting
 * collection assertions (`each`)
 * object assertions (`hasProperties`)
+* object-map assertions (`eachProperty`)
+* native type assertions (`type`)
 * range assertions (`range`)
+* stable run-scoped variables
+* runtime interpolation
 * sample CRUD-style task API
 
 The current implementation has been validated against a real Node.js HTTP API.
@@ -57,53 +61,6 @@ The eventual AI Coach should help users understand behavioral API testing while 
 
 ## Near-term roadmap
 
-## Assertion improvements
-
-### Primitive type assertions
-
-Add support for basic JSON/native value type assertions.
-
-Example:
-
-```json
-{
-  "path": "$.priority",
-  "type": "number"
-}
-```
-
-Supported initial values:
-
-```text
-string
-number
-boolean
-array
-object
-null
-```
-
-Purpose:
-
-* confirm basic representation shape
-* avoid overusing `equals`, `oneOf`, or `range`
-* support fields with generated or variable values
-* remain lighter than schema validation
-
-Deferred semantic assertions:
-
-```text
-uuid
-email
-uri
-date-time
-slug
-hostname
-regex
-```
-
-These semantic format assertions are intentionally outside the current scope.
-
 ### Traversal and recursion hardening
 
 As manifests and response bodies become more complex, recursive traversal behavior will require additional validation and stabilization.
@@ -118,6 +75,38 @@ Areas of focus:
 * null handling
 
 This work will likely evolve incrementally in response to real-world usage.
+
+### CLI packaging and executable ergonomics
+
+The current runner is still executed primarily through:
+
+```text
+node api-test-runner.js api-tests.json
+```
+
+Near-term usability improvements include:
+
+* renaming the executable runner to `tram`
+* supporting npm bin execution
+* simplifying CLI invocation
+* improving tool-oriented packaging ergonomics
+
+Example future workflow:
+
+```bash
+tram api-tests.json
+```
+
+The goal is not merely renaming a file.
+
+The larger goal is improving:
+
+* portability
+* onboarding
+* executable identity
+* manifest execution ergonomics
+
+while preserving the lightweight and dependency-free architecture.
 
 ## Reporting improvements
 
@@ -250,4 +239,3 @@ predictability
 reviewability
 human understanding
 ```
-

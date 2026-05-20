@@ -435,7 +435,6 @@ exists
 equals
 contains
 oneOf
-type
 range
 isArray
 hasProperties
@@ -496,71 +495,6 @@ Example:
   "path": "$.status",
   "oneOf": ["active", "pending", "completed"]
 }
-```
-
-### type
-
-Checks that a value matches a native JSON/JavaScript type.
-
-Example:
-
-```json
-{
-  "path": "$.id",
-  "type": "string"
-}
-```
-
-Supported values:
-
-```text
-string
-number
-boolean
-array
-object
-null
-```
-
-Examples:
-
-```json
-{
-  "path": "$.priority",
-  "type": "number"
-}
-```
-
-```json
-{
-  "path": "$._links",
-  "type": "object"
-}
-```
-
-```json
-{
-  "path": "$.items",
-  "type": "array"
-}
-```
-
-Rules:
-
-```text
-type checks native value categories only
-semantic formats are intentionally excluded
-```
-
-The following are currently out of scope:
-
-```text
-uuid
-email
-uri
-date-time
-regex formats
-schema validation
 ```
 
 ### range
@@ -702,22 +636,6 @@ Example:
 }
 ```
 
-### each.property.type
-
-Applies type assertions to a property on each array item.
-
-Example:
-
-```json
-{
-  "path": "$",
-  "each": {
-    "property": "priority",
-    "type": "number"
-  }
-}
-```
-
 ### each.property.range
 
 Applies range assertions to a property on each array item.
@@ -781,20 +699,6 @@ Example:
       "PATCH",
       "DELETE"
     ]
-  }
-}
-```
-
-Type assertions also work inside `eachProperty`.
-
-Example:
-
-```json
-{
-  "path": "$._links",
-  "eachProperty": {
-    "path": "$.href",
-    "type": "string"
   }
 }
 ```
@@ -872,3 +776,4 @@ reviewability
 human understanding
 low-noise execution
 ```
+
