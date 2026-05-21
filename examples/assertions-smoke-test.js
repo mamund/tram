@@ -1,7 +1,7 @@
 // assertions-smoke-test.js
 'use strict';
 
-const { evaluateExpectations } = require('./assertions');
+const { evaluateExpectations } = require('../lib/assertions');
 
 const fakeListResponse = {
   status: 200,
