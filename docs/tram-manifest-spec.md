@@ -17,6 +17,28 @@ The manifest acts as both:
 * executable configuration
 * behavioral operational artifact
 
+## Runner execution
+
+TRAM manifests are typically executed using the `tram` CLI.
+
+Example:
+
+```bash
+tram api-tests.json
+```
+
+Verbose mode:
+
+```bash
+tram api-tests.json --verbose
+```
+
+Machine-readable report generation:
+
+```bash
+tram api-tests.json --report results.json
+```
+
 ## File format
 
 TRAM manifests are JSON documents.

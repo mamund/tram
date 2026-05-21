@@ -29,6 +29,27 @@ git clone https://github.com/mamund/2026-05-tram.git
 cd 2026-05-tram
 ```
 
+## CLI setup
+
+macOS/Linux:
+
+```bash
+chmod +x bin/tram
+npm link
+```
+
+Windows:
+
+```bash
+npm link
+```
+
+Verify installation:
+
+```bash
+tram api-tests.json
+```
+
 ## Understand the sample workflow
 
 The sample project follows a simple execution model:
@@ -65,7 +86,7 @@ The runner executes the manifest directly.
 In one terminal window:
 
 ```bash
-node index.js
+node sample-api/index.js
 ```
 
 Expected output:
@@ -81,7 +102,7 @@ The sample API should now be running locally.
 In another terminal window:
 
 ```bash
-node api-test-runner.js api-tests.json
+tram api-tests.json
 ```
 
 Expected output:
@@ -253,7 +274,7 @@ This enables coordinated multi-step behavioral flows without introducing custom 
 Open:
 
 ```text
-assertions.js
+lib/assertions.js
 ```
 
 Current assertion support includes:
@@ -419,7 +440,7 @@ This allows the runner to work with APIs that expect different request encodings
 Verbose mode prints detailed assertion results.
 
 ```bash
-node api-test-runner.js api-tests.json --verbose
+tram api-tests.json --verbose
 ```
 
 Verbose mode helps reveal:
@@ -435,7 +456,7 @@ Verbose mode helps reveal:
 ## Generate a machine-readable report
 
 ```bash
-node api-test-runner.js api-tests.json --report results.json
+tram api-tests.json --report results.json
 ```
 
 This generates a detailed JSON report containing:
@@ -608,8 +629,8 @@ Recommended files to inspect:
 ```text
 README.md
 api-tests.json
-assertions.js
-api-test-runner.js
+lib/assertions.js
+bin/tram
 ```
 
 Recommended next experiments:

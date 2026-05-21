@@ -31,6 +31,9 @@ TRAM currently includes:
 * range assertions (`range`)
 * stable run-scoped variables
 * runtime interpolation
+* nested traversal assertions
+* npm CLI packaging
+* executable `tram` CLI runner
 * sample CRUD-style task API
 
 The current implementation has been validated against a real Node.js HTTP API.
@@ -76,39 +79,7 @@ Areas of focus:
 
 This work will likely evolve incrementally in response to real-world usage.
 
-### CLI packaging and executable ergonomics
-
-The current runner is still executed primarily through:
-
-```text
-node api-test-runner.js api-tests.json
-```
-
-Near-term usability improvements include:
-
-* renaming the executable runner to `tram`
-* supporting npm bin execution
-* simplifying CLI invocation
-* improving tool-oriented packaging ergonomics
-
-Example future workflow:
-
-```bash
-tram api-tests.json
-```
-
-The goal is not merely renaming a file.
-
-The larger goal is improving:
-
-* portability
-* onboarding
-* executable identity
-* manifest execution ergonomics
-
-while preserving the lightweight and dependency-free architecture.
-
-## Reporting improvements
+### Reporting improvements
 
 Current reporting intentionally emphasizes:
 
@@ -125,7 +96,7 @@ Possible future additions:
 * assertion statistics
 * test filtering by tag
 
-## Manifest ergonomics
+### Manifest ergonomics
 
 The current JSON manifest is intentionally explicit.
 
@@ -139,6 +110,34 @@ Ongoing evaluation areas:
 * coaching usability
 
 The project may eventually support alternate authoring formats while preserving the JSON manifest as the executable runtime representation.
+
+### Namespace expansion
+
+The current manifest system already supports:
+
+```text
+data.*
+```
+
+Future namespaces under consideration:
+
+```text
+captures.*
+env.*
+```
+
+Potential uses include:
+
+* response capture reuse
+* environment configuration
+* runtime execution flexibility
+* improved manifest portability
+
+The current design constraint remains:
+
+```text
+maintain visible and inspectable runtime behavior
+```
 
 ## AI Coach direction
 
@@ -227,6 +226,7 @@ TRAM is currently evolving through:
 * runner pressure-testing
 * assertion refinement
 * coaching-oriented design review
+* CLI usability refinement
 
 The project is intentionally conservative at this stage.
 

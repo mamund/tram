@@ -108,11 +108,45 @@ Current implementation includes:
 
 ```text
 .
-├── assertions.js
-├── api-test-runner.js
+├── README.md
+├── package.json
 ├── api-tests.json
-├── index.js
-└── docs/
+├── bin/
+│   └── tram
+├── lib/
+│   └── assertions.js
+├── docs/
+└── sample-api/
+```
+
+## CLI installation
+
+### Local development setup
+
+Clone the repository:
+
+```bash
+git clone https://github.com/mamund/2026-05-tram.git
+cd 2026-05-tram
+```
+
+macOS/Linux:
+
+```bash
+chmod +x bin/tram
+npm link
+```
+
+Windows:
+
+```bash
+npm link
+```
+
+Then run:
+
+```bash
+tram api-tests.json
 ```
 
 ## Core concepts
@@ -278,25 +312,25 @@ Example:
 Start the sample API:
 
 ```bash
-node index.js
+node sample-api/index.js
 ```
 
 Run the test suite:
 
 ```bash
-node api-test-runner.js api-tests.json
+tram api-tests.json
 ```
 
 Verbose mode:
 
 ```bash
-node api-test-runner.js api-tests.json --verbose
+tram api-tests.json --verbose
 ```
 
 Generate a machine-readable report:
 
 ```bash
-node api-test-runner.js api-tests.json --report results.json
+tram api-tests.json --report results.json
 ```
 
 ## Documentation

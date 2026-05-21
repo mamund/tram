@@ -2,7 +2,7 @@
 'use strict';
 
 /**
- * api-test-runner.js v0.1
+ * tram.js v0.1
  *
  * Dependency-free HTTP API test runner.
  *
