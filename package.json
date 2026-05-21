@@ -1,0 +1,30 @@
+{
+  "name": "tram",
+  "version": "1.0.0",
+  "description": "Test Runner for Assertion Manifests",
+  "bin" : {
+    "tram": "./bin/tram"
+  },
+  "directories": {
+    "doc": "docs",
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mamund/2026-05-tram.git"
+  },
+  "keywords": [
+    "test",
+    "tram",
+    "mamund"
+  ],
+  "author": "Mike Amundsen (@mamund)",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mamund/2026-05-tram/issues"
+  },
+  "homepage": "https://github.com/mamund/2026-05-tram#readme"
+}
