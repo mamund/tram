@@ -1,0 +1,180 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 4 Governance Assertions",
+  "description": "Confirms that task lifecycle policies, permissions, and semantic constraints are enforced.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "governanceTaskId": "${randomId}",
+    "governanceTask": {
+      "task": {
+        "id": "${data.governanceTaskId}",
+        "title": "Governance task",
+        "status": "active",
+        "priority": 3,
+        "assignedUser": "alice"
+      }
+    }
+  },
+  "tests": [
+    {
+      "name": "Create valid governed task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "setup"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": "$data.governanceTask",
+      "expect": {
+        "status": 201
+      }
+    },
+
+    {
+      "name": "Reject invalid status value",
+      "enabled": true,
+      "tags": ["level-4", "governance", "status"],
+      "method": "PUT",
+      "path": "/tasks/${data.governanceTaskId}/status",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "status": "flying-purple-banana"
+        }
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "contains": "invalid status"
+          }
+        ]
+      }
+    },
+
+    {
+      "name": "Reject priority above allowed range",
+      "enabled": true,
+      "tags": ["level-4", "governance", "priority"],
+      "method": "POST",
+      "path": "/tasks/${data.governanceTaskId}/edit",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "priority": 99
+        }
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "contains": "priority"
+          }
+        ]
+      }
+    },
+
+    {
+      "name": "Reject completion without assignee",
+      "enabled": true,
+      "tags": ["level-4", "governance", "workflow-policy"],
+      "method": "PUT",
+      "path": "/tasks/${data.governanceTaskId}/status",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "status": "completed"
+        }
+      },
+      "expect": {
+        "status": 409,
+        "body": [
+          {
+            "path": "$.error",
+            "contains": "assigned"
+          }
+        ]
+      }
+    },
+
+    {
+      "name": "Reject due date in the past",
+      "enabled": true,
+      "tags": ["level-4", "governance", "date-policy"],
+      "method": "PUT",
+      "path": "/tasks/${data.governanceTaskId}/due-date",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "dueDate": "2020-01-01"
+        }
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "contains": "past"
+          }
+        ]
+      }
+    },
+
+    {
+      "name": "Reject modification of completed task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "immutability"],
+      "method": "POST",
+      "path": "/tasks/${data.governanceTaskId}/edit",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "title": "Illegal edit"
+        }
+      },
+      "expect": {
+        "status": 409,
+        "body": [
+          {
+            "path": "$.error",
+            "contains": "completed"
+          }
+        ]
+      }
+    },
+
+    {
+      "name": "Reject unauthorized reassignment",
+      "enabled": true,
+      "tags": ["level-4", "governance", "authorization"],
+      "method": "PUT",
+      "path": "/tasks/${data.governanceTaskId}/assignee",
+      "headers": {
+        "x-user-role": "guest"
+      },
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "assignedUser": "bob"
+        }
+      },
+      "expect": {
+        "status": 403,
+        "body": [
+          {
+            "path": "$.error",
+            "contains": "authorized"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,251 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 4 Governance Assertions",
+  "description": "Confirms currently enforced validation and constraint rules in the sample task API.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "knownTaskId": "c3e59224-93d5-4b07-9317-6dc24eb586b3"
+  },
+  "tests": [
+    {
+      "name": "Reject create task without id",
+      "enabled": true,
+      "tags": ["level-4", "governance", "validation", "create"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "title": "Missing id",
+          "status": "active"
+        }
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Missing required field: id"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject create task without title",
+      "enabled": true,
+      "tags": ["level-4", "governance", "validation", "create"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "id": "governance-missing-title",
+          "status": "active"
+        }
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Missing required field: title"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject create task without status",
+      "enabled": true,
+      "tags": ["level-4", "governance", "validation", "create"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "id": "governance-missing-status",
+          "title": "Missing status"
+        }
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Missing required field: status"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject status update without status",
+      "enabled": true,
+      "tags": ["level-4", "governance", "validation", "status"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/status",
+      "bodyType": "json",
+      "body": {
+        "task": {}
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Missing required field: status"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject assignee update without assignedUser",
+      "enabled": true,
+      "tags": ["level-4", "governance", "validation", "assignee"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/assignee",
+      "bodyType": "json",
+      "body": {
+        "task": {}
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Missing required field: assignedUser"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject due-date update without dueDate",
+      "enabled": true,
+      "tags": ["level-4", "governance", "validation", "due-date"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/due-date",
+      "bodyType": "json",
+      "body": {
+        "task": {}
+      },
+      "expect": {
+        "status": 400,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Missing required field: dueDate"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject lookup for unknown task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "not-found"],
+      "method": "GET",
+      "path": "/tasks/not-a-real-task",
+      "expect": {
+        "status": 404,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Task not found"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject edit for unknown task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "not-found", "edit"],
+      "method": "POST",
+      "path": "/tasks/not-a-real-task/edit",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "title": "Should not update"
+        }
+      },
+      "expect": {
+        "status": 404,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Task not found"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject status update for unknown task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "not-found", "status"],
+      "method": "PUT",
+      "path": "/tasks/not-a-real-task/status",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "status": "completed"
+        }
+      },
+      "expect": {
+        "status": 404,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Task not found"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject assignee update for unknown task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "not-found", "assignee"],
+      "method": "PUT",
+      "path": "/tasks/not-a-real-task/assignee",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "assignedUser": "alice"
+        }
+      },
+      "expect": {
+        "status": 404,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Task not found"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Reject due-date update for unknown task",
+      "enabled": true,
+      "tags": ["level-4", "governance", "not-found", "due-date"],
+      "method": "PUT",
+      "path": "/tasks/not-a-real-task/due-date",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "dueDate": "2025-07-01"
+        }
+      },
+      "expect": {
+        "status": 404,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Task not found"
+          }
+        ]
+      }
+    }
+  ]
+}

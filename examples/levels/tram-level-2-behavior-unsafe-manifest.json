@@ -1,0 +1,122 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 2 Unsafe Behavior Assertions",
+  "description": "Confirms unsafe task API behaviors including create, edit, status update, assignment, and due-date update.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "knownTaskId": "c3e59224-93d5-4b07-9317-6dc24eb586b3",
+    "createTaskId": "level-2-unsafe-created-001"
+  },
+  "tests": [
+    {
+      "name": "Create task",
+      "enabled": true,
+      "tags": ["level-2", "behavior-unsafe", "create"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "id": "${data.createTaskId}",
+          "title": "Level 2 unsafe created task",
+          "status": "active"
+        }
+      },
+      "expect": {
+        "status": 201,
+        "body": [
+          { "path": "$.id", "equals": "${data.createTaskId}" },
+          { "path": "$.title", "equals": "Level 2 unsafe created task" },
+          { "path": "$.status", "equals": "active" }
+        ]
+      }
+    },
+    {
+      "name": "Edit task title",
+      "enabled": true,
+      "tags": ["level-2", "behavior-unsafe", "edit"],
+      "method": "POST",
+      "path": "/tasks/${data.knownTaskId}/edit",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "title": "Level 2 unsafe edited title"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.knownTaskId}" },
+          { "path": "$.title", "equals": "Level 2 unsafe edited title" }
+        ]
+      }
+    },
+    {
+      "name": "Update task status",
+      "enabled": true,
+      "tags": ["level-2", "behavior-unsafe", "status"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/status",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "status": "completed"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.knownTaskId}" },
+          { "path": "$.status", "equals": "completed" }
+        ]
+      }
+    },
+    {
+      "name": "Assign task",
+      "enabled": true,
+      "tags": ["level-2", "behavior-unsafe", "assign"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/assignee",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "assignedUser": "carol"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.knownTaskId}" },
+          { "path": "$.assignedUser", "equals": "carol" }
+        ]
+      }
+    },
+    {
+      "name": "Set task due date",
+      "enabled": true,
+      "tags": ["level-2", "behavior-unsafe", "due-date"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/due-date",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "dueDate": "2025-07-01"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.knownTaskId}" },
+          { "path": "$.dueDate", "equals": "2025-07-01" }
+        ]
+      }
+    }
+  ]
+}

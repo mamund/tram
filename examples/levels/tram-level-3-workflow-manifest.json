@@ -1,0 +1,188 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 3 Workflow Assertions",
+  "description": "Confirms that multiple task API actions compose into a coherent task lifecycle.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "workflowTaskId": "${randomId}",
+    "workflowTask": {
+      "task": {
+        "id": "${data.workflowTaskId}",
+        "title": "Level 3 workflow task",
+        "status": "active",
+        "priority": 3,
+        "assignedUser": "alice",
+        "dueDate": "2025-06-30"
+      }
+    }
+  },
+  "tests": [
+    {
+      "name": "Create workflow task",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "create"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": "$data.workflowTask",
+      "expect": {
+        "status": 201,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.status", "equals": "active" }
+        ]
+      }
+    },
+    {
+      "name": "Read created workflow task",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "read"],
+      "method": "GET",
+      "path": "/tasks/${data.workflowTaskId}",
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.title", "equals": "Level 3 workflow task" },
+          { "path": "$.status", "equals": "active" }
+        ]
+      }
+    },
+    {
+      "name": "Edit workflow task title",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "edit"],
+      "method": "POST",
+      "path": "/tasks/${data.workflowTaskId}/edit",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "title": "Level 3 workflow task edited"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.title", "equals": "Level 3 workflow task edited" }
+        ]
+      }
+    },
+    {
+      "name": "Complete workflow task",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "status"],
+      "method": "PUT",
+      "path": "/tasks/${data.workflowTaskId}/status",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "status": "completed"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.status", "equals": "completed" }
+        ]
+      }
+    },
+    {
+      "name": "Reassign workflow task",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "assign"],
+      "method": "PUT",
+      "path": "/tasks/${data.workflowTaskId}/assignee",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "assignedUser": "carol"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.assignedUser", "equals": "carol" }
+        ]
+      }
+    },
+    {
+      "name": "Set workflow due date",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "due-date"],
+      "method": "PUT",
+      "path": "/tasks/${data.workflowTaskId}/due-date",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "dueDate": "2025-07-15"
+        }
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.dueDate", "equals": "2025-07-15" }
+        ]
+      }
+    },
+    {
+      "name": "Read final accumulated workflow state",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "verification"],
+      "method": "GET",
+      "path": "/tasks/${data.workflowTaskId}",
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.workflowTaskId}" },
+          { "path": "$.title", "equals": "Level 3 workflow task edited" },
+          { "path": "$.status", "equals": "completed" },
+          { "path": "$.assignedUser", "equals": "carol" },
+          { "path": "$.dueDate", "equals": "2025-07-15" },
+          { "path": "$.priority", "equals": 3 }
+        ]
+      }
+    },
+    {
+      "name": "Find workflow task in filtered completed tasks",
+      "enabled": true,
+      "tags": ["level-3", "workflow", "filter", "verification"],
+      "method": "GET",
+      "path": "/tasks",
+      "query": {
+        "status": "completed",
+        "assignedUser": "carol"
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$", "isArray": true },
+          {
+            "path": "$",
+            "each": {
+              "property": "status",
+              "equals": "completed"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "assignedUser",
+              "equals": "carol"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,235 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 1 Shape Assertions",
+  "description": "Confirms that task API responses have the expected resource shapes, property types, collections, and link structures.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "knownTaskId": "c3e59224-93d5-4b07-9317-6dc24eb586b3"
+  },
+  "tests": [
+    {
+      "name": "Home has link representation shape",
+      "description": "Confirms the API entry point presents a link map.",
+      "enabled": true,
+      "tags": ["level-1", "shape", "home"],
+      "method": "GET",
+      "path": "/",
+      "expect": {
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ],
+        "body": [
+          {
+            "path": "$",
+            "hasProperties": ["_links"]
+          },
+          {
+            "path": "$._links",
+            "type": "object"
+          },
+          {
+            "path": "$._links.taskList",
+            "hasProperties": ["href", "method"]
+          },
+          {
+            "path": "$._links.createTask",
+            "hasProperties": ["href", "method", "args"]
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "hasProperties": ["href", "method"]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Task collection has array shape",
+      "description": "Confirms the task collection is an array of task-shaped resources.",
+      "enabled": true,
+      "tags": ["level-1", "shape", "collection"],
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ],
+        "body": [
+          {
+            "path": "$",
+            "isArray": true
+          },
+          {
+            "path": "$",
+            "minLength": 1
+          },
+          {
+            "path": "$",
+            "each": {
+              "hasProperties": [
+                "id",
+                "title",
+                "description",
+                "dueDate",
+                "status",
+                "priority",
+                "assignedUser",
+                "_links"
+              ]
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "id",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "title",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "status",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "priority",
+              "type": "number"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "path": "$._links",
+              "eachProperty": {
+                "hasProperties": ["href", "method"]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Task item has resource shape",
+      "description": "Confirms a known task has the expected task resource properties and link structure.",
+      "enabled": true,
+      "tags": ["level-1", "shape", "item"],
+      "method": "GET",
+      "path": "/tasks/${data.knownTaskId}",
+      "expect": {
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ],
+        "body": [
+          {
+            "path": "$",
+            "hasProperties": [
+              "id",
+              "title",
+              "description",
+              "dueDate",
+              "status",
+              "priority",
+              "assignedUser",
+              "_links"
+            ]
+          },
+          {
+            "path": "$.id",
+            "type": "string"
+          },
+          {
+            "path": "$.title",
+            "type": "string"
+          },
+          {
+            "path": "$.description",
+            "type": "string"
+          },
+          {
+            "path": "$.dueDate",
+            "type": "string"
+          },
+          {
+            "path": "$.status",
+            "type": "string"
+          },
+          {
+            "path": "$.priority",
+            "type": "number"
+          },
+          {
+            "path": "$.assignedUser",
+            "type": "string"
+          },
+          {
+            "path": "$._links",
+            "type": "object"
+          },
+          {
+            "path": "$._links",
+            "hasProperties": [
+              "self",
+              "edit",
+              "updateStatus",
+              "assignUser",
+              "setDueDate",
+              "goHome",
+              "goTaskList",
+              "goFilteredTasks"
+            ]
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "hasProperties": ["href", "method"]
+            }
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "path": "$.href",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "path": "$.method",
+              "type": "string"
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

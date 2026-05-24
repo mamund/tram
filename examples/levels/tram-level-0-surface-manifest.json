@@ -1,0 +1,139 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 0 Surface Assertions",
+  "description": "Confirms that the published task API endpoints exist and respond to minimally valid requests.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "knownTaskId": "c3e59224-93d5-4b07-9317-6dc24eb586b3",
+    "newTask": {
+      "task": {
+        "id": "level-0-task-001",
+        "title": "Level 0 task",
+        "status": "active"
+      }
+    }
+  },
+  "tests": [
+    {
+      "name": "Home endpoint exists",
+      "description": "Confirms the API entry point responds.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "GET",
+      "path": "/",
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "Task collection endpoint exists",
+      "description": "Confirms the task collection endpoint responds.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "Task item endpoint exists",
+      "description": "Confirms a known task resource endpoint responds.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "GET",
+      "path": "/tasks/${data.knownTaskId}",
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "Create task endpoint exists",
+      "description": "Confirms the task creation endpoint accepts a minimally valid request.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "json",
+      "body": "$data.newTask",
+      "expect": {
+        "status": 201
+      }
+    },
+    {
+      "name": "Edit task endpoint exists",
+      "description": "Confirms the task edit endpoint responds to a minimally valid update.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "POST",
+      "path": "/tasks/${data.knownTaskId}/edit",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "title": "Level 0 edited task"
+        }
+      },
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "Update task status endpoint exists",
+      "description": "Confirms the task status endpoint responds to a minimally valid request.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/status",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "status": "active"
+        }
+      },
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "Assign task endpoint exists",
+      "description": "Confirms the task assignment endpoint responds to a minimally valid request.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/assignee",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "assignedUser": "alice"
+        }
+      },
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "name": "Set task due date endpoint exists",
+      "description": "Confirms the task due-date endpoint responds to a minimally valid request.",
+      "enabled": true,
+      "tags": ["level-0", "surface"],
+      "method": "PUT",
+      "path": "/tasks/${data.knownTaskId}/due-date",
+      "bodyType": "json",
+      "body": {
+        "task": {
+          "dueDate": "2025-06-30"
+        }
+      },
+      "expect": {
+        "status": 200
+      }
+    }
+  ]
+}

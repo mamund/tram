@@ -1,0 +1,173 @@
+{
+  "manifestVersion": "0.1",
+  "version": "1.0.0",
+  "name": "Task API Level 2 Safe Behavior Assertions",
+  "description": "Confirms safe task API behaviors including navigation, item lookup, and filtering.",
+  "author": "Mike Amundsen",
+  "config": {
+    "baseUrl": "http://localhost:3000",
+    "defaultHeaders": {
+      "accept": "application/json"
+    }
+  },
+  "data": {
+    "knownTaskId": "c3e59224-93d5-4b07-9317-6dc24eb586b3",
+    "filters": {
+      "status": "completed",
+      "priority": "5",
+      "assignedUser": "bob"
+    }
+  },
+  "tests": [
+    {
+      "name": "Navigate from home to task collection",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "navigation"],
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$", "isArray": true }
+        ]
+      }
+    },
+    {
+      "name": "Lookup known task by id",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "lookup"],
+      "method": "GET",
+      "path": "/tasks/${data.knownTaskId}",
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$.id", "equals": "${data.knownTaskId}" }
+        ]
+      }
+    },
+    {
+      "name": "Filter tasks by status",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "filter"],
+      "method": "GET",
+      "path": "/tasks",
+      "query": {
+        "status": "${data.filters.status}"
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$", "isArray": true },
+          {
+            "path": "$",
+            "each": {
+              "property": "status",
+              "equals": "${data.filters.status}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Filter tasks by priority",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "filter"],
+      "method": "GET",
+      "path": "/tasks",
+      "query": {
+        "priority": "${data.filters.priority}"
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$", "isArray": true },
+          {
+            "path": "$",
+            "each": {
+              "property": "priority",
+              "range": {"min":1,"max":5}
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Filter tasks by assigned user",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "filter"],
+      "method": "GET",
+      "path": "/tasks",
+      "query": {
+        "assignedUser": "${data.filters.assignedUser}"
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$", "isArray": true },
+          {
+            "path": "$",
+            "each": {
+              "property": "assignedUser",
+              "contains": "${data.filters.assignedUser}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Filter tasks by combined criteria",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "filter"],
+      "method": "GET",
+      "path": "/tasks",
+      "query": {
+        "status": "${data.filters.status}",
+        "priority": "${data.filters.priority}",
+        "assignedUser": "${data.filters.assignedUser}"
+      },
+      "expect": {
+        "status": 200,
+        "body": [
+          { "path": "$", "isArray": true },
+          {
+            "path": "$",
+            "each": {
+              "property": "status",
+              "equals": "${data.filters.status}"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "priority",
+              "range": {"min":1,"max":5}
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "assignedUser",
+              "contains": "${data.filters.assignedUser}"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Unknown task lookup returns not found",
+      "enabled": true,
+      "tags": ["level-2", "behavior-safe", "lookup", "not-found"],
+      "method": "GET",
+      "path": "/tasks/not-a-real-task",
+      "expect": {
+        "status": 404,
+        "body": [
+          {
+            "path": "$.error",
+            "equals": "Task not found"
+          }
+        ]
+      }
+    }
+  ]
+}
