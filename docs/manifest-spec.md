@@ -229,7 +229,6 @@ Referenced using:
 ```json
 "body": "$data.task.valid"
 ```
-
 ## Assertion modifiers
 
 ### optional
@@ -319,6 +318,658 @@ eachProperty
 hasProperties
 ```
 
+## Stable run-scoped variables
+
+TRAM supports stable run-scoped values initialized once per test run.
+
+Example:
+
+```json
+"data": {
+  "stableId": "${randomId}"
+}
+```
+
+Then referenced later:
+
+```json
+"path": "/tasks/${data.stableId}"
+```
+
+The value remains stable throughout the current test run.
+
+A new value is generated on the next execution.
+
+## Runtime interpolation
+
+Runtime interpolation supports inserting values into:
+
+* request paths
+* query values
+* request bodies
+* expectations
+
+Example:
+
+```json
+"path": "/tasks/${data.stableId}"
+```
+
+Nested references are supported:
+
+```json
+"${data.filters.status}"
+```
+
+Example:
+
+```json
+"data": {
+  "filters": {
+    "status": "active"
+  }
+}
+```
+
+Then:
+
+```json
+"query": {
+  "status": "${data.filters.status}"
+}
+```
+
+Interpolation is also supported inside assertions.
+
+Example:
+
+```json
+{
+  "path": "$.id",
+  "equals": "${data.stableId}"
+}
+```
+
+## Runtime tokens
+
+Current runtime token support:
+
+```text
+${randomId}
+${timestamp}
+${uuid}
+${randomEmail}
+```
+
+Example:
+
+```json
+{
+  "id": "${randomId}"
+}
+```
+
+## Runtime token behavior
+
+Runtime tokens behave differently depending on usage location.
+
+### Direct usage
+
+Tokens used directly inside requests are generated per encounter.
+
+Example:
+
+```json
+{
+  "id": "${randomId}"
+}
+```
+
+Each occurrence generates a new value.
+
+### Run-scoped initialization
+
+Tokens inside `data` initialize once per test run.
+
+Example:
+
+```json
+"data": {
+  "stableId": "${randomId}"
+}
+```
+
+All later references to:
+
+```json
+"${data.stableId}"
+```
+
+reuse the same generated value.
+
+## Path and reference syntax
+
+TRAM currently uses several related traversal/reference systems.
+
+### Assertion traversal
+
+Assertion paths operate on response bodies using JSONPath-like traversal.
+
+Example:
+
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
+```
+
+### Manifest data lookup
+
+Manifest data references retrieve reusable manifest-defined values.
+
+Example:
+
+```json
+"body": "$data.task.valid"
+```
+
+### Runtime interpolation
+
+Runtime interpolation inserts values into runtime request construction.
+
+Example:
+
+```json
+"path": "/tasks/${data.stableId}"
+```
+
+## Expectations
+
+Structure:
+
+```json
+"expect": {
+  "status": 200,
+  "headers": [],
+  "body": []
+}
+```
+
+### status
+
+Simple HTTP status assertion.
+
+Example:
+
+```json
+"status": 200
+```
+
+### headers
+
+Array of header assertions.
+
+Example:
+
+```json
+"headers": [
+  {
+    "name": "content-type",
+    "contains": "application/json"
+  }
+]
+```
+
+### body
+
+Array of response body assertions.
+
+Body assertions operate on parsed JSON responses using JSONPath-like traversal.
+
+Example:
+
+```json
+"body": [
+  {
+    "path": "$.status",
+    "equals": "active"
+  }
+]
+```
+
+## Supported assertions
+
+```text
+exists
+equals
+contains
+oneOf
+type
+range
+isArray
+hasProperties
+minLength
+each
+eachProperty
+```
+
+## Assertion reference
+
+### exists
+
+Checks that a path exists.
+
+Example:
+
+```json
+{
+  "path": "$.id",
+  "exists": true
+}
+```
+
+### equals
+
+Checks exact equality.
+
+Example:
+
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
+```
+
+### contains
+
+Checks substring or array membership.
+
+Example:
+
+```json
+{
+  "path": "$.title",
+  "contains": "milk"
+}
+```
+
+### oneOf
+
+Checks that a value matches one of several allowed values.
+
+Example:
+
+```json
+{
+  "path": "$.status",
+  "oneOf": ["active", "pending", "completed"]
+}
+```
+
+### type
+
+Checks that a value matches a native JSON/JavaScript type.
+
+Example:
+
+```json
+{
+  "path": "$.id",
+  "type": "string"
+}
+```
+
+Supported values:
+
+```text
+string
+number
+boolean
+array
+object
+null
+```
+
+Examples:
+
+```json
+{
+  "path": "$.priority",
+  "type": "number"
+}
+```
+
+```json
+{
+  "path": "$._links",
+  "type": "object"
+}
+```
+
+```json
+{
+  "path": "$.items",
+  "type": "array"
+}
+```
+
+Rules:
+
+```text
+type checks native value categories only
+semantic formats are intentionally excluded
+```
+
+The following are currently out of scope:
+
+```text
+uuid
+email
+uri
+date-time
+regex formats
+schema validation
+```
+
+### range
+
+Checks that a numeric value falls within a valid range.
+
+Example:
+
+```json
+{
+  "path": "$.priority",
+  "range": {
+    "min": 1,
+    "max": 5
+  }
+}
+```
+
+Rules:
+
+```text
+min optional
+max optional
+inclusive bounds
+numeric values only
+negative values supported
+```
+
+Examples:
+
+Lower bound only:
+
+```json
+{
+  "path": "$.temperature",
+  "range": {
+    "min": -40
+  }
+}
+```
+
+Upper bound only:
+
+```json
+{
+  "path": "$.discountPercent",
+  "range": {
+    "max": 100
+  }
+}
+```
+
+### isArray
+
+Checks that the selected value is an array.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "isArray": true
+}
+```
+
+### hasProperties
+
+Checks that an object contains required properties.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "hasProperties": [
+    "id",
+    "title",
+    "status"
+  ]
+}
+```
+
+### minLength
+
+Checks minimum array/string length.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "minLength": 1
+}
+```
+
+### each
+
+Iterates over all elements of an array and applies assertions to each item.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "hasProperties": [
+      "id",
+      "title",
+      "status"
+    ]
+  }
+}
+```
+
+Rules:
+
+```text
+each only operates on arrays
+non-array values fail the assertion
+```
+
+### each.property
+
+Applies assertions to a property on each array item.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "status",
+    "oneOf": [
+      "active",
+      "pending",
+      "completed"
+    ]
+  }
+}
+```
+
+### each.property.type
+
+Applies type assertions to a property on each array item.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "priority",
+    "type": "number"
+  }
+}
+```
+
+### each.property.range
+
+Applies range assertions to a property on each array item.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "priority",
+    "range": {
+      "min": 1,
+      "max": 5
+    }
+  }
+}
+```
+
+### eachProperty
+
+Iterates over all properties in an object map and applies assertions to each property value.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "hasProperties": [
+      "href",
+      "method"
+    ]
+  }
+}
+```
+
+Rules:
+
+```text
+eachProperty only operates on object maps
+arrays fail the assertion
+primitive values fail the assertion
+```
+
+### Nested eachProperty assertions
+
+Nested assertions are supported inside `eachProperty`.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.method",
+    "oneOf": [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE"
+    ]
+  }
+}
+```
+
+Type assertions also work inside `eachProperty`.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.href",
+    "type": "string"
+  }
+}
+```
+
+### Nested collection + object-map assertions
+
+`each` and `eachProperty` can be combined.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "path": "$._links",
+    "eachProperty": {
+      "hasProperties": [
+        "href",
+        "method"
+      ]
+    }
+  }
+}
+```
+
+This assertion verifies:
+
+```text
+for each record
+  for each link relation
+    ensure href and method exist
+```
+
+## Nested assertions
+
+Nested path assertions are supported.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "path": "$._links.self",
+    "hasProperties": [
+      "href",
+      "method"
+    ]
+  }
+}
+```
+
+## Unsupported features
+
+The current specification intentionally excludes:
+
+```text
+custom scripting
+setup/teardown orchestration
+parallel execution
+schema engines
+plugin systems
+browser automation
+```
+
 ## Design philosophy
 
 The manifest design currently emphasizes:
@@ -331,4 +982,3 @@ reviewability
 human understanding
 low-noise execution
 ```
-

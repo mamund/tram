@@ -75,8 +75,23 @@ Protocol assertions focus on HTTP-level mechanics:
 Examples:
 
 ```json
-{ "assert": "status", "value": 200 }
-{ "assert": "method", "value": "GET" }
+{
+  "method": "GET",
+  "path": "/tasks",
+  "expect": {
+    "status": 200,
+    "headers": [
+      {
+        "name": "content-type",
+        "contains": "application/json"
+      },
+      {
+        "name": "api-key",
+        "exists": true
+      }
+    ]
+  }
+}
 ```
 
 ### Metadata
@@ -121,10 +136,9 @@ For example:
 
 ```json
 {
-  "request": {
-    "method": "GET",
-    "path": "/tasks"
-  },
+  "name": "List tasks endpoint responds",
+  "method": "GET",
+  "path": "/tasks",
   "expect": {
     "status": 200
   }
@@ -161,9 +175,20 @@ Shape assertions typically verify:
 Examples:
 
 ```json
-{ "path": "id", "assert": "isString" }
-{ "path": "priority", "assert": "isNumber" }
-{ "path": "_links", "assert": "isObject" }
+{
+  "path": "$.id",
+  "type": "string"
+}
+
+{
+  "path": "$.priority",
+  "type": "number"
+}
+
+{
+  "path": "$._links",
+  "type": "object"
+}
 ```
 
 Shape manifests often verify affordance presence explicitly:
@@ -218,7 +243,10 @@ This distinction becomes important in evolving systems, sparse representations, 
 This distinction is especially important for type assertions.
 
 ```json
-{ "path": "priority", "assert": "isNumber" }
+{
+  "path": "$.priority",
+  "type": "number"
+}
 ```
 
 is primarily a shape concern because it verifies structural form.
@@ -226,7 +254,13 @@ is primarily a shape concern because it verifies structural form.
 Meanwhile:
 
 ```json
-{ "path": "priority", "assert": "range", "min": 1, "max": 5 }
+{
+  "path": "$.priority",
+  "range": {
+    "min": 1,
+    "max": 5
+  }
+}
 ```
 
 is fundamentally a governance concern because it expresses domain legitimacy rather than representation structure.
@@ -247,9 +281,14 @@ Examples:
 
 ```json
 {
-  "request": {
-    "method": "GET",
-    "path": "/tasks?status=completed"
+  "name": "Filter completed tasks",
+  "method": "GET",
+  "path": "/tasks",
+  "query": {
+    "status": "completed"
+  },
+  "expect": {
+    "status": 200
   }
 }
 ```
@@ -258,9 +297,8 @@ or:
 
 ```json
 {
-  "path": "_links.goTaskList.href",
-  "assert": "equals",
-  "value": "/tasks"
+  "path": "$._links.goTaskList.href",
+  "equals": "/tasks"
 }
 ```
 
@@ -290,9 +328,21 @@ Examples:
 
 ```json
 {
-  "request": {
-    "method": "PUT",
-    "path": "/tasks/123/status"
+  "name": "Update task status",
+  "method": "PUT",
+  "path": "/tasks/123/status",
+  "bodyType": "json",
+  "body": {
+    "status": "completed"
+  },
+  "expect": {
+    "status": 200,
+    "body": [
+      {
+        "path": "$.status",
+        "equals": "completed"
+      }
+    ]
   }
 }
 ```
@@ -386,20 +436,21 @@ Examples:
 
 ```json
 {
-  "assert": "status",
-  "value": 400
+  "expect": {
+    "status": 400,
+    "body": [
+      {
+        "path": "$.error",
+        "equals": "Missing required field: status"
+      }
+    ]
+  }
 }
 ```
 
 or:
 
-```json
-{
-  "path": "error",
-  "assert": "equals",
-  "value": "Missing required field: status"
-}
-```
+
 
 The distinction between shape and governance becomes important at this layer.
 
