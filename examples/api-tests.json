@@ -102,6 +102,14 @@
               "path": "$.method",
               "oneOf": ["GET", "POST", "PUT", "DELETE"]
             }
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "path": "$.title",
+              "optional": true,
+              "type": "string"
+            }
           }          
         ]
       }
@@ -171,7 +179,15 @@
               "property": "priority",
               "type": "number"
             }
-          },     
+          },  
+          {
+            "path": "$",
+            "each": {
+              "property": "description",
+              "optional": true,
+              "type": "string"
+            }
+          },          
           {
             "path": "$",
             "each": {
@@ -235,6 +251,14 @@
           {
             "path": "$.priority",
             "type": "number"
+          },
+          {
+            "path": "$._links",
+            "eachProperty": {
+              "path": "$.title",
+              "optional": true,
+              "type": "string"
+            }
           },
           {
             "path": "$.status",

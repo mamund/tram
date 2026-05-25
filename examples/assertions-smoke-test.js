@@ -17,6 +17,7 @@ const fakeListResponse = {
       priority: 3,
       amount: -10,
       assignedUser: 'alice',
+      description: "This is a description",
       _links: {
         self: { href: '/tasks/task-1', method: 'GET' },
         updateStatus: { href: '/tasks/task-1/status', method: 'PUT' }
@@ -45,21 +46,36 @@ const expect = {
       each: {
         property: 'status',
         oneOf: ['active','pending','complete']
-      },
-      path: '$',
-      each: {
-        property: 'priority',
-        oneOf: [1,2,3,4]
-      },
+      }
+    },
+    {
       path: '$',
       each: {
         property: 'priority',
         range: {min:1, max:5}
-      },
+      }
+    },
+    {
       path: '$',
       each: {
         property: 'amount',
         range: {min: -100}
+      }
+    },
+    {
+      path: '$',
+      each: {
+        property: 'description',
+        type: 'string',
+        optional: true
+      }
+    },
+    {
+      path: '$',
+      each: {
+        property: 'missing-property',
+        type: 'string',
+        optional: true
       }
     }
   ]
