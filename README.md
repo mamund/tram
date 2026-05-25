@@ -11,6 +11,7 @@ TRAM combines:
 * a portable HTTP test runner
 * stable runtime interpolation support
 * native type assertions
+* optional property assertions
 * object-map and collection assertions
 * an eventual AI Coaching workflow focused on learning and augmentation rather than pure automation
 
@@ -72,6 +73,8 @@ Example:
 }
 ```
 
+TRAM supports partial and evolving representations through optional property assertions while preserving explicit behavioral validation.
+
 ## Project goals
 
 TRAM is designed around several principles:
@@ -96,6 +99,7 @@ Current implementation includes:
 * collection assertions (`each`)
 * object-map assertions (`eachProperty`)
 * native type assertions (`type`)
+* optional property assertions (`optional`)
 * range assertions (`range`)
 * stable run-scoped variables
 * runtime interpolation (`${data.*}`)
@@ -242,6 +246,26 @@ Example native type assertion:
 }
 ```
 
+Example optional property assertion:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This assertion means:
+
+```text
+"description" may be absent
+if present, it must still validate as a string
+```
+
 Example nested collection + object-map assertion:
 
 ```json
@@ -264,12 +288,28 @@ for each record
     ensure href and method exist
 ```
 
+Optional assertions also work inside nested object-map traversal.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.title",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
 The assertion model supports:
 
 * collection traversal
 * nested traversal
 * object-map iteration
 * native value validation
+* optional property validation
 * hypermedia affordance validation
 
 while remaining declarative and inspectable.
@@ -354,6 +394,7 @@ Defines:
 * manifest structure
 * request configuration
 * assertion syntax
+* optional property assertions
 * traversal behavior
 * runtime interpolation
 * stable run-scoped variables
@@ -443,3 +484,4 @@ Project repository:
 ```text
 https://github.com/mamund/2026-05-tram
 ```
+

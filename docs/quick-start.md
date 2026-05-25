@@ -333,6 +333,36 @@ This assertion verifies:
 all returned tasks expose valid status values
 ```
 
+TRAM also supports optional property assertions.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This assertion means:
+
+```text
+"description" may be absent
+if present, it must be a string
+```
+
+Optional assertions are useful for:
+
+* sparse representations
+* evolving APIs
+* hypermedia metadata
+* permission-dependent fields
+* state-dependent representations
+
 TRAM also supports object-map assertions.
 
 Example:
@@ -350,6 +380,28 @@ This assertion verifies:
 
 ```text
 all link relations expose href and method properties
+```
+
+Nested object-map traversal also supports optional assertions.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.title",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This assertion means:
+
+```text
+link relations may expose an optional title property
+if present, title must be a string
 ```
 
 Nested collection + object-map assertions are also supported.
@@ -396,6 +448,7 @@ The assertion model now supports:
 * nested traversal
 * object-map iteration
 * native value validation
+* optional property validation
 * hypermedia affordance validation
 
 while remaining declarative and inspectable.
@@ -450,6 +503,7 @@ Verbose mode helps reveal:
 * collection assertions
 * object-map assertions
 * native type assertions
+* optional property behavior
 * failure messages
 * behavioral expectations
 
@@ -541,6 +595,28 @@ to:
 
 Then rerun the suite.
 
+### Break an optional property assertion
+
+Change:
+
+```json
+{
+  "property": "description",
+  "optional": true,
+  "type": "string"
+}
+```
+
+so the API returns:
+
+```json
+"description": 42
+```
+
+Then rerun the suite.
+
+The assertion should fail because optional properties are still validated when present.
+
 ### Break a runtime reference
 
 Change:
@@ -582,6 +658,7 @@ These experiments help reveal:
 * runtime interpolation behavior
 * nested traversal behavior
 * native type validation
+* optional property validation
 * failure readability
 
 ## Understand the current philosophy
@@ -638,6 +715,7 @@ Recommended next experiments:
 * add new sad-path tests
 * add new range assertions
 * add new type assertions
+* add optional property assertions
 * add filtering tests
 * add collection assertions
 * add object-map assertions
@@ -645,3 +723,4 @@ Recommended next experiments:
 * explore manifest ergonomics
 * experiment with hypermedia assertions
 * experiment with stable run-scoped variables
+

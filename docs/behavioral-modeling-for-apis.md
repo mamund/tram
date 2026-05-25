@@ -45,16 +45,18 @@ One of the most useful distinctions to emerge from this work is that behavioral 
 Behavioral layers describe what kind of question an assertion is asking. Assertion targets describe where observations occur during the HTTP interaction.
 
 For example, a governance assertion may inspect:
-- a protocol status code
-- a metadata header
-- a body representation
+
+* a protocol status code
+* a metadata header
+* a body representation
 
 while still remaining fundamentally a governance concern.
 
 Similarly, a shape assertion may verify:
-- JSON structure in the response body
-- media type metadata
-- pagination headers
+
+* JSON structure in the response body
+* media type metadata
+* pagination headers
 
 without becoming a workflow assertion.
 
@@ -63,11 +65,12 @@ In practice, TRAM assertions tend to inspect three observable locations.
 ### Protocol
 
 Protocol assertions focus on HTTP-level mechanics:
-- methods
-- status codes
-- redirects
-- content negotiation
-- caching behavior
+
+* methods
+* status codes
+* redirects
+* content negotiation
+* caching behavior
 
 Examples:
 
@@ -79,24 +82,26 @@ Examples:
 ### Metadata
 
 Metadata assertions focus on information carried outside the primary representation:
-- headers
-- links
-- pagination controls
-- authentication challenges
-- ETags
-- continuation tokens
-- rate-limit information
+
+* headers
+* links
+* pagination controls
+* authentication challenges
+* ETags
+* continuation tokens
+* rate-limit information
 
 In hypermedia-oriented systems, metadata often carries important runtime behavior. Affordances may appear in headers, link maps, or negotiated representations rather than inside resource bodies alone.
 
 ### Body
 
 Body assertions focus on the representation itself:
-- resource properties
-- collections
-- embedded affordances
-- payload content
-- returned state
+
+* resource properties
+* collections
+* embedded affordances
+* payload content
+* returned state
 
 These assertion targets exist independently from the behavioral layers described below.
 
@@ -107,9 +112,10 @@ The simplest TRAM assertion asks a minimal question:
 > Does the published endpoint respond?
 
 A surface manifest verifies the observable API surface:
-- published routes
-- supported methods
-- callable interfaces
+
+* published routes
+* supported methods
+* callable interfaces
 
 For example:
 
@@ -128,10 +134,11 @@ For example:
 Surface assertions are intentionally lightweight. They do not verify business correctness, workflow continuity, or resource semantics. They simply confirm that the advertised interface exists and responds as expected.
 
 This level is useful for:
-- smoke testing
-- deployment validation
-- route inventory verification
-- documentation cross-checking
+
+* smoke testing
+* deployment validation
+* route inventory verification
+* documentation cross-checking
 
 Surface assertions also help separate observed capability from assumed capability. A system may support editing resources while intentionally omitting deletion. A surface manifest makes that distinction visible immediately.
 
@@ -144,11 +151,12 @@ At this layer, the question becomes:
 > Does this resemble the advertised resource?
 
 Shape assertions typically verify:
-- expected properties
-- collection structures
-- embedded affordances
-- representation composition
-- basic typing expectations
+
+* expected properties
+* collection structures
+* embedded affordances
+* representation composition
+* basic typing expectations
 
 Examples:
 
@@ -188,6 +196,25 @@ may satisfy basic shape assertions while remaining semantically invalid within t
 
 Shape assertions focus on structural validity and recognizable representation patterns. Governance assertions, discussed later, address semantic legitimacy and policy constraints.
 
+Recent additions to the TRAM assertion model also support optional property assertions. This allows manifests to model conditional representation structure without collapsing into rigid schema enforcement.
+
+For example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This assertion means the `description` property may be absent while still requiring valid structure whenever the property appears.
+
+This distinction becomes important in evolving systems, sparse representations, and hypermedia-oriented APIs where representation shape may vary legitimately at runtime.
+
 This distinction is especially important for type assertions.
 
 ```json
@@ -209,11 +236,12 @@ is fundamentally a governance concern because it expresses domain legitimacy rat
 Safe behavior assertions verify interactions that do not intentionally change server state.
 
 Examples include:
-- navigation
-- filtering
-- search
-- affordance traversal
-- query operations
+
+* navigation
+* filtering
+* search
+* affordance traversal
+* query operations
 
 Examples:
 
@@ -239,22 +267,24 @@ or:
 Safe behavior manifests verify semantic interaction rather than HTTP mechanics alone.
 
 This distinction becomes especially useful in hypermedia-oriented systems where meaningful actions may be expressed through:
-- links
-- forms
-- metadata
-- affordances
-- negotiated runtime state
+
+* links
+* forms
+* metadata
+* affordances
+* negotiated runtime state
 
 rather than through static route catalogs alone.
 
 ## Level 2b: Unsafe behavior — what can be changed?
 
 Unsafe behavior assertions focus on isolated state-changing operations:
-- create
-- update
-- assignment
-- status transitions
-- workflow advancement
+
+* create
+* update
+* assignment
+* status transitions
+* workflow advancement
 
 Examples:
 
@@ -268,9 +298,10 @@ Examples:
 ```
 
 At this layer, assertions typically verify:
-- the action succeeds
-- the expected state change appears
-- the returned representation reflects the mutation
+
+* the action succeeds
+* the expected state change appears
+* the returned representation reflects the mutation
 
 Unsafe behavior manifests intentionally avoid accumulated continuity assumptions. They focus on isolated semantic actions rather than long-running narratives.
 
@@ -295,19 +326,21 @@ search → select → update
 ```
 
 At this layer, the system is evaluated across:
-- sequencing
-- accumulated state
-- continuity
-- state preservation
-- cross-action assumptions
+
+* sequencing
+* accumulated state
+* continuity
+* state preservation
+* cross-action assumptions
 
 Workflow assertions are especially valuable in distributed systems where correctness often depends on interaction over time rather than isolated request handling.
 
 This layer also begins to intersect strongly with:
-- user stories
-- operational scenarios
-- BDD narratives
-- API Story scenarios
+
+* user stories
+* operational scenarios
+* BDD narratives
+* API Story scenarios
 
 Earlier layers primarily ask:
 
@@ -320,14 +353,16 @@ Workflow manifests ask:
 That shift is important. Workflow manifests are often organized around operational narratives rather than around individual endpoints.
 
 Examples:
-- task lifecycle workflow
-- assignment workflow
-- completion workflow
-- review workflow
+
+* task lifecycle workflow
+* assignment workflow
+* completion workflow
+* review workflow
 
 rather than:
-- PUT status tests
-- POST edit tests
+
+* PUT status tests
+* POST edit tests
 
 Workflow manifests are also effectively unbounded. As systems evolve, new operational narratives emerge naturally.
 
@@ -338,13 +373,14 @@ Governance assertions verify constraints, permissions, invariants, and policy ru
 Historically, these concerns are often grouped under “negative testing” or “sad path testing.” That framing is useful in some contexts but too limited here. Governance assertions are broader than failure conditions alone.
 
 Governance assertions may verify:
-- required fields
-- ownership rules
-- authorization
-- legal state transitions
-- read-only restrictions
-- policy invariants
-- rate limits
+
+* required fields
+* ownership rules
+* authorization
+* legal state transitions
+* read-only restrictions
+* policy invariants
+* rate limits
 
 Examples:
 
@@ -376,9 +412,10 @@ Governance asks:
 > What meanings and constraints apply to it?
 
 Governance manifests may describe:
-- currently enforced rules
-- proposed future rules
-- expected policy boundaries
+
+* currently enforced rules
+* proposed future rules
+* expected policy boundaries
 
 For exploratory systems, this distinction can be useful:
 
@@ -391,6 +428,8 @@ Rules suggested by the domain model, API Story, or operational requirements.
 ```
 
 Governance assertions help make implicit policies observable and executable.
+
+In some systems, governance rules may also influence representation visibility itself. Permissions, workflow state, or policy boundaries may legitimately suppress portions of a representation while still preserving behavioral correctness.
 
 ## Why separate the layers?
 
@@ -439,3 +478,4 @@ The layers described here are intentionally exploratory rather than prescriptive
 The value of the model lies less in strict categorization and more in separating concerns clearly enough that observable system behavior becomes easier to describe and verify.
 
 Viewed this way, TRAM manifests become more than executable tests alone. They also become readable behavioral models of running systems.
+

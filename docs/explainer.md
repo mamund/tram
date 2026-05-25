@@ -55,6 +55,50 @@ In this model, the manifest becomes a place where operational expectations are e
 
 This changes the role of verification. Instead of merely asking whether a test passes, the system begins to expose the operational assumptions that govern expected behavior.
 
+## Optional properties and behavioral contracts
+
+The distinction between structural validation and behavioral validation becomes more visible as APIs evolve over time.
+
+Traditional schema-oriented validation often assumes that stable representations should expose stable fields. In practice, distributed systems frequently operate with conditional representations:
+
+* permissions may affect field visibility
+* affordances may appear only in certain states
+* sparse responses may omit metadata
+* evolving systems may gradually introduce new properties
+* runtime conditions may alter representation shape
+
+In these environments, absence can itself be valid behavior.
+
+Recent additions to the TRAM assertion model support optional property assertions.
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This assertion means:
+
+```text
+"description" may be absent
+if present, it must still validate as a string
+```
+
+The important point is not the syntax itself. The larger implication is that behavioral correctness is no longer treated as identical to rigid structural completeness.
+
+A missing property may still represent correct operational behavior. A present property with invalid semantics does not.
+
+This becomes especially important in hypermedia-oriented systems where affordances, metadata, and navigation controls may appear conditionally at runtime. Optional assertions allow manifests to model these conditional representations without collapsing into either rigid schema enforcement or loosely defined payload checking.
+
+The result is a middle ground between exhaustive schema systems and purely ad hoc testing. Assertions remain executable and explicit while still allowing representations to evolve behaviorally over time.
+
 ## Hypermedia broadens the definition of testing
 
 The distinction becomes more visible in hypermedia-oriented systems. Many API testing approaches assume a relatively static environment:
@@ -87,7 +131,22 @@ For example:
 }
 ```
 
-This keeps nested behavioral expectations explicit, reviewable, and executable while preserving the declarative structure of the manifest.
+Optional assertions also work inside nested object-map traversal.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.title",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This allows manifests to express behavioral expectations around conditional affordance metadata while preserving declarative structure and readable operational intent.
 
 These checks move beyond endpoint availability. They verify aspects of runtime coordination and discoverability that are especially important in adaptive or agent-oriented systems.
 

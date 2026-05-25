@@ -469,7 +469,36 @@ Teaching point:
 Collections expose aggregate behavioral expectations.
 ```
 
-## 9.4 Object-map assertions
+## 9.4 Optional property assertions
+
+Example:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+Teaching point:
+
+```text
+Representations may vary behaviorally while still preserving operational validity.
+```
+
+Suggested discussion:
+
+* optional properties
+* sparse representations
+* evolving APIs
+* conditional metadata
+* state-dependent visibility
+
+## 9.5 Object-map assertions
 
 Example:
 
@@ -489,6 +518,25 @@ Teaching point:
 
 ```text
 Affordances are behavioral surfaces too.
+```
+
+Optional affordance metadata example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.title",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+Teaching point:
+
+```text
+Affordance metadata may appear conditionally at runtime.
 ```
 
 ## Desired reader outcome
@@ -562,10 +610,19 @@ Suggested examples:
 * wrong property
 * invalid interpolation
 * invalid range
+* invalid optional property type
 
 ## Important teaching point
 
 Failure readability is part of the system design.
+
+Optional properties are still validated when present.
+
+Example:
+
+```json
+"description": 42
+```
 
 ## Desired reader outcome
 
@@ -585,6 +642,7 @@ The tutorial should summarize that the manifest now expresses:
 * observable invariants
 * runtime coordination
 * hypermedia verification
+* conditional representation behavior
 
 Suggested closing concept:
 
@@ -608,6 +666,7 @@ Possible directions:
 * improve reporting
 * explore manifest ergonomics
 * experiment with hypermedia assertions
+* explore optional property assertions
 * explore AI-assisted manifest generation
 
 ## Final pedagogical note
