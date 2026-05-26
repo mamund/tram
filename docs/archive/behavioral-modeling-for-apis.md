@@ -23,20 +23,20 @@ Can the API be reached?
 Level 1 — Shape
 Do resources and affordances appear correctly?
 
-Level 2 — Safe behavior
+Level 2a — Safe behavior
 Do navigation and query interactions behave correctly?
 
-Level 3 — Unsafe behavior
+Level 2b — Unsafe behavior
 Do isolated state-changing actions behave correctly?
 
-Level 4 — Workflow
+Level 3 — Workflow
 Can meaningful operational narratives be completed successfully?
 
-Level 5 — Governance
-Are policies, constraints, permissions, and semantic rules enforced correctly?
+Level 4 — Governance
+Are policies, constraints, and permissions enforced correctly?
 ```
 
-Levels 0–3 primarily verify observable API capability. Workflow and governance layers move closer to operational narratives, policy modeling, domain constraints, and business intent.
+Levels 0–2 primarily verify observable API capability. Workflow and governance layers move closer to operational narratives, domain constraints, and business intent.
 
 ## Two dimensions of TRAM assertions
 
@@ -265,7 +265,7 @@ Meanwhile:
 
 is fundamentally a governance concern because it expresses domain legitimacy rather than representation structure.
 
-## Level 2: Safe behavior — what can be observed?
+## Level 2a: Safe behavior — what can be observed?
 
 Safe behavior assertions verify interactions that do not intentionally change server state.
 
@@ -314,34 +314,7 @@ This distinction becomes especially useful in hypermedia-oriented systems where 
 
 rather than through static route catalogs alone.
 
-In hypermedia-oriented systems, runtime discoverability itself becomes part of observable behavior. Testing therefore expands beyond endpoint correctness into questions of navigability, affordance exposure, and runtime coordination surfaces.
-
-Recent additions to the assertion model also support object-map traversal (`eachProperty`), allowing manifests to validate affordance-oriented structures such as hypermedia link maps without introducing scripting or custom matcher code.
-
-For example:
-
-```json
-{
-  "path": "$._links",
-  "eachProperty": {
-    "hasProperties": ["href", "method"]
-  }
-}
-```
-
-TRAM distinguishes between:
-
-* `each` for arrays
-* `eachProperty` for object maps
-
-It also distinguishes between:
-
-* `path` for structural traversal
-* `property` for scalar leaf assertions
-
-This allows nested affordance validation while preserving declarative readability.
-
-## Level 3: Unsafe behavior — what can be changed?
+## Level 2b: Unsafe behavior — what can be changed?
 
 Unsafe behavior assertions focus on isolated state-changing operations:
 
@@ -384,14 +357,7 @@ Unsafe behavior manifests intentionally avoid accumulated continuity assumptions
 
 This layer maps closely to the ACTION elements used in API Stories.
 
-TRAM also distinguishes between:
-
-* object injection using `$data.*`
-* string interpolation using `${data.*}`
-
-This allows manifests to coordinate reusable workflow state while preserving readable request construction.
-
-## Level 4: Workflow — what holds together over time?
+## Level 3: Workflow — what holds together over time?
 
 Workflow assertions verify continuity across multiple interactions.
 
@@ -448,25 +414,9 @@ rather than:
 * PUT status tests
 * POST edit tests
 
-Recent workflow-oriented manifest patterns also verify accumulated final state rather than isolated mutation success alone.
-
-For example:
-
-```text
-create
-read after create
-edit
-update status
-assign user
-set due date
-read final accumulated state
-```
-
-This allows operational continuity itself to become directly inspectable.
-
 Workflow manifests are also effectively unbounded. As systems evolve, new operational narratives emerge naturally.
 
-## Level 5: Governance — what is permitted?
+## Level 4: Governance — what is permitted?
 
 Governance assertions verify constraints, permissions, invariants, and policy rules.
 
@@ -497,6 +447,10 @@ Examples:
   }
 }
 ```
+
+or:
+
+
 
 The distinction between shape and governance becomes important at this layer.
 
@@ -538,10 +492,6 @@ Second, layered manifests are easier to review collaboratively. A resource desig
 
 Third, the separation reduces scenario explosion. Traditional behavioral suites often accumulate large, overlapping workflows that combine representation concerns, policy checks, state transitions, and authorization rules into single scenarios. Smaller layered assertions are easier to compose and evolve over time.
 
-The layered structure also narrows debugging scope operationally.
-
-If a workflow assertion fails while earlier surface, shape, and isolated mutation layers continue passing, the failure can often be localized to continuity, accumulation, or sequencing behavior rather than representation or transport concerns.
-
 The model also appears to align naturally with AI-assisted manifest generation. Surface and shape assertions can often be inferred from static descriptions such as OpenAPI documents, ALPS profiles, API Stories, or source scanning. Workflow and governance assertions usually require deeper domain understanding and runtime knowledge.
 
 ## Additive manifests and long-term evolution
@@ -572,8 +522,6 @@ This allows manifests to evolve incrementally alongside the API itself.
 
 Viewed this way, TRAM manifests become not only executable verification artifacts, but also a growing behavioral record of the system over time.
 
-As manifests accumulate across releases, they begin to function as a historical operational record describing how the observable behavior of the system evolved over time.
-
 ## Closing notes
 
 The layers described here are intentionally exploratory rather than prescriptive. Different systems may organize manifests differently. Some assertions will overlap multiple layers. Other systems may discover entirely different organizational patterns over time.
@@ -581,3 +529,4 @@ The layers described here are intentionally exploratory rather than prescriptive
 The value of the model lies less in strict categorization and more in separating concerns clearly enough that observable system behavior becomes easier to describe and verify.
 
 Viewed this way, TRAM manifests become more than executable tests alone. They also become readable behavioral models of running systems.
+

@@ -53,19 +53,6 @@ In this model, the manifest becomes a place where operational expectations are e
 * error semantics
 * behavioral constraints
 
-TRAM now organizes behavioral verification into six progressive layers:
-
-```text
-Level 0 — Surface
-Level 1 — Shape
-Level 2 — Safe behavior
-Level 3 — Unsafe behavior
-Level 4 — Workflow
-Level 5 — Governance
-```
-
-Each layer isolates a different class of operational concern while narrowing debugging scope and preserving readable behavioral intent.
-
 This changes the role of verification. Instead of merely asking whether a test passes, the system begins to expose the operational assumptions that govern expected behavior.
 
 ## Optional properties and behavioral contracts
@@ -108,16 +95,6 @@ The important point is not the syntax itself. The larger implication is that beh
 
 A missing property may still represent correct operational behavior. A present property with invalid semantics does not.
 
-The distinction between representation shape and semantic legitimacy becomes increasingly important in evolving systems.
-
-A representation may remain structurally recognizable while violating operational expectations around:
-
-* allowed values
-* ranges
-* permissions
-* workflow constraints
-* behavioral policies
-
 This becomes especially important in hypermedia-oriented systems where affordances, metadata, and navigation controls may appear conditionally at runtime. Optional assertions allow manifests to model these conditional representations without collapsing into either rigid schema enforcement or loosely defined payload checking.
 
 The result is a middle ground between exhaustive schema systems and purely ad hoc testing. Assertions remain executable and explicit while still allowing representations to evolve behaviorally over time.
@@ -132,11 +109,7 @@ The distinction becomes more visible in hypermedia-oriented systems. Many API te
 
 Hypermedia systems operate differently. Clients discover available actions dynamically through links, forms, and embedded controls. In these systems, behavior is exposed at runtime through affordances rather than being fully predetermined in client code.
 
-In hypermedia-oriented systems, runtime discoverability itself becomes part of observable behavior.
-
-Testing therefore expands beyond endpoint correctness into questions of navigability, affordance exposure, and runtime coordination surfaces.
-
-Verification now includes questions such as:
+That broadens the definition of testing. Verification now includes questions such as:
 
 * Are expected affordances present?
 * Can clients discover valid transitions?
@@ -157,18 +130,6 @@ For example:
   }
 }
 ```
-
-TRAM distinguishes between:
-
-* `each` for arrays
-* `eachProperty` for object maps
-
-It also distinguishes between:
-
-* `path` for structural traversal
-* `property` for scalar leaf assertions
-
-This allows manifests to express nested affordance validation while preserving declarative readability.
 
 Optional assertions also work inside nested object-map traversal.
 
@@ -203,17 +164,6 @@ Assertion manifests offer one possible stabilizing layer. They provide a shared 
 * monitoring tools
 * AI assistants
 
-Recent workflow-oriented manifest patterns also allow TRAM assertions to model accumulated operational narratives rather than isolated endpoint checks.
-
-A workflow manifest may:
-
-* create resources
-* retrieve intermediate state
-* apply mutations
-* verify accumulated final state
-
-This allows operational continuity itself to become directly inspectable.
-
 This is not primarily about replacing human judgment with automation. The manifest creates a visible representation of expected operational behavior that humans and machines can collaborate around. Assertions become reviewable objects rather than hidden details buried inside application code or testing frameworks.
 
 That collaborative aspect matters. Many software artifacts are optimized either for machines or for humans, but not both simultaneously. Assertion manifests occupy an interesting middle space. They remain executable while still exposing operational intent in a relatively direct form.
@@ -224,10 +174,7 @@ The broader architectural question underneath TRAM is whether behavior itself sh
 
 TRAM also supports stable run-scoped interpolation values, allowing related behavioral interactions to share state across requests without introducing custom scripting. This keeps multi-step workflows explicit, reviewable, and manifest-driven.
 
-The layered structure also narrows debugging scope operationally.
-
-If a workflow assertion fails at Level 4 while Levels 0–3 continue passing, the failure can often be localized to continuity, accumulation, or sequencing behavior rather than transport, representation, or isolated mutation semantics.
-
 This approach does not replace existing testing or observability systems. Unit tests, schema validation, monitoring, and contract testing each address important concerns. TRAM explores a narrower but increasingly important space: the explicit expression of operational behavior itself.
 
-The implementation underneath a system may evolve rapidly over time. Behavioral expectations still need to remain visible, reviewable, and stable enough for coordination to persist across teams, services, tooling, and increasingly adaptive runtime environments.
+As distributed systems continue to evolve toward more adaptive, generated, and agent-assisted environments, the ability to define and verify observable behavior directly may become more valuable. The implementation underneath a system may change rapidly over time. The operational expectations governing that system still need to remain understandable, inspectable, and stable enough for humans and machines to coordinate around them.
+

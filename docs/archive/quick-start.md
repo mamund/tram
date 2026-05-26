@@ -12,39 +12,7 @@ The goal is not only to execute the sample tests, but to understand the relation
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
 
----
-
-# Understand the behavioral layers
-
-TRAM organizes behavioral testing into six progressive layers.
-
-```text
-Level 0 — Surface
-Can the API be reached?
-
-Level 1 — Shape
-Do resources and affordances appear correctly?
-
-Level 2 — Safe behavior
-Do navigation, lookup, filtering, and query interactions behave correctly?
-
-Level 3 — Unsafe behavior
-Do isolated state-changing actions behave correctly?
-
-Level 4 — Workflow
-Can meaningful operational narratives be completed successfully?
-
-Level 5 — Governance
-Are policies, constraints, and semantic rules enforced correctly?
-```
-
-The layers are additive.
-
-Each layer narrows debugging scope while preserving readable behavioral intent.
-
----
-
-# Requirements
+## Requirements
 
 TRAM currently requires:
 
@@ -54,18 +22,14 @@ Node.js 18+
 
 No external libraries or framework dependencies are required.
 
----
-
-# Clone the repository
+## Clone the repository
 
 ```bash
 git clone https://github.com/mamund/2026-05-tram.git
 cd 2026-05-tram
 ```
 
----
-
-# CLI setup
+## CLI setup
 
 macOS/Linux:
 
@@ -86,9 +50,7 @@ Verify installation:
 tram api-tests.json
 ```
 
----
-
-# Understand the sample workflow
+## Understand the sample workflow
 
 The sample project follows a simple execution model:
 
@@ -119,9 +81,7 @@ The manifest contains:
 
 The runner executes the manifest directly.
 
----
-
-# Start the sample API
+## Start the sample API
 
 In one terminal window:
 
@@ -137,9 +97,7 @@ Listening on port 3000
 
 The sample API should now be running locally.
 
----
-
-# Run the sample test suite
+## Run the sample test suite
 
 In another terminal window:
 
@@ -173,26 +131,7 @@ At this point, TRAM has:
 * evaluated assertions
 * generated behavioral results
 
----
-
-# Understand layered progression
-
-A common layered progression:
-
-```text
-Level 0 — endpoint availability
-Level 1 — representation structure
-Level 2 — lookup and filtering behavior
-Level 3 — isolated mutation behavior
-Level 4 — workflow continuity
-Level 5 — governance and constraints
-```
-
-This layered structure helps narrow debugging scope while preserving readable behavioral intent.
-
----
-
-# Inspect the manifest
+## Inspect the manifest
 
 Open:
 
@@ -239,13 +178,11 @@ Example:
 
 This assertion is an explicit operational expectation.
 
----
-
-# Understand path and reference syntax
+## Understand path and reference syntax
 
 TRAM currently uses several related traversal/reference systems.
 
-## Assertion traversal
+### Assertion traversal
 
 Assertion paths operate on response bodies.
 
@@ -258,7 +195,7 @@ Example:
 }
 ```
 
-## Manifest data lookup
+### Manifest data lookup
 
 Manifest data references retrieve reusable manifest-defined data.
 
@@ -268,7 +205,7 @@ Example:
 "body": "$data.task.valid"
 ```
 
-## Runtime interpolation
+### Runtime interpolation
 
 Runtime interpolation inserts values into runtime request construction.
 
@@ -278,46 +215,7 @@ Example:
 "path": "/tasks/${data.stableId}"
 ```
 
----
-
-# Understand runtime interpolation semantics
-
-TRAM distinguishes between:
-
-* object injection
-* string interpolation
-
-Use:
-
-```json
-"$data.someObject"
-```
-
-when injecting structured runtime objects.
-
-Use:
-
-```json
-"${data.someValue}"
-```
-
-when interpolating values inside strings.
-
-Correct object injection:
-
-```json
-"body": "$data.createTask"
-```
-
-Correct string interpolation:
-
-```json
-"path": "/tasks/${data.knownTaskId}"
-```
-
----
-
-# Shared data and runtime interpolation
+## Shared data and runtime interpolation
 
 The `data` section stores reusable manifest-defined values.
 
@@ -371,72 +269,7 @@ Example:
 
 This enables coordinated multi-step behavioral flows without introducing custom scripting.
 
----
-
-# Understand traversal semantics
-
-TRAM distinguishes between:
-
-* `path` for structural traversal
-* `property` for scalar leaf checks
-
-Example structural traversal:
-
-```json
-{
-  "path": "$",
-  "each": {
-    "path": "$._links",
-    "eachProperty": {
-      "hasProperties": ["href", "method"]
-    }
-  }
-}
-```
-
-Example scalar leaf assertion:
-
-```json
-{
-  "path": "$",
-  "each": {
-    "property": "status",
-    "equals": "active"
-  }
-}
-```
-
-TRAM also distinguishes between:
-
-* `each` for arrays
-* `eachProperty` for object maps
-
-Example array traversal:
-
-```json
-{
-  "path": "$",
-  "each": {
-    "property": "status",
-    "equals": "active"
-  }
-}
-```
-
-Example object-map traversal:
-
-```json
-{
-  "path": "$._links",
-  "eachProperty": {
-    "hasProperties": ["href", "method"]
-  }
-}
-```
-
----
-
-# Inspect the assertion model
+## Inspect the assertion model
 
 Open:
 
@@ -500,44 +333,6 @@ This assertion verifies:
 all returned tasks expose valid status values
 ```
 
----
-
-# Understand governance assertions
-
-Governance assertions verify:
-
-* required fields
-* allowed values
-* semantic legitimacy
-* ranges
-* policy constraints
-
-Example governance assertion:
-
-```json
-{
-  "path": "$.status",
-  "oneOf": [
-    "pending",
-    "active",
-    "cancelled",
-    "completed"
-  ]
-}
-```
-
-Example range governance assertion:
-
-```json
-{
-  "path": "$.priority",
-  "range": {
-    "min": 1,
-    "max": 5
-  }
-}
-```
-
 TRAM also supports optional property assertions.
 
 Example:
@@ -568,11 +363,48 @@ Optional assertions are useful for:
 * permission-dependent fields
 * state-dependent representations
 
----
+TRAM also supports object-map assertions.
 
-# Understand nested traversal
+Example:
 
-TRAM supports nested collection and object-map traversal.
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "hasProperties": ["href", "method"]
+  }
+}
+```
+
+This assertion verifies:
+
+```text
+all link relations expose href and method properties
+```
+
+Nested object-map traversal also supports optional assertions.
+
+Example:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "path": "$.title",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+This assertion means:
+
+```text
+link relations may expose an optional title property
+if present, title must be a string
+```
+
+Nested collection + object-map assertions are also supported.
 
 Example:
 
@@ -610,7 +442,7 @@ Example:
 }
 ```
 
-The assertion model supports:
+The assertion model now supports:
 
 * collection traversal
 * nested traversal
@@ -633,36 +465,7 @@ date-time
 schema validation
 ```
 
----
-
-# Understand workflow-oriented behavioral modeling
-
-TRAM manifests can model operational workflows rather than isolated endpoint checks.
-
-A workflow manifest may:
-
-* create resources
-* retrieve intermediate state
-* apply mutations
-* verify accumulated final state
-
-Example workflow sequence:
-
-```text
-create
-read after create
-edit
-update status
-assign user
-set due date
-read final accumulated state
-```
-
-Workflow manifests allow behavioral continuity and accumulated-state verification to remain directly inspectable.
-
----
-
-# Inspect request body handling
+## Inspect request body handling
 
 TRAM currently supports:
 
@@ -685,9 +488,7 @@ Example:
 
 This allows the runner to work with APIs that expect different request encodings.
 
----
-
-# Run in verbose mode
+## Run in verbose mode
 
 Verbose mode prints detailed assertion results.
 
@@ -706,9 +507,7 @@ Verbose mode helps reveal:
 * failure messages
 * behavioral expectations
 
----
-
-# Generate a machine-readable report
+## Generate a machine-readable report
 
 ```bash
 tram api-tests.json --report results.json
@@ -721,13 +520,11 @@ This generates a detailed JSON report containing:
 * assertion results
 * pass/fail summaries
 
----
-
-# Try intentionally breaking a test
+## Try intentionally breaking a test
 
 One of the fastest ways to understand TRAM is to intentionally introduce a failure.
 
-## Change an expected value
+### Change an expected value
 
 Change:
 
@@ -743,7 +540,7 @@ to:
 
 Then rerun the suite.
 
-## Disable a test
+### Disable a test
 
 Add:
 
@@ -755,13 +552,13 @@ to a test.
 
 Then rerun the suite.
 
-## Break a request body
+### Break a request body
 
 Remove a required property from a POST request body.
 
 Then rerun the suite.
 
-## Break a range assertion
+### Break a range assertion
 
 Change:
 
@@ -782,7 +579,7 @@ to:
 
 Then rerun the suite.
 
-## Break a type assertion
+### Break a type assertion
 
 Change:
 
@@ -798,7 +595,7 @@ to:
 
 Then rerun the suite.
 
-## Break an optional property assertion
+### Break an optional property assertion
 
 Change:
 
@@ -820,7 +617,7 @@ Then rerun the suite.
 
 The assertion should fail because optional properties are still validated when present.
 
-## Break a runtime reference
+### Break a runtime reference
 
 Change:
 
@@ -836,7 +633,7 @@ to:
 
 Then rerun the suite.
 
-## Break an object-map assertion
+### Break an object-map assertion
 
 Change:
 
@@ -864,9 +661,7 @@ These experiments help reveal:
 * optional property validation
 * failure readability
 
----
-
-# Understand the current philosophy
+## Understand the current philosophy
 
 TRAM currently emphasizes:
 
@@ -887,9 +682,7 @@ setup/teardown orchestration
 hidden runtime behavior
 ```
 
----
-
-# AI Coaching direction
+## AI Coaching direction
 
 The long-term direction includes an AI Coaching layer.
 
@@ -901,16 +694,12 @@ The AI Coach is intended to:
 * distinguish happy and sad paths
 * review assertions collaboratively
 * generate executable manifests
-* support layered behavioral modeling
-* help users understand workflow and governance testing
 
 The goal is not one-shot generation alone.
 
 The goal is helping users understand behavioral API testing while collaboratively constructing executable manifests.
 
----
-
-# Recommended next steps
+## Recommended next steps
 
 Recommended files to inspect:
 
@@ -928,11 +717,10 @@ Recommended next experiments:
 * add new type assertions
 * add optional property assertions
 * add filtering tests
-* add workflow manifests
-* add governance manifests
 * add collection assertions
 * add object-map assertions
 * improve reporting
 * explore manifest ergonomics
 * experiment with hypermedia assertions
 * experiment with stable run-scoped variables
+

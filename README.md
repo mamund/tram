@@ -13,13 +13,17 @@ TRAM combines:
 * native type assertions
 * optional property assertions
 * object-map and collection assertions
-* an eventual AI Coaching workflow focused on learning and augmentation rather than pure automation
+* layered behavioral modeling
+* workflow-oriented behavioral validation
+* an AI Coaching workflow focused on learning and augmentation rather than pure automation
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
 
 <img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
 
-## Why TRAM exists
+---
+
+# Why TRAM exists
 
 Modern API systems already have strong tooling around structure and implementation:
 
@@ -75,7 +79,39 @@ Example:
 
 TRAM supports partial and evolving representations through optional property assertions while preserving explicit behavioral validation.
 
-## Project goals
+---
+
+# Behavioral layering
+
+TRAM organizes behavioral testing into six progressive layers.
+
+```text
+Level 0 — Surface
+Can the API be reached?
+
+Level 1 — Shape
+Do resources and affordances appear correctly?
+
+Level 2 — Safe behavior
+Do navigation, lookup, filtering, and query interactions behave correctly?
+
+Level 3 — Unsafe behavior
+Do isolated state-changing actions behave correctly?
+
+Level 4 — Workflow
+Can meaningful operational narratives be completed successfully?
+
+Level 5 — Governance
+Are policies, constraints, and semantic rules enforced correctly?
+```
+
+The layers are additive rather than replacement-oriented.
+
+Each layer narrows debugging scope while preserving readable behavioral intent.
+
+---
+
+# Project goals
 
 TRAM is designed around several principles:
 
@@ -88,7 +124,9 @@ TRAM is designed around several principles:
 
 The long-term direction is an AI Coach that helps users learn behavioral API testing while collaboratively constructing executable manifests.
 
-## Current implementation
+---
+
+# Current implementation
 
 Current implementation includes:
 
@@ -103,12 +141,16 @@ Current implementation includes:
 * range assertions (`range`)
 * stable run-scoped variables
 * runtime interpolation (`${data.*}`)
+* object injection (`$data.*`)
 * happy-path and sad-path testing
 * JSON, form, and text request body support
+* workflow-oriented behavioral modeling
 * machine-readable reporting
 * real API validation against a sample CRUD-style task API
 
-## Project structure
+---
+
+# Project structure
 
 ```text
 .
@@ -123,9 +165,11 @@ Current implementation includes:
 └── sample-api/
 ```
 
-## CLI installation
+---
 
-### Local development setup
+# CLI installation
+
+## Local development setup
 
 Clone the repository:
 
@@ -153,9 +197,11 @@ Then run:
 tram api-tests.json
 ```
 
-## Core concepts
+---
 
-### Manifest-driven testing
+# Core concepts
+
+## Manifest-driven testing
 
 Tests are defined declaratively in a manifest:
 
@@ -182,7 +228,9 @@ The manifest acts as both:
 * executable configuration
 * behavioral operational artifact
 
-### Shared runtime data
+---
+
+## Shared runtime data
 
 The `data` section stores reusable request and runtime values.
 
@@ -208,7 +256,43 @@ Later requests can reference the same value:
 
 This enables coordinated multi-step behavioral flows without introducing custom scripting.
 
-### Assertion engine
+---
+
+## Runtime interpolation semantics
+
+Use:
+
+```json
+"$data.someObject"
+```
+
+when injecting structured runtime objects.
+
+Use:
+
+```json
+"${data.someValue}"
+```
+
+when interpolating values inside strings.
+
+Examples:
+
+Correct object injection:
+
+```json
+"body": "$data.createTask"
+```
+
+Correct string interpolation:
+
+```json
+"path": "/tasks/${data.knownTaskId}"
+```
+
+---
+
+## Assertion engine
 
 The assertion library currently supports:
 
@@ -266,7 +350,47 @@ This assertion means:
 if present, it must still validate as a string
 ```
 
-Example nested collection + object-map assertion:
+---
+
+## Traversal semantics
+
+TRAM distinguishes between arrays and object maps.
+
+Use:
+
+* `each` for arrays
+* `eachProperty` for object maps
+
+Examples:
+
+```json
+[
+  {...},
+  {...}
+]
+```
+
+```text
+=> each
+```
+
+```json
+{
+  "self": {...},
+  "edit": {...}
+}
+```
+
+```text
+=> eachProperty
+```
+
+TRAM also distinguishes between:
+
+* `path` for structural traversal
+* `property` for scalar leaf checks
+
+Example structural traversal:
 
 ```json
 {
@@ -280,25 +404,14 @@ Example nested collection + object-map assertion:
 }
 ```
 
-This assertion verifies:
-
-```text
-for each record
-  for each link relation
-    ensure href and method exist
-```
-
-Optional assertions also work inside nested object-map traversal.
-
-Example:
+Example scalar leaf assertion:
 
 ```json
 {
-  "path": "$._links",
-  "eachProperty": {
-    "path": "$.title",
-    "optional": true,
-    "type": "string"
+  "path": "$",
+  "each": {
+    "property": "status",
+    "equals": "active"
   }
 }
 ```
@@ -326,7 +439,51 @@ date-time
 schema validation
 ```
 
-### Request body support
+---
+
+## Workflow-oriented behavioral modeling
+
+TRAM manifests can model operational workflows rather than isolated endpoint checks.
+
+A workflow manifest may:
+
+* create resources
+* retrieve intermediate state
+* apply mutations
+* verify accumulated final state
+
+This allows manifests to function as executable operational narratives.
+
+Example workflow sequence:
+
+```text
+create
+read after create
+edit
+update status
+assign user
+set due date
+read final accumulated state
+```
+
+---
+
+## Header assertion semantics
+
+Header assertions use:
+
+```json
+{
+  "name": "content-type",
+  "contains": "application/json"
+}
+```
+
+Do not use `path` for header assertions.
+
+---
+
+## Request body support
 
 TRAM supports multiple request body encodings:
 
@@ -347,7 +504,9 @@ Example:
 }
 ```
 
-## Running the sample project
+---
+
+# Running the sample project
 
 Start the sample API:
 
@@ -373,9 +532,11 @@ Generate a machine-readable report:
 tram api-tests.json --report results.json
 ```
 
-## Documentation
+---
 
-### Quick Start
+# Documentation
+
+## Quick Start
 
 Practical walkthrough for:
 
@@ -385,7 +546,7 @@ Practical walkthrough for:
 * understanding runtime interpolation
 * exploring behavioral API testing workflows
 
-### Manifest Specification
+## Manifest Specification
 
 Authoritative executable manifest model.
 
@@ -403,7 +564,7 @@ Defines:
 * native type assertions
 * body handling
 
-### Explainer
+## Explainer
 
 Architectural discussion of:
 
@@ -411,9 +572,12 @@ Architectural discussion of:
 * operational artifacts
 * hypermedia-oriented testing
 * generated systems
+* workflow-oriented behavioral modeling
 * AI-assisted workflows
 
-## Reporting philosophy
+---
+
+# Reporting philosophy
 
 TRAM emphasizes:
 
@@ -424,7 +588,9 @@ TRAM emphasizes:
 
 The console output is intentionally concise by default.
 
-## Design philosophy
+---
+
+# Design philosophy
 
 TRAM is intentionally conservative.
 
@@ -447,7 +613,18 @@ manifest ergonomics
 reviewability
 ```
 
-## AI Coaching direction
+---
+
+# AI Coaching direction
+
+The AI Coaching direction includes:
+
+* layered manifest generation
+* traversal-aware assertion guidance
+* workflow modeling support
+* governance distinction guidance
+* collaborative review cycles
+* behavioral decomposition assistance
 
 The eventual AI Coach layer will:
 
@@ -462,7 +639,24 @@ The goal is not automatic test generation alone.
 
 The goal is helping users understand behavioral API testing while collaboratively constructing executable manifests.
 
-## Related ideas
+---
+
+# Example layer progression
+
+Typical TRAM progression:
+
+```text
+Level 0 — endpoint availability
+Level 1 — representation structure
+Level 2 — lookup and filtering behavior
+Level 3 — isolated mutation behavior
+Level 4 — workflow continuity
+Level 5 — governance and constraints
+```
+
+---
+
+# Related ideas
 
 TRAM draws inspiration from:
 
@@ -473,7 +667,9 @@ TRAM draws inspiration from:
 * augmentation-oriented AI systems
 * coaching-based human/machine collaboration
 
-## Status
+---
+
+# Status
 
 Early experimental project.
 
@@ -484,4 +680,3 @@ Project repository:
 ```text
 https://github.com/mamund/2026-05-tram
 ```
-
