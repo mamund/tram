@@ -1,7 +1,7 @@
 {
   "manifestVersion": "0.1",
   "version": "1.0.0",
-  "name": "Task API Level 4 Governance Assertions",
+  "name": "Task API Level 5 Governance Assertions",
   "description": "Confirms currently enforced validation and constraint rules in the sample task API.",
   "author": "Mike Amundsen",
   "config": {

@@ -1,7 +1,7 @@
 {
   "manifestVersion": "0.1",
   "version": "1.0.0",
-  "name": "Task API Level 3 Workflow Assertions",
+  "name": "Task API Level 4 Workflow Assertions",
   "description": "Confirms that multiple task API actions compose into a coherent task lifecycle.",
   "author": "Mike Amundsen",
   "config": {

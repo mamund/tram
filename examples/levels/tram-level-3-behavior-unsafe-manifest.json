@@ -1,7 +1,7 @@
 {
   "manifestVersion": "0.1",
   "version": "1.0.0",
-  "name": "Task API Level 2 Unsafe Behavior Assertions",
+  "name": "Task API Level 3 Unsafe Behavior Assertions",
   "description": "Confirms unsafe task API behaviors including create, edit, status update, assignment, and due-date update.",
   "author": "Mike Amundsen",
   "config": {

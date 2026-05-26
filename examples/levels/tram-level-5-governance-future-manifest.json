@@ -1,7 +1,7 @@
 {
   "manifestVersion": "0.1",
   "version": "1.0.0",
-  "name": "Task API Level 4 Governance Assertions",
+  "name": "Task API Level 5 Governance Assertions",
   "description": "Confirms that task lifecycle policies, permissions, and semantic constraints are enforced.",
   "author": "Mike Amundsen",
   "config": {
