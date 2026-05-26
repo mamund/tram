@@ -64,7 +64,7 @@ function parseArgs(argv) {
       continue;
     }
 
-    if (arg === '--report') {
+    if (arg === '--report' || arg === '-r') {
       const reportPath = argv[i + 1];
       if (!reportPath) throw new Error('--report requires a file path.');
       args.reportPath = reportPath;
