@@ -77,10 +77,8 @@ This is the smallest useful complete TRAM manifest:
 
 TRAM explores a narrow problem:
 
-```text
-How do we make behavioral expectations directly visible,
-portable, executable, and reviewable?
-````
+_**How do we make behavioral expectations directly visible,
+portable, executable, and reviewable?**_
 
 The core artifact is the manifest:
 
@@ -95,6 +93,82 @@ The manifest defines:
 * shared test data
 * runtime interpolation values
 
+Assertions become directly inspectable operational statements.
+
+Simple behavioral assertion:
+
+```json
+{
+  "path": "$.status",
+  "equals": "active"
+}
+````
+
+Meaning:
+
+```text
+The resource status must be "active".
+```
+
+Optional property assertion for evolving representations:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+Meaning:
+
+```text
+"description" may be absent.
+If present, it must be a string.
+```
+
+Hypermedia affordance assertion:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "hasProperties": ["href", "method"]
+  }
+}
+```
+
+Meaning:
+
+```text
+Every affordance must define both a target URL and an HTTP method.
+```
+
+Collection behavioral assertion:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "status",
+    "oneOf": ["active", "pending", "completed"]
+  }
+}
+```
+
+Meaning:
+
+```text
+Every returned resource must have a recognized workflow state.
+```
+
+TRAM supports partial and evolving representations while preserving explicit behavioral validation.
+
+
+<!--
 Assertions become directly inspectable operational statements.
 
 Simple behavioral assertion:
@@ -131,6 +205,7 @@ Hypermedia affordance assertion:
 ```
 
 TRAM supports partial and evolving representations while preserving explicit behavioral validation.
+-->
 
 ---
 
