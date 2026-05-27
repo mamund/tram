@@ -23,8 +23,6 @@
 <li>an AI Coaching workflow focused on learning and augmentation rather than pure automation</li>
 </ul>
 
-<p>TRAM treats API testing as behavioral modeling rather than framework scripting.</p>
-
 </td>
 <td width="240" valign="top">
 
@@ -33,6 +31,8 @@
 </td>
 </tr>
 </table>
+
+TRAM treats API testing as behavioral modeling rather than framework scripting.
 
 <!-- 
 <img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
