@@ -30,26 +30,9 @@
 </tr>
 </table>
 
-TRAM treats API testing as behavioral modeling rather than framework scripting.
-
-<!-- 
-<img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
-
-TRAM combines:
-
-* a manifest-driven test format
-* a reusable assertion engine
-* a portable HTTP test runner
-* stable runtime interpolation support
-* native type assertions
-* optional property assertions
-* object-map and collection assertions
-* layered behavioral modeling
-* workflow-oriented behavioral validation
-* an AI Coaching workflow focused on learning and augmentation rather than pure automation
+<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
--->
 
 ## Documentation
 
@@ -58,8 +41,6 @@ TRAM treats API testing as behavioral modeling rather than framework scripting.
 * [Manifest Specification](docs/manifest-spec.md)
 * [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md)
 * [Roadmap](docs/roadmap.md)
-
-<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
 
 ---
 
