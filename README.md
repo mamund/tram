@@ -165,6 +165,28 @@ Meaning:
 Every returned resource must have a recognized workflow state.
 ```
 
+
+Nested affordance traversal assertion:
+
+
+```json
+{
+  "path": "$",
+  "each": {
+    "path": "$._links",
+    "eachProperty": {
+      "hasProperties": ["href", "method"]
+    }
+  }
+}
+```
+Meaning:
+
+```text
+Every returned resource must expose affordances
+that define both a target URL and an HTTP method.
+```
+
 TRAM supports partial and evolving representations while preserving explicit behavioral validation.
 
 
