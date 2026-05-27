@@ -2,6 +2,39 @@
 
 **TRAM** (Test Runner for Assertion Manifests) is a lightweight, dependency-free HTTP API behavioral testing platform for Node.js.
 
+<table>
+<tr>
+<td valign="top">
+
+<p><strong>TRAM</strong> (Test Runner for Assertion Manifests) is a lightweight, dependency-free HTTP API behavioral testing platform for Node.js.</p>
+
+<p>TRAM combines:</p>
+
+<ul>
+<li>a manifest-driven test format</li>
+<li>a reusable assertion engine</li>
+<li>a portable HTTP test runner</li>
+<li>stable runtime interpolation support</li>
+<li>native type assertions</li>
+<li>optional property assertions</li>
+<li>object-map and collection assertions</li>
+<li>layered behavioral modeling</li>
+<li>workflow-oriented behavioral validation</li>
+<li>an AI Coaching workflow focused on learning and augmentation rather than pure automation</li>
+</ul>
+
+<p>TRAM treats API testing as behavioral modeling rather than framework scripting.</p>
+
+</td>
+<td width="240" valign="top">
+
+<img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
+
+</td>
+</tr>
+</table>
+
+<!-- 
 <img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
 
 TRAM combines:
@@ -18,12 +51,21 @@ TRAM combines:
 * an AI Coaching workflow focused on learning and augmentation rather than pure automation
 
 TRAM treats API testing as behavioral modeling rather than framework scripting.
+-->
+
+## Documentation
+
+* [Quick Start](docs/quick-start.md)
+* [Explainer](docs/explainer.md)
+* [Manifest Specification](docs/manifest-spec.md)
+* [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md)
+* [Roadmap](docs/roadmap.md)
 
 <img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
 
 ---
 
-# Smallest complete TRAM manifest
+## Smallest complete TRAM manifest
 
 ```json
 {
@@ -52,39 +94,18 @@ This is the smallest useful complete TRAM manifest:
 
 ---
 
-# Why TRAM exists
+## Why TRAM exists
 
-Modern API systems already have strong tooling around structure and implementation:
-
-* OpenAPI generation
-* schema validation
-* SDK generation
-* monitoring
-* scaffolding
-* AI-assisted code generation
-
-At the same time, distributed systems often fail behaviorally rather than structurally.
-
-A response may validate correctly while:
-
-* workflows drift
-* affordances disappear
-* assumptions diverge
-* state transitions become inconsistent
-* operational expectations become fragmented across teams and tools
-
-TRAM explores a narrower problem:
+TRAM explores a narrow problem:
 
 ```text
 How do we make behavioral expectations directly visible,
 portable, executable, and reviewable?
-```
+````
 
 The core artifact is the manifest:
 
-```text
-api-tests.json
-```
+[api-tests.json](examples/api-tests.json)
 
 The manifest defines:
 
@@ -97,7 +118,7 @@ The manifest defines:
 
 Assertions become directly inspectable operational statements.
 
-Example:
+Simple behavioral assertion:
 
 ```json
 {
@@ -106,41 +127,56 @@ Example:
 }
 ```
 
-TRAM supports partial and evolving representations through optional property assertions while preserving explicit behavioral validation.
+Optional property assertion for evolving representations:
+
+```json
+{
+  "path": "$",
+  "each": {
+    "property": "description",
+    "optional": true,
+    "type": "string"
+  }
+}
+```
+
+Hypermedia affordance assertion:
+
+```json
+{
+  "path": "$._links",
+  "eachProperty": {
+    "hasProperties": ["href", "method"]
+  }
+}
+```
+
+TRAM supports partial and evolving representations while preserving explicit behavioral validation.
 
 ---
 
-# Behavioral layering
+
+## Behavioral layering
 
 TRAM organizes behavioral testing into six progressive layers.
 
-```text
-Level 0 — Surface
-Can the API be reached?
+| Level | Focus | Question |
+|---|---|---|
+| 0 | Surface | Can the API be reached? |
+| 1 | Shape | Do resources and affordances appear correctly? |
+| 2 | Safe behavior | Do navigation, lookup, filtering, and query interactions behave correctly? |
+| 3 | Unsafe behavior | Do isolated state-changing actions behave correctly? |
+| 4 | Workflow | Can meaningful operational narratives be completed successfully? |
+| 5 | Governance | Are policies, constraints, and semantic rules enforced correctly? |
 
-Level 1 — Shape
-Do resources and affordances appear correctly?
 
-Level 2 — Safe behavior
-Do navigation, lookup, filtering, and query interactions behave correctly?
+<img src="./docs/tram-graphics/tram-testing-pyramid-simple.png" width="75%" alt="TRAM Testing Maturity Pyramid" />
 
-Level 3 — Unsafe behavior
-Do isolated state-changing actions behave correctly?
-
-Level 4 — Workflow
-Can meaningful operational narratives be completed successfully?
-
-Level 5 — Governance
-Are policies, constraints, and semantic rules enforced correctly?
-```
-
-The layers are additive rather than replacement-oriented.
-
-Each layer narrows debugging scope while preserving readable behavioral intent.
+The layers are additive rather than replacement-oriented. Each layer narrows debugging scope while preserving readable behavioral intent.
 
 ---
 
-# Project goals
+## Project goals
 
 TRAM is designed around several principles:
 
@@ -155,7 +191,7 @@ The long-term direction is an AI Coach that helps users learn behavioral API tes
 
 ---
 
-# Current implementation
+## Current implementation
 
 Current implementation includes:
 
@@ -179,7 +215,7 @@ Current implementation includes:
 
 ---
 
-# Project structure
+## Project structure
 
 ```text
 .
@@ -196,9 +232,9 @@ Current implementation includes:
 
 ---
 
-# CLI installation
+## CLI installation
 
-## Local development setup
+### Local development setup
 
 Clone the repository:
 
@@ -228,9 +264,9 @@ tram api-tests.json
 
 ---
 
-# Core concepts
+## Core concepts
 
-## Manifest-driven testing
+### Manifest-driven testing
 
 Tests are defined declaratively in a manifest:
 
@@ -259,7 +295,7 @@ The manifest acts as both:
 
 ---
 
-## Shared runtime data
+### Shared runtime data
 
 The `data` section stores reusable request and runtime values.
 
@@ -287,7 +323,7 @@ This enables coordinated multi-step behavioral flows without introducing custom 
 
 ---
 
-## Runtime interpolation semantics
+### Runtime interpolation semantics
 
 Use:
 
@@ -321,7 +357,7 @@ Correct string interpolation:
 
 ---
 
-## Assertion engine
+### Assertion engine
 
 The assertion library currently supports:
 
@@ -381,7 +417,7 @@ if present, it must still validate as a string
 
 ---
 
-## Traversal semantics
+### Traversal semantics
 
 TRAM distinguishes between arrays and object maps.
 
@@ -470,7 +506,7 @@ schema validation
 
 ---
 
-## Workflow-oriented behavioral modeling
+### Workflow-oriented behavioral modeling
 
 TRAM manifests can model operational workflows rather than isolated endpoint checks.
 
@@ -497,7 +533,7 @@ read final accumulated state
 
 ---
 
-## Header assertion semantics
+### Header assertion semantics
 
 Header assertions use:
 
@@ -512,7 +548,7 @@ Do not use `path` for header assertions.
 
 ---
 
-## Request body support
+### Request body support
 
 TRAM supports multiple request body encodings:
 
@@ -535,7 +571,7 @@ Example:
 
 ---
 
-# Running the sample project
+## Running the sample project
 
 Start the sample API:
 
@@ -563,11 +599,11 @@ tram api-tests.json --report results.json
 
 ---
 
-# Documentation
+## Documentation
 
-## Quick Start
+### Quick Start
 
-Practical walkthrough for:
+[Practical walkthrough](docs/quick-start.md) for:
 
 * running the sample project
 * inspecting manifests
@@ -575,9 +611,9 @@ Practical walkthrough for:
 * understanding runtime interpolation
 * exploring behavioral API testing workflows
 
-## Manifest Specification
+### Manifest Specification
 
-Authoritative executable manifest model.
+Authoritative executable [manifest model](docs/manifest.spec.md).
 
 Defines:
 
@@ -593,9 +629,9 @@ Defines:
 * native type assertions
 * body handling
 
-## Explainer
+### Explainer
 
-Architectural discussion of:
+Architectural [discussion](docs/explainer.md) of:
 
 * behavioral assertions
 * operational artifacts
@@ -606,7 +642,7 @@ Architectural discussion of:
 
 ---
 
-# Reporting philosophy
+## Reporting philosophy
 
 TRAM emphasizes:
 
@@ -619,7 +655,7 @@ The console output is intentionally concise by default.
 
 ---
 
-# Design philosophy
+## Design philosophy
 
 TRAM is intentionally conservative.
 
@@ -644,7 +680,7 @@ reviewability
 
 ---
 
-# AI Coaching direction
+## AI Coaching direction
 
 The AI Coaching direction includes:
 
@@ -670,7 +706,7 @@ The goal is helping users understand behavioral API testing while collaborativel
 
 ---
 
-# Example layer progression
+## Example layer progression
 
 Typical TRAM progression:
 
@@ -685,7 +721,7 @@ Level 5 — governance and constraints
 
 ---
 
-# Related ideas
+## Related ideas
 
 TRAM draws inspiration from:
 
@@ -698,7 +734,7 @@ TRAM draws inspiration from:
 
 ---
 
-# Status
+## Status
 
 Early experimental project.
 
