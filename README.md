@@ -2,9 +2,6 @@
 
 **TRAM** (Test Runner for Assertion Manifests) is a lightweight, dependency-free HTTP API behavioral testing platform for Node.js.
 
-
-*TRAM* (Test Runner for Assertion Manifests) is a lightweight, dependency-free HTTP API behavioral testing platform for Node.js.
-
 <table>
 <tr>
 <td valign="top">
