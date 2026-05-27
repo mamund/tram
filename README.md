@@ -23,6 +23,35 @@ TRAM treats API testing as behavioral modeling rather than framework scripting.
 
 ---
 
+# Smallest complete TRAM manifest
+
+```json
+{
+  "name": "Smallest TRAM manifest",
+  "tests": [
+    {
+      "name": "GET /tasks returns 200",
+      "request": {
+        "method": "GET",
+        "path": "/tasks"
+      },
+      "expect": {
+        "status": 200,
+      }
+    }
+  ]
+}
+```
+
+This is the smallest useful complete TRAM manifest:
+
+* one manifest
+* one test
+* one request
+* one behavioral assertion
+
+---
+
 # Why TRAM exists
 
 Modern API systems already have strong tooling around structure and implementation:
