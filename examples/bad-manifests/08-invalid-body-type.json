@@ -1,0 +1,16 @@
+{
+  "config": {
+    "baseUrl": "http://localhost:3000"
+  },
+  "tests": [
+    {
+      "name": "Bad body type",
+      "method": "POST",
+      "path": "/tasks",
+      "bodyType": "xml",
+      "expect": {
+        "status": 201
+      }
+    }
+  ]
+}

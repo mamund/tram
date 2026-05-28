@@ -1,0 +1,15 @@
+{
+  "config": {
+    "baseUrl": "http://localhost:3000"
+  },
+  "tests": [
+    {
+      "name": "Bad method",
+      "method": "FETCH",
+      "path": "/tasks",
+      "expect": {
+        "status": 200
+      }
+    }
+  ]
+}

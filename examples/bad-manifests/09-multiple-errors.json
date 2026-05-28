@@ -1,0 +1,21 @@
+{
+  "config": {},
+  "tests": [
+    {
+      "method": "FETCH"
+    },
+    {
+      "id": "dup",
+      "name": "A",
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {}
+    },
+    {
+      "id": "dup",
+      "name": "B",
+      "method": "POST",
+      "bodyType": "yaml"
+    }
+  ]
+}

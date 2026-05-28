@@ -162,6 +162,84 @@ function loadManifest(manifestPath) {
   }
 }
 
+const VALID_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
+const VALID_BODY_TYPES = ['json', 'form', 'text'];
+
+function validateManifest(manifest) {
+  const errors = [];
+
+  if (!manifest || typeof manifest !== 'object' || Array.isArray(manifest)) {
+    errors.push('Manifest must be a JSON object.');
+  }
+
+  if (manifest?.manifestVersion && manifest.manifestVersion !== SUPPORTED_MANIFEST_VERSION) {
+    errors.push(
+      `Unsupported manifestVersion ${manifest.manifestVersion}. Supported version is ${SUPPORTED_MANIFEST_VERSION}.`
+    );
+  }
+
+  if (!manifest?.config || typeof manifest.config !== 'object' || Array.isArray(manifest.config)) {
+    errors.push('Manifest requires config object.');
+  } else if (!manifest.config.baseUrl) {
+    errors.push('Manifest requires config.baseUrl.');
+  }
+
+  if (!Array.isArray(manifest?.tests)) {
+    errors.push('Manifest requires tests array.');
+  } else {
+    validateTests(manifest.tests, errors);
+  }
+
+  if (errors.length > 0) {
+    throw new Error(`Manifest validation failed:\n- ${errors.join('\n- ')}`);
+  }
+}
+
+function validateTests(tests, errors) {
+  const seenIds = new Set();
+
+  tests.forEach((test, index) => {
+    const prefix = `tests[${index}]`;
+
+    if (!test || typeof test !== 'object' || Array.isArray(test)) {
+      errors.push(`${prefix} must be an object.`);
+      return;
+    }
+
+    if (test.id) {
+      if (seenIds.has(test.id)) {
+        errors.push(`${prefix}.id duplicates "${test.id}".`);
+      }
+      seenIds.add(test.id);
+    }
+
+    if (!test.name) {
+      errors.push(`${prefix} missing name.`);
+    }
+
+    if (!test.method) {
+      errors.push(`${prefix} missing method.`);
+    } else if (!VALID_METHODS.includes(String(test.method).toUpperCase())) {
+      errors.push(`${prefix}.method unsupported HTTP method: ${test.method}.`);
+    }
+
+    if (!test.path) {
+      errors.push(`${prefix} missing path.`);
+    } else if (typeof test.path !== 'string') {
+      errors.push(`${prefix}.path must be a string.`);
+    }
+
+    if (!test.expect || typeof test.expect !== 'object' || Array.isArray(test.expect)) {
+      errors.push(`${prefix} missing expect object.`);
+    }
+
+    if (test.bodyType && !VALID_BODY_TYPES.includes(test.bodyType)) {
+      errors.push(`${prefix}.bodyType unsupported value: ${test.bodyType}.`);
+    }
+  });
+}
+
+/*
 function validateManifest(manifest) {
   if (!manifest || typeof manifest !== 'object') {
     throw new Error('Manifest must be a JSON object.');
@@ -185,7 +263,7 @@ function validateManifest(manifest) {
     throw new Error('Manifest requires tests array.');
   }
 }
-
+*/
 async function runSuite(manifest) {
   const results = [];
   const tests = manifest.tests || [];

@@ -1,0 +1,25 @@
+{
+  "config": {
+    "baseUrl": "http://localhost:3000"
+  },
+  "tests": [
+    {
+      "id": "same-id",
+      "name": "Test 1",
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {
+        "status": 200
+      }
+    },
+    {
+      "id": "same-id",
+      "name": "Test 2",
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {
+        "status": 200
+      }
+    }
+  ]
+}

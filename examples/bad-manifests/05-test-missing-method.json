@@ -1,0 +1,14 @@
+{
+  "config": {
+    "baseUrl": "http://localhost:3000"
+  },
+  "tests": [
+    {
+      "name": "Missing method",
+      "path": "/tasks",
+      "expect": {
+        "status": 200
+      }
+    }
+  ]
+}
