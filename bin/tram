@@ -23,15 +23,13 @@ const { evaluateExpectations } = require('../lib/assertions');
 const SUPPORTED_MANIFEST_VERSION = '0.1';
 
 async function main() {
-  const args = parseArgs(process.argv.slice(2));
-
-  if (!args.manifestPath) {
-    printUsage();
-    process.exit(1);
-  }
-
   try {
-    const manifest = loadManifest(args.manifestPath);
+    const args = parseArgs(process.argv.slice(2));
+    const manifestPath = validateManifestPath(args.manifestPath);
+
+    validateReportPath(args.reportPath);
+
+    const manifest = loadManifest(manifestPath);
     validateManifest(manifest);
 
     const suiteResult = await runSuite(manifest);
@@ -56,8 +54,18 @@ function parseArgs(argv) {
     reportPath: null
   };
 
+  if (argv.length === 0) {
+    printUsage();
+    process.exit(1);
+  }
+
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
+
+    if (arg === '--help' || arg === '-h') {
+      printUsage();
+      process.exit(0);
+    }
 
     if (arg === '--verbose' || arg === '-v') {
       args.verbose = true;
@@ -65,16 +73,14 @@ function parseArgs(argv) {
     }
 
     if (arg === '--report' || arg === '-r') {
-      const reportPath = argv[i + 1];
-      if (!reportPath) throw new Error('--report requires a file path.');
+      const reportPath = requireOptionValue(arg, argv[i + 1]);
       args.reportPath = reportPath;
       i += 1;
       continue;
     }
 
-    if (arg === '--help' || arg === '-h') {
-      printUsage();
-      process.exit(0);
+    if (arg.startsWith('-')) {
+      throw new Error(`Unknown option: ${arg}`);
     }
 
     if (!args.manifestPath) {
@@ -82,28 +88,75 @@ function parseArgs(argv) {
       continue;
     }
 
-    throw new Error(`Unknown argument: ${arg}`);
+    throw new Error(`Unexpected argument: ${arg}`);
+  }
+
+  if (!args.manifestPath) {
+    throw new Error('Missing manifest file path.');
   }
 
   return args;
 }
 
+function requireOptionValue(option, value) {
+  if (!value || value.startsWith('-')) {
+    throw new Error(`${option} requires a file path.`);
+  }
+
+  return value;
+}
+
 function printUsage() {
   console.log('Usage:');
+  console.log('  tram <manifest-file> [options]');
+  console.log('');
+  console.log('Options:');
+  console.log('  -v, --verbose          Print passing assertion details');
+  console.log('  -r, --report <file>    Write JSON report to file');
+  console.log('  -h, --help             Show help');
+  console.log('');
+  console.log('Examples:');
   console.log('  tram api-tests.json');
   console.log('  tram api-tests.json --verbose');
   console.log('  tram api-tests.json --report results.json');
 }
 
-function loadManifest(manifestPath) {
+function validateManifestPath(manifestPath) {
   const fullPath = path.resolve(process.cwd(), manifestPath);
 
   if (!fs.existsSync(fullPath)) {
     throw new Error(`Manifest file not found: ${fullPath}`);
   }
 
+  const stats = fs.statSync(fullPath);
+
+  if (!stats.isFile()) {
+    throw new Error(`Manifest path is not a file: ${fullPath}`);
+  }
+
+  return fullPath;
+}
+
+function validateReportPath(reportPath) {
+  if (!reportPath) return;
+
+  const fullPath = path.resolve(process.cwd(), reportPath);
+  const directory = path.dirname(fullPath);
+
+  if (!fs.existsSync(directory)) {
+    throw new Error(`Report directory does not exist: ${directory}`);
+  }
+
+  const stats = fs.statSync(directory);
+
+  if (!stats.isDirectory()) {
+    throw new Error(`Report path parent is not a directory: ${directory}`);
+  }
+}
+
+function loadManifest(manifestPath) {
   try {
-    return JSON.parse(fs.readFileSync(fullPath, 'utf8'));
+    return JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   } catch (error) {
     throw new Error(`Unable to read manifest JSON: ${error.message}`);
   }
