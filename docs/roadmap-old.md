@@ -46,23 +46,18 @@ TRAM currently includes:
 * path vs property traversal distinction
 * npm CLI packaging
 * executable `tram` CLI runner
-* CLI argument hardening
-* pre-run manifest validation
-* accumulated validation error reporting
-* supported method/bodyType validation
-* authoring/runtime/assertion failure separation
 * sample CRUD-style task API
 
 The current implementation has been validated against a real Node.js HTTP API using layered behavioral manifests spanning:
 
-| Level | Focus |
-|---|---|
-| 0 | Surface |
-| 1 | Shape |
-| 2 | Safe behavior |
-| 3 | Unsafe behavior |
-| 4 | Workflow |
-| 5 | Governance |
+```text
+Level 0 — Surface
+Level 1 — Shape
+Level 2 — Safe behavior
+Level 3 — Unsafe behavior
+Level 4 — Workflow
+Level 5 — Governance
+```
 
 ---
 
@@ -85,16 +80,6 @@ Reporting should help users quickly understand failures.
 ## Stable executable core
 
 The runner and assertion library should remain lightweight and predictable.
-
-TRAM increasingly distinguishes between:
-
-* manifest correctness
-* runtime execution
-* behavioral verification
-
-## Declarative sequencing over scripting
-
-TRAM models workflows through visible sequential behavioral declarations rather than embedded procedural scripting.
 
 ## Coaching-oriented design
 
@@ -197,8 +182,6 @@ Possible future additions:
 * timing summaries
 * assertion statistics
 * test filtering by tag
-* validation-phase diagnostics
-* workflow-phase summaries
 * workflow continuity summaries
 * governance-focused failure grouping
 
@@ -241,7 +224,7 @@ data.*
 Future namespaces under consideration:
 
 ```text
-capture.*
+captures.*
 env.*
 ```
 
@@ -356,7 +339,7 @@ The following ideas are intentionally postponed:
 ```text
 schema validation
 parallel execution
-dedicated setup/teardown lifecycle sections
+setup/teardown orchestration
 custom scripting
 plugin systems
 external assertion libraries
