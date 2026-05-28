@@ -205,8 +205,6 @@ Assertion manifests offer one possible stabilizing layer. They provide a shared 
 
 Recent workflow-oriented manifest patterns also allow TRAM assertions to model accumulated operational narratives rather than isolated endpoint checks.
 
-TRAM models these workflows through declarative sequencing rather than embedded scripting. Requests execute sequentially in manifest order while preserving readable operational intent as a first-class artifact.
-
 A workflow manifest may:
 
 * create resources
@@ -218,23 +216,11 @@ This allows operational continuity itself to become directly inspectable.
 
 This is not primarily about replacing human judgment with automation. The manifest creates a visible representation of expected operational behavior that humans and machines can collaborate around. Assertions become reviewable objects rather than hidden details buried inside application code or testing frameworks.
 
-Recent additions to the TRAM runtime also distinguish between:
-
-* manifest authoring failures
-* request/runtime failures
-* behavioral assertion failures
-
-Malformed manifests now fail validation before any HTTP requests execute. This preserves a stronger boundary between operational intent and runtime behavior. A malformed manifest represents an authoring defect rather than an API failure.
-
-That distinction becomes increasingly important in generated systems where assertions themselves may be produced collaboratively by humans and AI assistants. Validation helps preserve the manifest as a trustworthy operational artifact rather than treating it as an opaque execution script.
-
 That collaborative aspect matters. Many software artifacts are optimized either for machines or for humans, but not both simultaneously. Assertion manifests occupy an interesting middle space. They remain executable while still exposing operational intent in a relatively direct form.
 
 ## Behavior as a first-class operational layer
 
 The broader architectural question underneath TRAM is whether behavior itself should become a first-class operational layer in distributed systems. APIs already expose structural contracts through schemas and interface descriptions. Hypermedia systems expose runtime affordances through messages. Assertion manifests extend this progression by exposing behavioral expectations as portable, inspectable artifacts independent of implementation details.
-
-The runtime validation model reinforces this separation by treating manifest correctness as a distinct concern from API correctness.
 
 TRAM also supports stable run-scoped interpolation values, allowing related behavioral interactions to share state across requests without introducing custom scripting. This keeps multi-step workflows explicit, reviewable, and manifest-driven.
 

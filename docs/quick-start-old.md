@@ -18,14 +18,25 @@ TRAM treats API testing as behavioral modeling rather than framework scripting.
 
 TRAM organizes behavioral testing into six progressive layers.
 
-| Level | Focus | Question |
-|---|---|---|
-| 0 | Surface | Can the API be reached? |
-| 1 | Shape | Do resources and affordances appear correctly? |
-| 2 | Safe behavior | Do navigation, lookup, filtering, and query interactions behave correctly? |
-| 3 | Unsafe behavior | Do isolated state-changing actions behave correctly? |
-| 4 | Workflow | Can meaningful operational narratives be completed successfully? |
-| 5 | Governance | Are policies, constraints, and semantic rules enforced correctly? |
+```text
+Level 0 — Surface
+Can the API be reached?
+
+Level 1 — Shape
+Do resources and affordances appear correctly?
+
+Level 2 — Safe behavior
+Do navigation, lookup, filtering, and query interactions behave correctly?
+
+Level 3 — Unsafe behavior
+Do isolated state-changing actions behave correctly?
+
+Level 4 — Workflow
+Can meaningful operational narratives be completed successfully?
+
+Level 5 — Governance
+Are policies, constraints, and semantic rules enforced correctly?
+```
 
 The layers are additive.
 
@@ -85,8 +96,6 @@ The sample project follows a simple execution model:
 sample API
         ↓
 TRAM manifest
-        ↓
-manifest validation
         ↓
 TRAM runner
         ↓
@@ -159,26 +168,29 @@ Summary: 9 passed, 0 failed, 0 skipped, 9 total
 At this point, TRAM has:
 
 * loaded the manifest
-* validated manifest structure
 * initialized shared runtime data
 * executed each request
 * evaluated assertions
 * generated behavioral results
 
-Before executing HTTP requests, TRAM validates:
-
-* manifest structure
-* required fields
-* supported HTTP methods
-* supported body types
-* duplicate test IDs
-
-Invalid manifests fail before execution begins.
-
-The sample manifest includes tests spanning several behavioral layers, from endpoint availability through workflow-oriented validation.
-
 ---
 
+# Understand layered progression
+
+A common layered progression:
+
+```text
+Level 0 — endpoint availability
+Level 1 — representation structure
+Level 2 — lookup and filtering behavior
+Level 3 — isolated mutation behavior
+Level 4 — workflow continuity
+Level 5 — governance and constraints
+```
+
+This layered structure helps narrow debugging scope while preserving readable behavioral intent.
+
+---
 
 # Inspect the manifest
 
@@ -627,8 +639,6 @@ schema validation
 
 TRAM manifests can model operational workflows rather than isolated endpoint checks.
 
-TRAM models workflows through declarative sequencing rather than embedded scripting.
-
 A workflow manifest may:
 
 * create resources
@@ -710,8 +720,6 @@ This generates a detailed JSON report containing:
 * response details
 * assertion results
 * pass/fail summaries
-
-Only successfully validated manifests generate execution reports.
 
 ---
 
@@ -875,7 +883,7 @@ The current design intentionally avoids:
 ```text
 custom scripting
 schema engines
-scripted setup/teardown orchestration
+setup/teardown orchestration
 hidden runtime behavior
 ```
 

@@ -19,22 +19,31 @@ The manifest acts as both:
 
 TRAM manifests are designed to support layered behavioral modeling for HTTP APIs.
 
-TRAM manifests are intended to remain readable, reviewable operational artifacts even as implementation code evolves.
-
 ---
 
 # Behavioral layering
 
 TRAM organizes behavioral testing into six progressive layers.
 
-| Level | Focus | Question |
-|---|---|---|
-| 0 | Surface | Can the API be reached? |
-| 1 | Shape | Do resources and affordances appear correctly? |
-| 2 | Safe behavior | Do navigation, lookup, filtering, and query interactions behave correctly? |
-| 3 | Unsafe behavior | Do isolated state-changing actions behave correctly? |
-| 4 | Workflow | Can meaningful operational narratives be completed successfully? |
-| 5 | Governance | Are policies, constraints, permissions, and semantic rules enforced correctly? |
+```text
+Level 0 — Surface
+Can the API be reached?
+
+Level 1 — Shape
+Do resources and affordances appear correctly?
+
+Level 2 — Safe behavior
+Do navigation, lookup, filtering, and query interactions behave correctly?
+
+Level 3 — Unsafe behavior
+Do isolated state-changing actions behave correctly?
+
+Level 4 — Workflow
+Can meaningful operational narratives be completed successfully?
+
+Level 5 — Governance
+Are policies, constraints, permissions, and semantic rules enforced correctly?
+```
 
 The layers are additive.
 
@@ -62,20 +71,6 @@ Machine-readable report generation:
 
 ```bash
 tram api-tests.json --report results.json
-```
-
-Reports are generated only for successfully validated manifests.
-
-Typical execution flow:
-
-```text
-manifest load
-        ↓
-manifest validation
-        ↓
-runtime execution
-        ↓
-assertion evaluation
 ```
 
 ---
@@ -134,29 +129,6 @@ tram-level-5-governance-manifest.json
 | `config` | Yes | Runner configuration |
 | `data` | No | Shared request/test data |
 | `tests` | Yes | Array of test definitions |
-
----
-
-# Manifest validation
-
-TRAM validates manifests before executing HTTP requests.
-
-Validation currently includes:
-
-* manifest JSON structure
-* required top-level properties
-* required test properties
-* supported HTTP methods
-* supported `bodyType` values
-* duplicate test IDs
-
-Invalid manifests fail before execution begins.
-
-TRAM distinguishes between:
-
-* manifest authoring failures
-* request/runtime failures
-* behavioral assertion failures
 
 ---
 
@@ -225,7 +197,6 @@ Example:
 
 | Property | Required | Description |
 |---|---|---|
-| `id` | No | Stable unique identifier for the test |
 | `name` | Yes | Human-readable test name |
 | `description` | No | Additional test explanation |
 | `enabled` | No | Enable/disable test execution. Default: `true` |
@@ -237,24 +208,6 @@ Example:
 | `bodyType` | No | Request body encoding |
 | `body` | No | Request body or `$data` reference |
 | `expect` | Yes | Expected response assertions |
-
-If present, test `id` values must be unique within a manifest.
-
-Tests execute sequentially in manifest order.
-
----
-
-# Supported HTTP methods
-
-```text
-GET
-POST
-PUT
-PATCH
-DELETE
-HEAD
-OPTIONS
-```
 
 ---
 
@@ -376,8 +329,6 @@ Correct string interpolation:
 ```json
 "path": "/tasks/${data.knownTaskId}"
 ```
-
-Unresolved interpolation references fail manifest execution.
 
 ---
 
@@ -1032,8 +983,6 @@ Additional example:
 
 TRAM manifests can model operational workflows rather than isolated endpoint checks.
 
-TRAM models workflows through declarative sequencing rather than embedded scripting.
-
 A workflow manifest may:
 
 * create resources
@@ -1120,7 +1069,7 @@ The current specification intentionally excludes:
 
 ```text
 custom scripting
-dedicated setup/teardown orchestration
+setup/teardown orchestration
 parallel execution
 schema engines
 plugin systems
