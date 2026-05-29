@@ -157,6 +157,137 @@ Future work may include:
 
 Workflow modeling is increasingly becoming a core architectural capability within TRAM rather than merely a convenience feature.
 
+## Named Endpoint Support
+
+### Motivation
+
+Current TRAM manifests assume all requests execute against a single `baseUrl` defined in configuration. This works well for single-service APIs but limits the ability to model workflows that span multiple services.
+
+As TRAM expands into workflow and governance testing, manifests should be able to express that a request targets a particular service without embedding deployment-specific URLs in the manifest itself.
+
+The goal is to preserve executable intent while keeping infrastructure details in configuration.
+
+### Proposed Configuration
+
+Add an optional `endpoints` collection to the configuration file.
+
+```json
+{
+  "baseUrl": "http://localhost:3000",
+  "endpoints": {
+    "auth": "http://localhost:5000",
+    "billing": "http://localhost:4000",
+    "notifications": "http://localhost:6000"
+  }
+}
+```
+
+The existing `baseUrl` remains unchanged and continues to serve as the default target for requests that do not specify an endpoint.
+
+### Proposed Manifest Extension
+
+Add an optional `endpoint` property to the `request` object.
+
+```json
+{
+  "request": {
+    "endpoint": "auth",
+    "method": "POST",
+    "path": "/login"
+  }
+}
+```
+
+When omitted, the request uses the configured `baseUrl`.
+
+```json
+{
+  "request": {
+    "method": "GET",
+    "path": "/tasks"
+  }
+}
+```
+
+### Resolution Rules
+
+Request execution follows these rules:
+
+1. If `request.endpoint` is present, resolve the corresponding URL root from `config.endpoints`.
+2. If `request.endpoint` is absent, use `config.baseUrl`.
+3. If an endpoint name cannot be resolved, execution fails with a descriptive error.
+
+Example:
+
+```text
+Unknown endpoint "authz".
+Known endpoints: auth, billing, notifications
+```
+
+### Validation Changes
+
+Manifest validation:
+
+* `request.endpoint` is optional.
+* When present, it must be a string.
+
+Configuration validation:
+
+* `endpoints` is optional.
+* When present, it must be an object.
+* Each endpoint value must be a string URL root.
+
+### Benefits
+
+* Supports cross-service workflow testing.
+* Keeps deployment details out of manifests.
+* Preserves backward compatibility.
+* Maintains separation between behavioral intent and runtime configuration.
+* Improves support for workflow and governance scenarios where multiple services participate in a single business process.
+
+### Example Workflow
+
+```json
+{
+  "request": {
+    "endpoint": "auth",
+    "method": "POST",
+    "path": "/login"
+  }
+}
+```
+
+```json
+{
+  "request": {
+    "endpoint": "tasks",
+    "method": "POST",
+    "path": "/tasks"
+  }
+}
+```
+
+```json
+{
+  "request": {
+    "endpoint": "notifications",
+    "method": "POST",
+    "path": "/messages"
+  }
+}
+```
+
+This allows manifests to express relationships between services while leaving deployment concerns in configuration.
+
+### Relationship to TRAM Layers
+
+This enhancement is primarily intended to support Level 4 (Workflow) and Level 5 (Governance) testing.
+
+Levels 0–3 focus on validating the behavior of individual resources and interactions. Named endpoint support enables manifests to describe business processes that span multiple services while preserving the same declarative testing model.
+
+The feature does not introduce new assertion types or alter existing manifest semantics. Instead, it expands the execution environment so that workflow-oriented manifests can express service boundaries without exposing infrastructure details.
+
+
 ---
 
 ## Governance-oriented assertions
