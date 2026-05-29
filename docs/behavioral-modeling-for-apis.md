@@ -1,6 +1,6 @@
 # Executable Behavioral Modeling for APIs
 
-## A layered approach to modeling observable API behavior
+_A layered approach to modeling observable API behavior_
 
 Most API test suites accumulate over time. A smoke test is added to verify deployment. A schema check appears later. Workflow scenarios arrive after production failures. Authorization checks are folded in after a security review. Eventually the entire collection becomes difficult to reason about because unrelated concerns sit side-by-side with little distinction between them.
 
