@@ -16,27 +16,20 @@ The goal here is not to define a formal testing taxonomy. The layers described b
 
 The layers described in this document can be viewed as a progression from basic API capability verification toward operational and policy modeling.
 
-```text
-Level 0 — Surface
-Can the API be reached?
-
-Level 1 — Shape
-Do resources and affordances appear correctly?
-
-Level 2 — Safe behavior
-Do navigation and query interactions behave correctly?
-
-Level 3 — Unsafe behavior
-Do isolated state-changing actions behave correctly?
-
-Level 4 — Workflow
-Can meaningful operational narratives be completed successfully?
-
-Level 5 — Governance
-Are policies, constraints, permissions, and semantic rules enforced correctly?
-```
+| Level | Name            | Primary Question                                                               | Focus          |
+| ----- | --------------- | ------------------------------------------------------------------------------ | -------------- |
+| 0     | Surface         | Can the API be reached?                                                        | Availability   |
+| 1     | Shape           | Do resources and affordances appear correctly?                                 | Representation |
+| 2     | Safe behavior   | Do navigation and query interactions behave correctly?                         | Observation    |
+| 3     | Unsafe behavior | Do isolated state-changing actions behave correctly?                           | Mutation       |
+| 4     | Workflow        | Can meaningful operational narratives be completed successfully?               | Continuity     |
+| 5     | Governance      | Are policies, constraints, permissions, and semantic rules enforced correctly? | Policy         |
 
 Levels 0–3 primarily verify observable API capability. Workflow and governance layers move closer to operational narratives, policy modeling, domain constraints, and business intent.
+
+Another useful way to view the progression is as a gradual expansion of concern. Surface and shape focus on what the API exposes. Safe and unsafe behavior focus on how the API behaves. Workflow and governance focus on whether the API supports meaningful operational goals while respecting domain rules and organizational constraints.
+
+Viewed this way, each layer builds upon the layers beneath it. Higher layers do not replace lower layers; they depend on them. A workflow assertion assumes that routes exist, representations are recognizable, and state-changing actions function correctly. Governance assertions often span all preceding layers, expressing the rules that determine which behaviors are legitimate within a particular domain.
 
 ## Two dimensions of TRAM assertions
 
