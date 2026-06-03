@@ -2,13 +2,34 @@
 
 **TRAM** (Test Runner for Assertion Manifests) is a lightweight, dependency-free HTTP API behavioral testing platform built using Node.js.
 
-TRAM models API behavior as executable assertions that produce evidence. Its goal is to verify that observable system behavior continues to align with intended operational outcomes. 
 
-Rather than focusing on implementation details, TRAM focuses on what can be observed at the API surface: the resources, actions, workflows, and rules that define how a system behaves. Assertions are organized into progressively richer layers, moving from endpoint availability and response structure to business behavior, workflows, and governance constraints. This allows teams to express operational intent as a durable behavioral model that remains valuable even as implementations evolve. 
 
 <table>
 <tr>
 <td valign="top">
+
+TRAM models API behavior as executable assertions that produce evidence. Its goal is to verify that observable system behavior continues to align with intended operational outcomes. 
+
+Rather than focusing on implementation details, TRAM focuses on what can be observed at the API surface: the resources, actions, workflows, and rules that define how a system behaves. Assertions are organized into progressively richer layers, moving from endpoint availability and response structure to business behavior, workflows, and governance constraints. This allows teams to express operational intent as a durable behavioral model that remains valuable even as implementations evolve. 
+
+</td>
+<td width="240" valign="top">
+
+<img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
+
+</td>
+</tr>
+</table>
+
+<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
+
+## Documentation
+
+* [Quick Start](docs/quick-start.md)
+* [Explainer](docs/explainer.md)
+* [Manifest Specification](docs/manifest-spec.md)
+* [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md)
+* [Roadmap](docs/roadmap.md)
 
 <p>TRAM combines:</p>
 
@@ -24,27 +45,6 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 <li>workflow-oriented behavioral validation</li>
 <li>an AI Coaching workflow focused on learning and augmentation rather than pure automation</li>
 </ul>
-
-</td>
-<td width="240" valign="top">
-
-<img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />
-
-</td>
-</tr>
-</table>
-
-<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
-
-TRAM treats API testing as behavioral modeling rather than framework scripting.
-
-## Documentation
-
-* [Quick Start](docs/quick-start.md)
-* [Explainer](docs/explainer.md)
-* [Manifest Specification](docs/manifest-spec.md)
-* [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md)
-* [Roadmap](docs/roadmap.md)
 
 ---
 
