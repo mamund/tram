@@ -872,5 +872,5 @@ Interfaces and manifest formats will evolve during v0.x development.
 Project repository:
 
 ```text
-https://github.com/mamund/2026-05-tram
+https://github.com/mamund/tram
 ```
