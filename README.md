@@ -327,6 +327,7 @@ Options:
 ```text
 -v, --verbose          Print passing assertion details
 -r, --report <file>    Write JSON report to file
+--validate             Validate the manifest without making HTTP requests
 -h, --help             Show help
 ```
 
@@ -361,6 +362,14 @@ Then run:
 ```bash
 tram api-tests.json
 ```
+
+Validate the manifest without contacting the sample API:
+
+```bash
+tram api-tests.json --validate
+```
+
+This performs structural validation of the manifest and exits without sending any HTTP requests.
 
 ---
 
@@ -747,7 +756,7 @@ Architectural [discussion](docs/explainer.md) of:
 
 ## Validation pipeline
 
-TRAM validates manifests before running HTTP requests.
+TRAM validates manifests before executing HTTP requests. Validation may also be invoked directly from the command line using the `--validate` option.
 
 Validation currently includes:
 
@@ -758,6 +767,14 @@ Validation currently includes:
 * supported HTTP methods
 * supported request body types
 * duplicate test IDs
+
+Example:
+
+```bash
+tram api-tests.json --validate
+```
+
+If the manifest is valid, TRAM reports success and exits without executing any requests. If validation fails, TRAM reports the validation errors and exits with a non-zero status.
 
 Invalid manifests fail before execution begins.
 
@@ -781,6 +798,8 @@ TRAM emphasizes:
 * detailed machine-readable reports
 
 The console output is intentionally concise by default.
+
+Manifest validation is treated as a first-class operation, allowing behavioral models to be reviewed independently of execution.
 
 ---
 
