@@ -31,7 +31,12 @@ async function main() {
 
     const manifest = loadManifest(manifestPath);
     validateManifest(manifest);
-
+  
+    if (args.validate) {
+      console.log("Manifest is valid. No HTTP requests were made.");
+      process.exit(0);
+    }
+    
     const suiteResult = await runSuite(manifest);
 
     printConsoleReport(suiteResult, { verbose: args.verbose });
@@ -51,6 +56,7 @@ function parseArgs(argv) {
   const args = {
     manifestPath: null,
     verbose: false,
+    validate: false,
     reportPath: null
   };
 
@@ -72,6 +78,11 @@ function parseArgs(argv) {
       continue;
     }
 
+    if (arg === "--validate") {
+      args.validate = true;
+      continue;
+    }
+    
     if (arg === '--report' || arg === '-r') {
       const reportPath = requireOptionValue(arg, argv[i + 1]);
       args.reportPath = reportPath;
