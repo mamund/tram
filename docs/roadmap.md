@@ -52,6 +52,7 @@ TRAM currently includes:
 * supported method/bodyType validation
 * authoring/runtime/assertion failure separation
 * sample CRUD-style task API
+* standalone manifest validation (--validate)
 
 The current implementation has been validated against a real Node.js HTTP API using layered behavioral manifests spanning:
 

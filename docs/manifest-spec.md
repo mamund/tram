@@ -52,6 +52,16 @@ Example:
 tram api-tests.json
 ```
 
+Manifest validation
+
+TRAM validates manifests before execution. Validation can also be invoked directly from the command line:
+
+```bash
+tram api-tests.json --validate
+```
+
+Validation checks manifest structure, required fields, supported request methods, request body types, duplicate test identifiers, and other structural constraints. Validation does not contact the target API.
+
 Verbose mode:
 
 ```bash

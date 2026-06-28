@@ -69,7 +69,15 @@ Windows:
 npm link
 ```
 
-Verify installation:
+Before executing a test suite, validate the manifest structure:
+
+```bash
+tram api-tests.json --validate
+```
+
+TRAM verifies the manifest and exits without making HTTP requests.
+
+Then run the suite:
 
 ```bash
 tram api-tests.json
