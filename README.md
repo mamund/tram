@@ -15,7 +15,7 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 </td>
 <td width="240" valign="top">
 
-<div style="texxt-align: center; display: block; margin: 0 auto;">
+<div style="text-align: center; display: block; margin: auto;">
 <img src="./docs/images/tram-logo.png" width="200" alt="TRAM (Test Runner for Assertion Manifests)" />  
 </div>
 
@@ -23,7 +23,7 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 </tr>
 </table>
 
-<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
+<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" style="text-align: center; display: block; margin: auto;" />
 
 ## Documentation
 
