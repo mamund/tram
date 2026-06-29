@@ -14,7 +14,7 @@ TRAM is still early-stage software. The current emphasis is not feature complete
 
 The roadmap reflects ideas and implementation pressure discovered during real usage of the sample runner and manifest system.
 
-Several core TRAM semantics are now operationally validated rather than purely exploratory. The project is increasingly evolving from a lightweight assertion runner into a layered behavioral modeling system for HTTP APIs.
+Several core TRAM semantics are now operationally validated rather than purely exploratory. The project is increasingly evolving from a lightweight assertion runner into a layered behavioral modeling system for observable HTTP API behavior.
 
 ---
 
@@ -27,9 +27,9 @@ TRAM currently includes:
 * manifest-driven behavioral testing
 * layered behavioral modeling (Levels 0–5)
 * happy-path and sad-path support
-* workflow-oriented behavioral validation
+* workflow-oriented behavioral modeling
 * governance-oriented behavioral assertions
-* accumulated-state workflow verification
+* accumulated-state workflow modeling
 * JSON/form/text request body support
 * machine-readable reporting
 * collection assertions (`each`)
@@ -64,6 +64,18 @@ The current implementation has been validated against a real Node.js HTTP API us
 | 3 | Unsafe behavior |
 | 4 | Workflow |
 | 5 | Governance |
+
+The behavioral levels build progressively. Early levels verify observable responses in isolation. Later levels introduce continuity through captured observations, workflow progression through hypermedia affordances, and governance through observable policy behavior.
+
+| Level | Primary behavioral capability |
+| ----- | ---------------------- |
+| 0     | Observation            |
+| 1     | Structural description |
+| 2     | Navigation             |
+| 3     | Captured observations  |
+| 4     | Hypermedia progression |
+| 5     | Governance validation  |
+
 
 ---
 
@@ -143,13 +155,15 @@ This work will likely evolve incrementally in response to real-world usage.
 
 Recent manifest patterns now support executable operational workflows including:
 
+* captured observations
 * accumulated state verification
-* workflow-scoped runtime values
 * continuity validation
 * multi-step operational narratives
 
-Future work may include:
+Future work will focus on:
 
+* declarative capture of observed responses
+* captured observation reuse
 * workflow visualization
 * workflow diffing
 * continuity diagnostics
@@ -288,6 +302,7 @@ Levels 0–3 focus on validating the behavior of individual resources and intera
 
 The feature does not introduce new assertion types or alter existing manifest semantics. Instead, it expands the execution environment so that workflow-oriented manifests can express service boundaries without exposing infrastructure details.
 
+Named endpoint support also provides the foundation for future hypermedia traversal across service boundaries.
 
 ---
 
@@ -367,14 +382,14 @@ Possible future directions include:
 The current manifest system already supports:
 
 ```text
-data.*
+data.* -- authored input
 ```
 
 Future namespaces under consideration:
 
 ```text
-capture.*
-env.*
+capture.* -- captured observations
+env.* -- execution environment
 ```
 
 Potential uses include:
@@ -413,8 +428,9 @@ The coaching layer now also includes:
 
 * layered manifest progression
 * traversal-aware guidance
-* workflow continuity coaching
-* governance distinction guidance
+* capture guidance
+* hypermedia workflow guidance
+* governance guidance
 * runtime interpolation guidance
 * manifest debugging assistance
 * workflow-oriented review patterns
@@ -494,7 +510,6 @@ plugin systems
 external assertion libraries
 framework adapters
 browser automation
-capture-variable mutation systems
 ```
 
 The current project emphasis remains:
@@ -534,6 +549,8 @@ predictability
 reviewability
 human understanding
 ```
+
+Execution is one outcome of a behavioral model. TRAM is increasingly focused on helping authors create, validate, execute, and review those models while preserving observable API behavior as the primary source of evidence. Validation establishes that the behavioral model is internally consistent. Execution gathers evidence about that model by observing a running API.
 
 The long-term direction is not merely a larger assertion engine.
 
