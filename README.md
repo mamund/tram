@@ -23,7 +23,9 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 </tr>
 </table>
 
-<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" style="text-align: center; display: block; margin: auto;" />
+<div style="text-align: center; display: block; margin: auto;">
+<img src="./docs/images/tram-test-run.png" alt="TRAM screenshot of test run" />
+</div>
 
 ## Documentation
 
