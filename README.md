@@ -374,14 +374,14 @@ TRAM requires Node.js 18 or later and has no runtime dependencies.
 Install the command globally:
 
 ```bash
-npm install --global tram@0.1.0
+npm install --global @mamund/tram@beta
 tram --help
 ```
 
 Alternatively, add TRAM to an existing Node.js project:
 
 ```bash
-npm install --save-dev tram@0.1.0
+npm install --save-dev @mamund/tram@beta
 npx tram --help
 ```
 

@@ -9,7 +9,7 @@ TRAM executes a JSON manifest containing HTTP requests and assertions. It record
 Once the beta is published to npm, install it with:
 
 ```bash
-npm install -g tram@beta
+npm install -g @mamund/tram@beta
 ```
 
 Check the command:
