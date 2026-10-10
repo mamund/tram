@@ -1053,11 +1053,17 @@ function redactHeaderValue(name, value) {
   return value;
 }
 
+function redactHeaders(headers) {
+  return Object.fromEntries(
+    Object.entries(headers || {}).map(([name, value]) => [name, redactHeaderValue(name, value)])
+  );
+}
+
 function requestForReport(request) {
   return {
     method: request.method,
     url: request.url,
-    headers: request.headers,
+    headers: redactHeaders(request.headers),
     bodyType: request.bodyType,
     body: request.body ? safeParseRequestBody(request.body, request.bodyType) : null
   };
@@ -1082,7 +1088,7 @@ function safeParseRequestBody(value, bodyType) {
 function responseForReport(response) {
   return {
     status: response.status,
-    headers: response.headers,
+    headers: redactHeaders(response.headers),
     body: response.body,
     rawBody: response.rawBody
   };

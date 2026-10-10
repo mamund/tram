@@ -58,11 +58,15 @@ test('HTTP transcript redacts credential headers',async()=>{
   assert.match(x.transcript,/set-cookie: \[redacted\]/i);
   for(const secret of ['super-secret','api-secret','request-secret','secret-cookie'])assert.doesNotMatch(x.transcript,new RegExp(secret));
 });
-test('JSON report currently retains sensitive header values (known beta issue)',async()=>{
+test('JSON report redacts sensitive request and response headers',async()=>{
   const x=await exercise([{headers:{Authorization:'Bearer super-secret','x-api-key':'api-secret'}}]);
   assert.equal(x.result.code,0,x.result.stderr);
   const raw=JSON.stringify(x.report);
-  assert.match(raw,/super-secret/);assert.match(raw,/api-secret/);assert.match(raw,/secret-cookie/);
+  assert.doesNotMatch(raw,/super-secret|api-secret|secret-cookie/);
+  assert.match(raw,/\[redacted\]/);
+  assert.equal(x.report.results[0].request.headers.Authorization,'[redacted]');
+  assert.equal(x.report.results[0].request.headers['x-api-key'],'[redacted]');
+  assert.equal(x.report.results[0].response.headers['set-cookie'],'[redacted]');
 });
 test('invalid report directory is rejected before any HTTP request',async()=>{
   const x=await exercise([{}],{reportPath:path.join(os.tmpdir(),'tram-nonexistent-dir-987654321','report.json')});
