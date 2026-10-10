@@ -10,7 +10,9 @@
     "lib": "lib"
   },
   "scripts": {
-    "test": "node --test test/*.test.js"
+    "test": "node --test test/*.test.js",
+    "test:integration": "node test/tasks-integration.js",
+    "test:all": "npm test && npm run test:integration"
   },
   "repository": {
     "type": "git",
@@ -34,6 +36,7 @@
     "bin/",
     "lib/assertions.js",
     "docs/quick-start.md",
+    "docs/tasks-api-tutorial.md",
     "docs/explainer.md",
     "docs/manifest-spec.md",
     "docs/behavioral-modeling-for-apis.md",
