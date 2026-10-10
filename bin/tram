@@ -374,10 +374,11 @@ async function runTest({ manifest, runtimeData, runtimeCapture, test, index }) {
 
   validateTest(test, index);
 
-  const request = buildRequest({ manifest, runtimeData, runtimeCapture, test });
   const started = Date.now();
+  let request = null;
 
   try {
+    request = buildRequest({ manifest, runtimeData, runtimeCapture, test });
     const response = await executeRequest(request, manifest.config.timeoutMs);
     const durationMs = Date.now() - started;
     const resolvedExpect = resolveRuntimeTokens(
@@ -423,12 +424,12 @@ async function runTest({ manifest, runtimeData, runtimeCapture, test, index }) {
       type: test.type || null,
       tags: Array.isArray(test.tags) ? test.tags : [],
       rationale: test.rationale || null,
-      method: request.method,
-      path: request.path,
-      url: request.url,
+      method: request ? request.method : (test.method || null),
+      path: request ? request.path : (test.path || null),
+      url: request ? request.url : null,
       status: null,
       durationMs,
-      request: requestForReport(request),
+      request: request ? requestForReport(request) : null,
       response: null,
       assertions: [
         {

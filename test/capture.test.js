@@ -59,8 +59,8 @@ test('failed expectations prevent capture from being applied',async()=>{
   const x=await exercise([{expect:{status:201},capture:{id:'body.id'}}]);
   assert.equal(x.result.code,1);assert.ok(x.report);assert.doesNotMatch(JSON.stringify(x.report),/Captured id from/);
 });
-test('missing capture reference aborts before report generation (known issue)',async()=>{
+test('missing capture reference produces structured failure evidence',async()=>{
   const x=await exercise([{body:{id:'$capture.unknown'}}]);
-  assert.equal(x.result.code,1);assert.equal(x.requests.length,0);assert.equal(x.report,null);
-  assert.match(x.result.stderr,/Capture reference not found/);
+  assert.equal(x.result.code,1);assert.equal(x.requests.length,0);assert.ok(x.report);assert.equal(x.report.summary.failed,1);
+  assert.match(JSON.stringify(x.report.results[0].assertions),/Capture reference not found/);
 });

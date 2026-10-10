@@ -83,17 +83,22 @@ test('unknown built-in token remains literal', async()=>{
   assert.equal(x.requests[0].body.value,'${unrecognizedToken}');
 });
 
-test('missing $data reference aborts execution before report generation', async()=>{
+test('missing $data reference produces structured failure evidence', async()=>{
   const x=await exercise({},[{body:{value:'$data.missing'}}]);
   assert.equal(x.result.code,1);
   assert.equal(x.requests.length,0);
-  // Currently buildRequest throws before the runTest catch block, so no report is written.
-  assert.match(x.result.stderr,/Data reference not found/);
+  assert.ok(x.report);
+  assert.equal(x.report.summary.failed,1);
+  assert.equal(x.report.results[0].passed,false);
+  assert.equal(x.report.results[0].request,null);
+  assert.match(JSON.stringify(x.report.results[0].assertions),/Data reference not found/);
 });
 
 test('missing embedded data reference fails before sending request', async()=>{
   const x=await exercise({},[{path:'/items/${data.missing}'}]);
   assert.equal(x.result.code,1);
   assert.equal(x.requests.length,0);
-  assert.match(x.result.stderr,/Data reference not found/);
+  assert.ok(x.report);
+  assert.equal(x.report.summary.failed,1);
+  assert.match(JSON.stringify(x.report.results[0].assertions),/Data reference not found/);
 });
