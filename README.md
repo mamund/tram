@@ -396,7 +396,7 @@ Execute a manifest and save the resulting evidence:
 tram api-tests.json --report results.json --transcript transcript.http
 ```
 
-The manifest is supplied by your project; the npm package does not install a sample API or sample manifest. See the [repository quick start](docs/quick-start.md) for the sample workflow.
+The manifest is supplied by your project; the npm package does not install a sample API or sample manifest. Start with the [public API quick start](docs/quick-start.md). The repository also contains a local Tasks API example for more advanced testing.
 
 ### Local development setup
 
