@@ -25,6 +25,9 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 
 ## Documentation
 
+* [Beta status and limitations](docs/beta-status.md)
+* [Changelog](CHANGELOG.md)
+
 * [Quick Start](docs/quick-start.md)
 * [Explainer](docs/explainer.md)
 * [Manifest Specification](docs/manifest-spec.md)
@@ -150,7 +153,7 @@ portable, executable, and reviewable?**_
 
 The core artifact is the manifest:
 
-[api-tests.json](examples/api-tests.json)
+[`api-tests.json`](https://github.com/mamund/tram/blob/main/api-tests.json)
 
 The manifest defines:
 
@@ -274,7 +277,7 @@ TRAM organizes behavioral testing into six progressive layers.
 | 5 | Governance | Are policies, constraints, and semantic rules enforced correctly? |
 
 
-<img src="./docs/tram-graphics/tram-testing-pyramid-simple.png" width="75%" alt="TRAM Testing Maturity Pyramid" />
+See [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md) for the six-layer model.
 
 The layers are additive rather than replacement-oriented. Each layer narrows debugging scope while preserving readable behavioral intent.
 
@@ -341,6 +344,8 @@ Current implementation includes:
 
 ## CLI usage
 
+The CLI accepts a manifest filename followed by options; `validate` and `run` are not separate subcommands.
+
 ```bash
 tram <manifest-file> [options]
 ```
@@ -351,13 +356,15 @@ Options:
 -v, --verbose              Print passing assertion details
 -r, --report <file>        Write behavioral report (JSON)
 -t, --transcript <file>    Write HTTP transcript
---validate                 Validate the manifest without making HTTP requests
+-c, --validate             Validate the manifest without making HTTP requests
 -h, --help                 Show help
 ```
 
 ---
 
 ## CLI installation
+
+The `tram@0.1.0` commands below apply after the beta has been published under that package name.
 
 ### Install from npm
 
@@ -525,12 +532,10 @@ These values are populated during test execution from earlier HTTP responses.
 
 ### Capture Example
 
-The repository includes a dedicated capture example that demonstrates creating a resource, capturing values from the response, and using those values in subsequent requests.
-
 The repository includes a dedicated capture example:
 
 ```text
-examples/api-tests-capture.json
+See the capture examples in the [repository](https://github.com/mamund/tram).
 ```
 
 The example demonstrates:
@@ -802,6 +807,9 @@ tram api-tests.json \
 ---
 
 ## Documentation
+
+* [Beta status and limitations](docs/beta-status.md)
+* [Changelog](CHANGELOG.md)
 
 ### Quick Start
 

@@ -39,6 +39,8 @@
     "docs/behavioral-modeling-for-apis.md",
     "docs/roadmap.md",
     "docs/images/tram-logo.png",
-    "docs/images/tram-test-run.png"
+    "docs/images/tram-test-run.png",
+    "docs/beta-status.md",
+    "CHANGELOG.md"
   ]
 }

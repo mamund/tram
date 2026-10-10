@@ -140,7 +140,7 @@ tram-level-5-governance-manifest.json
 
 | Property | Required | Description |
 |---|---|---|
-| `manifestVersion` | Yes | Version of the TRAM manifest specification |
+| `manifestVersion` | No | Manifest specification version (`0.1` or `0.2`); the runner currently permits omission |
 | `version` | No | Version of this manifest/test collection |
 | `name` | Yes | Human-readable test collection name |
 | `description` | No | Description of the collection |
