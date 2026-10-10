@@ -26,5 +26,19 @@
   "bugs": {
     "url": "https://github.com/mamund/2026-05-tram/issues"
   },
-  "homepage": "https://github.com/mamund/2026-05-tram#readme"
+  "homepage": "https://github.com/mamund/2026-05-tram#readme",
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "bin/",
+    "lib/assertions.js",
+    "docs/quick-start.md",
+    "docs/explainer.md",
+    "docs/manifest-spec.md",
+    "docs/behavioral-modeling-for-apis.md",
+    "docs/roadmap.md",
+    "docs/images/tram-logo.png",
+    "docs/images/tram-test-run.png"
+  ]
 }
