@@ -365,7 +365,7 @@ Options:
 
 ## CLI installation
 
-The `tram@0.1.0` commands below apply after the beta has been published under that package name.
+TRAM 0.1.0 beta is distributed through npm as @mamund/tram using the beta distribution tag. The following installation commands apply after publication.
 
 ### Install from npm
 
