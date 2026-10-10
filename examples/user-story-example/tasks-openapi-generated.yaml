@@ -1,0 +1,354 @@
+openapi: 3.1.0
+info:
+  title: Task Management API
+  version: 1.0.0
+  description: >
+    OpenAPI description generated from the observed behavior of the supplied
+    Node.js/Express implementation.
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /:
+    get:
+      operationId: getApiHome
+      summary: Get the API entry point
+      responses:
+        '200':
+          description: API entry point with links to task operations
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Home'
+
+  /tasks:
+    get:
+      operationId: listTasks
+      summary: List tasks
+      description: >
+        Returns tasks matching all supplied query parameters. The implementation
+        performs case-insensitive substring matching against task properties.
+      parameters:
+        - name: title
+          in: query
+          required: false
+          schema: { type: string }
+        - name: description
+          in: query
+          required: false
+          schema: { type: string }
+        - name: dueDate
+          in: query
+          required: false
+          schema: { type: string }
+        - name: status
+          in: query
+          required: false
+          schema: { type: string }
+        - name: priority
+          in: query
+          required: false
+          schema: {}
+        - name: assignedUser
+          in: query
+          required: false
+          schema: { type: string }
+      responses:
+        '200':
+          description: Matching tasks
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TaskResponse'
+    post:
+      operationId: createTask
+      summary: Create a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskEnvelopeCreate'
+      responses:
+        '201':
+          description: Task created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: A required task field is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tasks/{id}:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    get:
+      operationId: getTask
+      summary: Get a task by ID
+      responses:
+        '200':
+          description: Task found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tasks/{id}/edit:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    post:
+      operationId: editTask
+      summary: Edit a task
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskEnvelopeUpdate'
+      responses:
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tasks/{id}/status:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    put:
+      operationId: updateTaskStatus
+      summary: Update task status
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [task]
+              properties:
+                task:
+                  type: object
+                  required: [status]
+                  properties:
+                    status:
+                      type: string
+      responses:
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Required status is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tasks/{id}/assignee:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    put:
+      operationId: updateTaskAssignee
+      summary: Update task assignee
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [task]
+              properties:
+                task:
+                  type: object
+                  required: [assignedUser]
+                  properties:
+                    assignedUser:
+                      type: string
+      responses:
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Required assignedUser is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /tasks/{id}/due-date:
+    parameters:
+      - $ref: '#/components/parameters/TaskId'
+    put:
+      operationId: updateTaskDueDate
+      summary: Update task due date
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [task]
+              properties:
+                task:
+                  type: object
+                  required: [dueDate]
+                  properties:
+                    dueDate:
+                      type: string
+      responses:
+        '200':
+          description: Updated task
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskResponse'
+        '400':
+          description: Required dueDate is missing
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Task not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  parameters:
+    TaskId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        dueDate:
+          type: string
+        status:
+          type: string
+        priority:
+          type: number
+        assignedUser:
+          type: string
+
+    TaskCreate:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          required: [id, title, status]
+
+    TaskEnvelopeCreate:
+      type: object
+      required: [task]
+      properties:
+        task:
+          $ref: '#/components/schemas/TaskCreate'
+
+    TaskEnvelopeUpdate:
+      type: object
+      properties:
+        task:
+          $ref: '#/components/schemas/Task'
+
+    Link:
+      type: object
+      required: [href, method]
+      properties:
+        href:
+          type: string
+        method:
+          type: string
+        args:
+          type: array
+          items:
+            type: string
+
+    TaskLinks:
+      type: object
+      required: [self, edit, updateStatus, assignUser, setDueDate, goHome, goTaskList, goFilteredTasks]
+      properties:
+        self: { $ref: '#/components/schemas/Link' }
+        edit: { $ref: '#/components/schemas/Link' }
+        updateStatus: { $ref: '#/components/schemas/Link' }
+        assignUser: { $ref: '#/components/schemas/Link' }
+        setDueDate: { $ref: '#/components/schemas/Link' }
+        goHome: { $ref: '#/components/schemas/Link' }
+        goTaskList: { $ref: '#/components/schemas/Link' }
+        goFilteredTasks: { $ref: '#/components/schemas/Link' }
+
+    TaskResponse:
+      allOf:
+        - $ref: '#/components/schemas/Task'
+        - type: object
+          required: [_links]
+          properties:
+            _links:
+              $ref: '#/components/schemas/TaskLinks'
+
+    Home:
+      type: object
+      required: [_links]
+      properties:
+        _links:
+          type: object
+          required: [taskList, createTask]
+          properties:
+            taskList:
+              $ref: '#/components/schemas/Link'
+            createTask:
+              $ref: '#/components/schemas/Link'
+
+    Error:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: string

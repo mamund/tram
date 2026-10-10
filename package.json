@@ -1,5 +1,5 @@
 {
-  "name": "tram",
+  "name": "@mamund/tram",
   "version": "0.1.0",
   "description": "Test Runner for Assertion Manifests",
   "bin": {

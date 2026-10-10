@@ -1,0 +1,167 @@
+{
+  "manifestVersion": "0.2",
+  "version": "1.0.0",
+  "name": "Create and Track Task \u2014 ERI Evidence",
+  "description": "TRAM evidence for the user story: As a USER, I want to CREATE A NEW TASK in order to KEEP TRACK OF MY WORK.",
+  "config": {
+    "baseUrl": "http://localhost:3000"
+  },
+  "data": {
+    "task": {
+      "valid": {
+        "task": {
+          "id": "${randomId}",
+          "title": "ERI generated task",
+          "status": "active"
+        }
+      },
+      "missingTitle": {
+        "task": {
+          "id": "${randomId}",
+          "status": "active"
+        }
+      }
+    }
+  },
+  "tests": [
+    {
+      "id": "eri-001-create-task",
+      "name": "Create a new task",
+      "description": "Evidence for ERI-001: a user can create a new task.",
+      "enabled": true,
+      "tags": [
+        "level-3",
+        "unsafe",
+        "eri-explicit",
+        "ERI-001"
+      ],
+      "method": "POST",
+      "path": "/tasks",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "bodyType": "json",
+      "body": "$data.task.valid",
+      "expect": {
+        "status": 201,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ],
+        "body": [
+          {
+            "path": "$",
+            "hasProperties": [
+              "id",
+              "title",
+              "status",
+              "_links"
+            ]
+          },
+          {
+            "path": "$.title",
+            "equals": "ERI generated task"
+          },
+          {
+            "path": "$.status",
+            "equals": "active"
+          }
+        ]
+      },
+      "capture": {
+        "createdTaskId": "body.id",
+        "createdTaskTitle": "body.title"
+      }
+    },
+    {
+      "id": "eri-003-retrieve-created-task",
+      "name": "Retrieve the created task",
+      "description": "Evidence for ERI-003 and ERI-005: the created task is identifiable and remains observable after creation.",
+      "enabled": true,
+      "tags": [
+        "level-4",
+        "workflow",
+        "eri-required",
+        "eri-implied",
+        "ERI-003",
+        "ERI-005"
+      ],
+      "method": "GET",
+      "path": "/tasks/${capture.createdTaskId}",
+      "expect": {
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ],
+        "body": [
+          {
+            "path": "$.id",
+            "equals": "${capture.createdTaskId}"
+          },
+          {
+            "path": "$.title",
+            "equals": "${capture.createdTaskTitle}"
+          },
+          {
+            "path": "$.status",
+            "equals": "active"
+          },
+          {
+            "path": "$",
+            "hasProperties": [
+              "id",
+              "title",
+              "status",
+              "_links"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "eri-006-reject-invalid-create",
+      "name": "Reject task creation without title",
+      "description": "Evidence for ERI-006: an invalid creation request does not result in successful task creation.",
+      "enabled": true,
+      "tags": [
+        "level-5",
+        "governance",
+        "eri-implied",
+        "ERI-006"
+      ],
+      "method": "POST",
+      "path": "/tasks",
+      "headers": {
+        "content-type": "application/json"
+      },
+      "bodyType": "json",
+      "body": "$data.task.missingTitle",
+      "expect": {
+        "status": 400,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ],
+        "body": [
+          {
+            "path": "$",
+            "hasProperties": [
+              "error"
+            ]
+          },
+          {
+            "path": "$.error",
+            "equals": "Missing required field: title"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -29,6 +29,7 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 * [Changelog](CHANGELOG.md)
 
 * [Quick Start](docs/quick-start.md)
+* [Tasks API tutorial](docs/tasks-api-tutorial.md)
 * [Explainer](docs/explainer.md)
 * [Manifest Specification](docs/manifest-spec.md)
 * [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md)
