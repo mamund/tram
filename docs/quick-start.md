@@ -1,6 +1,6 @@
 # TRAM Quick Start
 
-This guide walks through running the TRAM sample project and inspecting the behavioral testing workflow.
+This guide walks through running the TRAM sample project **from the source repository** and inspecting the behavioral testing workflow. The sample API and `api-tests.json` are not distributed with the npm package. For npm installation instructions, see the [README](../README.md#cli-installation).
 
 The goal is not only to execute the sample tests, but to understand the relationship between:
 
@@ -50,13 +50,13 @@ No external libraries or framework dependencies are required.
 # Clone the repository
 
 ```bash
-git clone https://github.com/mamund/2026-05-tram.git
-cd 2026-05-tram
+git clone https://github.com/mamund/tram.git
+cd tram
 ```
 
 ---
 
-# CLI setup
+# CLI setup for the source checkout
 
 macOS/Linux:
 

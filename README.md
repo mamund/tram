@@ -359,41 +359,50 @@ Options:
 
 ## CLI installation
 
-### Local development setup
+### Install from npm
 
-Clone the repository:
+TRAM requires Node.js 18 or later and has no runtime dependencies.
 
-```bash
-git clone https://github.com/mamund/2026-05-tram.git
-cd 2026-05-tram
-```
-
-macOS/Linux:
+Install the command globally:
 
 ```bash
-chmod +x bin/tram
-npm link
+npm install --global tram@0.1.0
+tram --help
 ```
 
-Windows:
+Alternatively, add TRAM to an existing Node.js project:
 
 ```bash
-npm link
+npm install --save-dev tram@0.1.0
+npx tram --help
 ```
 
-Then run:
-
-```bash
-tram api-tests.json
-```
-
-Validate the manifest without contacting the sample API:
+Validate a manifest without sending HTTP requests:
 
 ```bash
 tram api-tests.json --validate
 ```
 
-This performs structural validation of the manifest and exits without sending any HTTP requests.
+Execute a manifest and save the resulting evidence:
+
+```bash
+tram api-tests.json --report results.json --transcript transcript.http
+```
+
+The manifest is supplied by your project; the npm package does not install a sample API or sample manifest. See the [repository quick start](docs/quick-start.md) for the sample workflow.
+
+### Local development setup
+
+To work on TRAM itself, clone the source repository:
+
+```bash
+git clone https://github.com/mamund/tram.git
+cd tram
+npm test
+npm link
+```
+
+The `npm link` command is for developing TRAM from source. It is not required for npm consumers.
 
 ---
 
