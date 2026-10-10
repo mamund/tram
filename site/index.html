@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="TRAM is a declarative API behavior testing tool. Define assertions, run HTTP interactions, and collect evidence.">
+  <meta name="theme-color" content="#f7f7f4">
+  <title>TRAM — Test behavior. Collect evidence.</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <header class="site-header shell">
+    <a class="wordmark" href="./" aria-label="TRAM home"><span class="mark" aria-hidden="true">T<span>·</span></span> TRAM</a>
+    <nav aria-label="Main navigation">
+      <a href="#how">How it works</a>
+      <a href="#why">Why TRAM</a>
+      <a href="https://github.com/mamund/tram/blob/main/docs/quick-start.md">Quick start</a>
+      <a class="nav-github" href="https://github.com/mamund/tram">GitHub <span aria-hidden="true">↗</span></a>
+    </nav>
+  </header>
+
+  <main id="main">
+    <section class="hero shell">
+      <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> OPEN SOURCE · 0.1.0 BETA</p>
+      <h1>Test behavior.<br><em>Collect evidence.</em></h1>
+      <p class="lead">TRAM is a declarative API testing tool. Describe what an API should do, execute HTTP interactions, evaluate assertions, and preserve the evidence of what happened.</p>
+      <div class="hero-actions">
+        <a class="button primary" href="https://github.com/mamund/tram/blob/main/docs/quick-start.md">Get started <span aria-hidden="true">↗</span></a>
+        <a class="button secondary" href="https://github.com/mamund/tram">Explore the repository</a>
+      </div>
+      <div class="install" aria-label="Install TRAM"><span class="prompt" aria-hidden="true">$</span><code>npm install -g @mamund/tram@beta</code><button id="copy" type="button" aria-label="Copy installation command">Copy</button></div>
+    </section>
+
+    <section class="section section-muted" id="how">
+      <div class="shell">
+        <div class="section-intro"><p class="eyebrow">HOW IT WORKS</p><h2>From expectations to evidence.</h2><p>TRAM keeps the behavioral claim visible throughout the test.</p></div>
+        <div class="steps">
+          <article class="step"><span class="step-number">01</span><h3>Define</h3><p>Describe requests and expected behavior in a JSON manifest.</p></article>
+          <article class="step"><span class="step-number">02</span><h3>Execute</h3><p>Run the manifest against an HTTP API from the command line.</p></article>
+          <article class="step"><span class="step-number">03</span><h3>Evaluate</h3><p>Check responses against the assertions you declared.</p></article>
+          <article class="step"><span class="step-number">04</span><h3>Examine</h3><p>Use the resulting reports and transcripts to understand the outcome.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="example">
+      <div class="split">
+        <div class="section-intro"><p class="eyebrow">START WITH A REAL API</p><h2>A working example, not just a promise.</h2><p>The quick start uses a public HTTP API to demonstrate a small assertion and the evidence produced when it runs.</p><p>Then move on to the Tasks API tutorial for a fuller testing scenario.</p><div class="text-links"><a href="https://github.com/mamund/tram/blob/main/docs/quick-start.md">Read the quick start ↗</a><a href="https://github.com/mamund/tram/blob/main/docs/tasks-api-tutorial.md">Explore the Tasks API tutorial ↗</a></div></div>
+        <div class="example-card"><div class="example-header"><span>QUICK START</span><span>HTTP / JSON</span></div><div class="example-body"><div class="mini-label">REQUEST</div><code>GET https://jsonplaceholder.typicode.com/todos/1</code><div class="mini-label">BEHAVIORAL ASSERTION</div><pre><code>{
+  "path": "$.id",
+  "equals": 1
+}</code></pre><p>Check the response body, then inspect the reported outcome.</p></div></div>
+      </div>
+    </section>
+
+    <section class="section section-dark" id="why"><div class="shell why-grid"><div><p class="eyebrow">WHY TRAM</p><h2>Generated code still needs verification.</h2></div><div><p>When implementation becomes easier to produce, deciding what to verify becomes more important.</p><p>TRAM supports evidence-based testing: identify observable behaviors, express them as assertions, and retain evidence of the results.</p><p>One useful starting point is to distinguish behaviors that are <strong>explicit</strong> in a story, <strong>required</strong> for it to work, or <strong>implied</strong> by its context.</p></div></div></section>
+
+    <section class="section shell resources"><p class="eyebrow">GO FURTHER</p><h2>Explore TRAM.</h2><div class="resource-grid"><a href="https://github.com/mamund/tram/blob/main/docs/quick-start.md"><strong>Quick start</strong><span>Run your first public API test ↗</span></a><a href="https://github.com/mamund/tram/blob/main/docs/tasks-api-tutorial.md"><strong>Tasks API tutorial</strong><span>Explore a more complete example ↗</span></a><a href="https://github.com/mamund/tram"><strong>Source and documentation</strong><span>Review the project on GitHub ↗</span></a><a href="https://www.npmjs.com/package/@mamund/tram"><strong>npm package</strong><span>Install the published beta ↗</span></a></div></section>
+  </main>
+  <footer class="site-footer shell"><span class="wordmark">TRAM</span><span>API behavior testing · Open source</span><a href="https://github.com/mamund/tram">GitHub ↗</a></footer>
+  <script src="./script.js" defer></script>
+</body>
+</html>
