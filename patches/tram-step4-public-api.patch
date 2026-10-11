@@ -1,0 +1,98 @@
+diff --git a/index.js b/index.js
+new file mode 100644
+index 0000000..0065a7f
+--- /dev/null
++++ b/index.js
+@@ -0,0 +1,13 @@
++'use strict';
++
++/** Public Node.js interface for TRAM. */
++const { loadManifest, validateManifest } = require('./lib/manifest');
++const { runSuite } = require('./lib/runner');
++
++/** Execute an already-loaded manifest and return structured results. */
++async function run(manifest) {
++  validateManifest(manifest);
++  return runSuite(manifest);
++}
++
++module.exports = { loadManifest, validateManifest, run };
+diff --git a/package.json b/package.json
+index e5459e1..d874f53 100644
+--- a/package.json
++++ b/package.json
+@@ -33,6 +33,7 @@
+     "node": ">=18"
+   },
+   "files": [
++    "index.js",
+     "bin/",
+     "lib/assertions.js",
+     "lib/manifest.js",
+@@ -48,5 +49,9 @@
+     "docs/images/tram-test-run.png",
+     "docs/beta-status.md",
+     "CHANGELOG.md"
+-  ]
++  ],
++  "main": "index.js",
++  "exports": {
++    ".": "./index.js"
++  }
+ }
+diff --git a/test/public-api.test.js b/test/public-api.test.js
+new file mode 100644
+index 0000000..a17e8d3
+--- /dev/null
++++ b/test/public-api.test.js
+@@ -0,0 +1,50 @@
++'use strict';
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const os = require('node:os');
++const path = require('node:path');
++const http = require('node:http');
++const { loadManifest, validateManifest, run } = require('..');
++
++test('package root exports the documented public API', () => {
++  assert.equal(typeof loadManifest, 'function');
++  assert.equal(typeof validateManifest, 'function');
++  assert.equal(typeof run, 'function');
++});
++
++test('public API loads and validates a manifest', () => {
++  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tram-api-'));
++  try {
++    const file = path.join(dir, 'manifest.json');
++    const manifest = { config: { baseUrl: 'http://127.0.0.1:1' }, tests: [] };
++    fs.writeFileSync(file, JSON.stringify(manifest));
++    assert.deepEqual(loadManifest(file), manifest);
++    assert.equal(validateManifest(manifest), undefined);
++    assert.throws(() => validateManifest({}), /Manifest validation failed/);
++  } finally {
++    fs.rmSync(dir, { recursive: true, force: true });
++  }
++});
++
++test('public run executes valid manifests and returns evidence', async () => {
++  const server = http.createServer((_req, res) => {
++    res.setHeader('content-type', 'application/json');
++    res.end(JSON.stringify({ ok: true }));
++  });
++  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
++  try {
++    const manifest = { manifestVersion: '0.2', config: { baseUrl: `http://127.0.0.1:${server.address().port}` }, tests: [{ name: 'smoke', method: 'GET', path: '/', expect: { status: 200 } }] };
++    const result = await run(manifest);
++    assert.equal(result.summary.passed, 1);
++    assert.equal(result.summary.failed, 0);
++    assert.equal(result.results[0].response.body.ok, true);
++    assert.deepEqual((await run(manifest)).summary, result.summary);
++  } finally {
++    await new Promise(resolve => server.close(resolve));
++  }
++});
++
++test('public run rejects invalid manifests before making requests', async () => {
++  await assert.rejects(run({ tests: [] }), /Manifest validation failed/);
++});

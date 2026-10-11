@@ -1,0 +1,394 @@
+--- a/bin/tram
++++ b/bin/tram
+@@ -21,7 +21,8 @@
+ const fs = require('fs');
+ const path = require('path');
+ const { loadManifest, validateManifest, validateManifestPath } = require('../lib/manifest');
+-const { runSuite, redactHeaderValue } = require('../lib/runner');
++const { runSuite } = require('../lib/runner');
++const { printConsoleReport, writeJsonReport, writeHttpTranscript } = require('../lib/reports');
+ 
+ 
+ async function main() {
+@@ -168,160 +169,6 @@
+   }
+ }
+ 
+-function printConsoleReport(suiteResult, options = {}) {
+-  const verbose = options.verbose === true;
+-
+-  console.log(suiteResult.name);
+-  console.log('');
+-
+-  for (const result of suiteResult.results) {
+-    if (result.skipped) {
+-      console.log(`- ${result.name} (skipped)`);
+-      continue;
+-    }
+-
+-    const marker = result.passed ? '✓' : '✗';
+-    console.log(`${marker} ${result.name}`);
+-
+-    if (!result.passed || verbose) {
+-      console.log(`  ${result.method} ${result.path}`);
+-      if (result.status !== null && result.status !== undefined) {
+-        console.log(`  Status: ${result.status}`);
+-      }
+-
+-      const assertionsToPrint = verbose
+-        ? result.assertions
+-        : result.assertions.filter((assertion) => !assertion.passed);
+-
+-      for (const assertion of assertionsToPrint) {
+-        const assertionMarker = assertion.passed ? '✓' : '✗';
+-        console.log(`  ${assertionMarker} ${assertion.message}`);
+-      }
+-    }
+-  }
+-
+-  console.log('');
+-  console.log(
+-    `Summary: ${suiteResult.summary.passed} passed, ${suiteResult.summary.failed} failed, ${suiteResult.summary.skipped} skipped, ${suiteResult.summary.total} total`
+-  );
+-}
+-
+-function writeJsonReport(reportPath, suiteResult) {
+-  const fullPath = path.resolve(process.cwd(), reportPath);
+-  fs.writeFileSync(fullPath, `${JSON.stringify(suiteResult, null, 2)}\n`, 'utf8');
+-}
+-
+-
+-function writeHttpTranscript(transcriptPath, suiteResult) {
+-  const fullPath = path.resolve(process.cwd(), transcriptPath);
+-  fs.writeFileSync(fullPath, renderHttpTranscript(suiteResult), 'utf8');
+-}
+-
+-function renderHttpTranscript(suiteResult) {
+-  const lines = [];
+-
+-  lines.push('TRAM HTTP Transcript');
+-  lines.push(`Suite: ${suiteResult.name}`);
+-  lines.push(`Generated: ${new Date().toISOString()}`);
+-  lines.push('');
+-
+-  for (const result of suiteResult.results) {
+-    if (result.skipped) {
+-      continue;
+-    }
+-
+-    lines.push('============================================================');
+-    lines.push(`${result.name} (${result.id})`);
+-    lines.push('');
+-    lines.push(renderTranscriptRequest(result.request));
+-    lines.push('');
+-    lines.push(renderTranscriptResponse(result.response));
+-
+-    const captureAssertions = (result.assertions || []).filter((assertion) => assertion.type === 'capture');
+-    if (captureAssertions.length > 0) {
+-      lines.push('');
+-      lines.push('--- Captures ------------------------------------------------');
+-      for (const assertion of captureAssertions) {
+-        if (assertion.passed) {
+-          lines.push(`${assertion.target} = ${formatTranscriptValue(assertion.actual)}`);
+-        } else {
+-          lines.push(`${assertion.target} = <not captured>`);
+-        }
+-      }
+-    }
+-
+-    lines.push('');
+-  }
+-
+-  return `${lines.join('\n')}\n`;
+-}
+-
+-function renderTranscriptRequest(request) {
+-  if (!request) {
+-    return '> REQUEST UNAVAILABLE';
+-  }
+-
+-  const url = new URL(request.url);
+-  const lines = [];
+-
+-  lines.push(`> ${request.method} ${url.pathname}${url.search} HTTP/1.1`);
+-  lines.push(`> Host: ${url.host}`);
+-
+-  for (const [name, value] of Object.entries(request.headers || {})) {
+-    lines.push(`> ${name}: ${redactHeaderValue(name, value)}`);
+-  }
+-
+-  if (request.body !== null && request.body !== undefined) {
+-    lines.push('>');
+-    lines.push(prefixTranscriptBody(formatTranscriptBody(request.body), '> '));
+-  }
+-
+-  return lines.join('\n');
+-}
+-
+-function renderTranscriptResponse(response) {
+-  if (!response) {
+-    return '< REQUEST FAILED';
+-  }
+-
+-  const lines = [];
+-
+-  lines.push(`< HTTP/1.1 ${response.status}`);
+-
+-  for (const [name, value] of Object.entries(response.headers || {})) {
+-    lines.push(`< ${name}: ${redactHeaderValue(name, value)}`);
+-  }
+-
+-  if (response.rawBody) {
+-    lines.push('<');
+-    lines.push(prefixTranscriptBody(formatTranscriptBody(response.body), '< '));
+-  }
+-
+-  return lines.join('\n');
+-}
+-
+-function formatTranscriptBody(value) {
+-  if (typeof value === 'string') {
+-    return value;
+-  }
+-
+-  return JSON.stringify(value, null, 2);
+-}
+-
+-function prefixTranscriptBody(value, prefix) {
+-  return String(value)
+-    .split('\n')
+-    .map((line) => `${prefix}${line}`)
+-    .join('\n');
+-}
+-
+-function formatTranscriptValue(value) {
+-  if (typeof value === 'string') {
+-    return JSON.stringify(value);
+-  }
+-
+-  return JSON.stringify(value, null, 2);
+-}
+ 
+ 
+ main();
+--- a/package.json
++++ b/package.json
+@@ -37,6 +37,7 @@
+     "lib/assertions.js",
+     "lib/manifest.js",
+     "lib/runner.js",
++    "lib/reports.js",
+     "docs/quick-start.md",
+     "docs/tasks-api-tutorial.md",
+     "docs/explainer.md",
+--- /dev/null
++++ b/lib/reports.js
+@@ -0,0 +1,163 @@
++'use strict';
++
++const fs = require('fs');
++const path = require('path');
++const { redactHeaderValue } = require('./runner');
++
++function printConsoleReport(suiteResult, options = {}) {
++  const verbose = options.verbose === true;
++
++  console.log(suiteResult.name);
++  console.log('');
++
++  for (const result of suiteResult.results) {
++    if (result.skipped) {
++      console.log(`- ${result.name} (skipped)`);
++      continue;
++    }
++
++    const marker = result.passed ? '✓' : '✗';
++    console.log(`${marker} ${result.name}`);
++
++    if (!result.passed || verbose) {
++      console.log(`  ${result.method} ${result.path}`);
++      if (result.status !== null && result.status !== undefined) {
++        console.log(`  Status: ${result.status}`);
++      }
++
++      const assertionsToPrint = verbose
++        ? result.assertions
++        : result.assertions.filter((assertion) => !assertion.passed);
++
++      for (const assertion of assertionsToPrint) {
++        const assertionMarker = assertion.passed ? '✓' : '✗';
++        console.log(`  ${assertionMarker} ${assertion.message}`);
++      }
++    }
++  }
++
++  console.log('');
++  console.log(
++    `Summary: ${suiteResult.summary.passed} passed, ${suiteResult.summary.failed} failed, ${suiteResult.summary.skipped} skipped, ${suiteResult.summary.total} total`
++  );
++}
++
++function writeJsonReport(reportPath, suiteResult) {
++  const fullPath = path.resolve(process.cwd(), reportPath);
++  fs.writeFileSync(fullPath, `${JSON.stringify(suiteResult, null, 2)}\n`, 'utf8');
++}
++
++
++function writeHttpTranscript(transcriptPath, suiteResult) {
++  const fullPath = path.resolve(process.cwd(), transcriptPath);
++  fs.writeFileSync(fullPath, renderHttpTranscript(suiteResult), 'utf8');
++}
++
++function renderHttpTranscript(suiteResult) {
++  const lines = [];
++
++  lines.push('TRAM HTTP Transcript');
++  lines.push(`Suite: ${suiteResult.name}`);
++  lines.push(`Generated: ${new Date().toISOString()}`);
++  lines.push('');
++
++  for (const result of suiteResult.results) {
++    if (result.skipped) {
++      continue;
++    }
++
++    lines.push('============================================================');
++    lines.push(`${result.name} (${result.id})`);
++    lines.push('');
++    lines.push(renderTranscriptRequest(result.request));
++    lines.push('');
++    lines.push(renderTranscriptResponse(result.response));
++
++    const captureAssertions = (result.assertions || []).filter((assertion) => assertion.type === 'capture');
++    if (captureAssertions.length > 0) {
++      lines.push('');
++      lines.push('--- Captures ------------------------------------------------');
++      for (const assertion of captureAssertions) {
++        if (assertion.passed) {
++          lines.push(`${assertion.target} = ${formatTranscriptValue(assertion.actual)}`);
++        } else {
++          lines.push(`${assertion.target} = <not captured>`);
++        }
++      }
++    }
++
++    lines.push('');
++  }
++
++  return `${lines.join('\n')}\n`;
++}
++
++function renderTranscriptRequest(request) {
++  if (!request) {
++    return '> REQUEST UNAVAILABLE';
++  }
++
++  const url = new URL(request.url);
++  const lines = [];
++
++  lines.push(`> ${request.method} ${url.pathname}${url.search} HTTP/1.1`);
++  lines.push(`> Host: ${url.host}`);
++
++  for (const [name, value] of Object.entries(request.headers || {})) {
++    lines.push(`> ${name}: ${redactHeaderValue(name, value)}`);
++  }
++
++  if (request.body !== null && request.body !== undefined) {
++    lines.push('>');
++    lines.push(prefixTranscriptBody(formatTranscriptBody(request.body), '> '));
++  }
++
++  return lines.join('\n');
++}
++
++function renderTranscriptResponse(response) {
++  if (!response) {
++    return '< REQUEST FAILED';
++  }
++
++  const lines = [];
++
++  lines.push(`< HTTP/1.1 ${response.status}`);
++
++  for (const [name, value] of Object.entries(response.headers || {})) {
++    lines.push(`< ${name}: ${redactHeaderValue(name, value)}`);
++  }
++
++  if (response.rawBody) {
++    lines.push('<');
++    lines.push(prefixTranscriptBody(formatTranscriptBody(response.body), '< '));
++  }
++
++  return lines.join('\n');
++}
++
++function formatTranscriptBody(value) {
++  if (typeof value === 'string') {
++    return value;
++  }
++
++  return JSON.stringify(value, null, 2);
++}
++
++function prefixTranscriptBody(value, prefix) {
++  return String(value)
++    .split('\n')
++    .map((line) => `${prefix}${line}`)
++    .join('\n');
++}
++
++function formatTranscriptValue(value) {
++  if (typeof value === 'string') {
++    return JSON.stringify(value);
++  }
++
++  return JSON.stringify(value, null, 2);
++}
++
++
++module.exports = { printConsoleReport, writeJsonReport, writeHttpTranscript, renderHttpTranscript };
+--- /dev/null
++++ b/test/reports-module.test.js
+@@ -0,0 +1,42 @@
++'use strict';
++const test = require('node:test');
++const assert = require('node:assert/strict');
++const fs = require('node:fs');
++const os = require('node:os');
++const path = require('node:path');
++const { renderHttpTranscript, writeHttpTranscript, writeJsonReport, printConsoleReport } = require('../lib/reports');
++
++const sample = {
++  name: 'Report module test',
++  summary: { passed: 1, failed: 0, skipped: 0, total: 1 },
++  results: [{ id: 'r1', name: 'GET ok', passed: true, skipped: false, method: 'GET', path: '/ok', status: 200, assertions: [],
++    request: { method: 'GET', url: 'http://example.test/ok', headers: { authorization: 'Bearer secret' } },
++    response: { status: 200, headers: {}, rawBody: '', body: null }
++  }]
++};
++
++test('reports module renders transcript with redacted headers', () => {
++  const transcript = renderHttpTranscript(sample);
++  assert.match(transcript, /GET \/ok HTTP\/1\.1/);
++  assert.doesNotMatch(transcript, /Bearer secret/);
++});
++
++test('reports module writes JSON and transcript', () => {
++  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tram-reports-'));
++  try {
++    const jsonPath = path.join(dir, 'results.json');
++    const transcriptPath = path.join(dir, 'results.http');
++    writeJsonReport(jsonPath, sample);
++    writeHttpTranscript(transcriptPath, sample);
++    assert.deepEqual(JSON.parse(fs.readFileSync(jsonPath, 'utf8')), sample);
++    assert.match(fs.readFileSync(transcriptPath, 'utf8'), /TRAM HTTP Transcript/);
++  } finally { fs.rmSync(dir, { recursive: true, force: true }); }
++});
++
++test('console report can be called independently', () => {
++  const lines = [];
++  const original = console.log;
++  console.log = (...args) => lines.push(args.join(' '));
++  try { printConsoleReport(sample); } finally { console.log = original; }
++  assert.match(lines.join('\n'), /Summary: 1 passed, 0 failed/);
++});
