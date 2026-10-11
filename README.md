@@ -30,6 +30,8 @@ Rather than focusing on implementation details, TRAM focuses on what can be obse
 
 * [Quick Start](docs/quick-start.md)
 * [Tasks API tutorial](docs/tasks-api-tutorial.md)
+* [Node.js API guide](docs/node-api.md) — load, validate, and execute manifests programmatically
+* [Node.js Tasks example](examples/node-api/README.md) — run the existing Tasks manifest from Node.js
 * [Explainer](docs/explainer.md)
 * [Manifest Specification](docs/manifest-spec.md)
 * [Behavioral Modeling for APIs](docs/behavioral-modeling-for-apis.md)
