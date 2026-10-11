@@ -33,6 +33,7 @@
     "node": ">=18"
   },
   "files": [
+    "index.js",
     "bin/",
     "lib/assertions.js",
     "lib/manifest.js",
@@ -48,5 +49,9 @@
     "docs/images/tram-test-run.png",
     "docs/beta-status.md",
     "CHANGELOG.md"
-  ]
+  ],
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js"
+  }
 }
