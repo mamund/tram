@@ -35,6 +35,8 @@
   "files": [
     "bin/",
     "lib/assertions.js",
+    "lib/manifest.js",
+    "lib/runner.js",
     "docs/quick-start.md",
     "docs/tasks-api-tutorial.md",
     "docs/explainer.md",
