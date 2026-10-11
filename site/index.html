@@ -22,7 +22,7 @@
 
   <main id="main">
     <section class="hero shell">
-      <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> OPEN SOURCE · 0.1.0 BETA</p>
+      <p class="eyebrow"><span class="status-dot" aria-hidden="true"></span> OPEN SOURCE · 0.2.0 BETA</p>
       <h1>Test behavior.<br><em>Collect evidence.</em></h1>
       <p class="lead">TRAM is a declarative API testing tool. Describe what an API should do, execute HTTP interactions, evaluate assertions, and preserve the evidence of what happened.</p>
       <div class="hero-actions">
@@ -37,9 +37,43 @@
         <div class="section-intro"><p class="eyebrow">HOW IT WORKS</p><h2>From expectations to evidence.</h2><p>TRAM keeps the behavioral claim visible throughout the test.</p></div>
         <div class="steps">
           <article class="step"><span class="step-number">01</span><h3>Define</h3><p>Describe requests and expected behavior in a JSON manifest.</p></article>
-          <article class="step"><span class="step-number">02</span><h3>Execute</h3><p>Run the manifest against an HTTP API from the command line.</p></article>
+          <article class="step"><span class="step-number">02</span><h3>Execute</h3><p>Run the manifest against an HTTP API from the CLI or a Node.js application.</p></article>
           <article class="step"><span class="step-number">03</span><h3>Evaluate</h3><p>Check responses against the assertions you declared.</p></article>
           <article class="step"><span class="step-number">04</span><h3>Examine</h3><p>Use the resulting reports and transcripts to understand the outcome.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section shell" id="interfaces">
+      <div class="section-intro">
+        <p class="eyebrow">TWO WAYS TO RUN TRAM</p>
+        <h2>Use TRAM from the command line or Node.js.</h2>
+        <p>Run the same assertion manifest through the CLI or embed TRAM in an application.</p>
+      </div>
+      <div class="split">
+        <div class="example-card">
+          <div class="example-header"><span>COMMAND LINE</span><span>CLI</span></div>
+          <div class="example-body">
+            <div class="mini-label">RUN A MANIFEST</div>
+            <pre><code>tram api-tests.json</code></pre>
+            <p>Execute assertions and inspect the results in your terminal.</p>
+          </div>
+        </div>
+        <div class="example-card">
+          <div class="example-header"><span>NODE.JS API</span><span>COMMONJS</span></div>
+          <div class="example-body">
+            <div class="mini-label">RUN PROGRAMMATICALLY</div>
+            <pre><code>const tram = require('@mamund/tram');
+
+async function main() {
+  const manifest = tram.loadManifest('./api-tests.json');
+  const result = await tram.run(manifest);
+  console.log(result.summary);
+}
+
+main().catch(console.error);</code></pre>
+            <p>Use structured results in your own application. <a href="https://github.com/mamund/tram/blob/main/docs/node-api.md">Read the Node.js API guide ↗</a></p>
+          </div>
         </div>
       </div>
     </section>
@@ -56,7 +90,7 @@
 
     <section class="section section-dark" id="why"><div class="shell why-grid"><div><p class="eyebrow">WHY TRAM</p><h2>Generated code still needs verification.</h2></div><div><p>When implementation becomes easier to produce, deciding what to verify becomes more important.</p><p>TRAM supports evidence-based testing: identify observable behaviors, express them as assertions, and retain evidence of the results.</p><p>One useful starting point is to distinguish behaviors that are <strong>explicit</strong> in a story, <strong>required</strong> for it to work, or <strong>implied</strong> by its context.</p></div></div></section>
 
-    <section class="section shell resources"><p class="eyebrow">GO FURTHER</p><h2>Explore TRAM.</h2><div class="resource-grid"><a href="https://github.com/mamund/tram/blob/main/docs/quick-start.md"><strong>Quick start</strong><span>Run your first public API test ↗</span></a><a href="https://github.com/mamund/tram/blob/main/docs/tasks-api-tutorial.md"><strong>Tasks API tutorial</strong><span>Explore a more complete example ↗</span></a><a href="https://github.com/mamund/tram"><strong>Source and documentation</strong><span>Review the project on GitHub ↗</span></a><a href="https://www.npmjs.com/package/@mamund/tram"><strong>npm package</strong><span>Install the published beta ↗</span></a></div></section>
+    <section class="section shell resources"><p class="eyebrow">GO FURTHER</p><h2>Explore TRAM.</h2><div class="resource-grid"><a href="https://github.com/mamund/tram/blob/main/docs/quick-start.md"><strong>Quick start</strong><span>Run your first public API test ↗</span></a><a href="https://github.com/mamund/tram/blob/main/docs/tasks-api-tutorial.md"><strong>Tasks API tutorial</strong><span>Explore a more complete example ↗</span></a><a href="https://github.com/mamund/tram/blob/main/docs/node-api.md"><strong>Node.js API</strong><span>Run assertions programmatically ↗</span></a><a href="https://github.com/mamund/tram"><strong>Source and documentation</strong><span>Review the project on GitHub ↗</span></a><a href="https://www.npmjs.com/package/@mamund/tram"><strong>npm package</strong><span>Install the published beta ↗</span></a></div></section>
   </main>
   <footer class="site-footer shell"><span class="wordmark">TRAM</span><span>API behavior testing · Open source</span><a href="https://github.com/mamund/tram">GitHub ↗</a></footer>
   <script src="./script.js" defer></script>
