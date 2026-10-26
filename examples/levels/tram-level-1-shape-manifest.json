@@ -1,5 +1,5 @@
 {
-  "manifestVersion": "0.1",
+  "manifestVersion": "0.2",
   "version": "1.0.0",
   "name": "Task API Level 1 Shape Assertions",
   "description": "Confirms that task API responses have the expected resource shapes, property types, collections, and link structures.",
@@ -18,7 +18,11 @@
       "name": "Home has link representation shape",
       "description": "Confirms the API entry point presents a link map.",
       "enabled": true,
-      "tags": ["level-1", "shape", "home"],
+      "tags": [
+        "level-1",
+        "shape",
+        "home"
+      ],
       "method": "GET",
       "path": "/",
       "expect": {
@@ -32,7 +36,9 @@
         "body": [
           {
             "path": "$",
-            "hasProperties": ["_links"]
+            "hasProperties": [
+              "_links"
+            ]
           },
           {
             "path": "$._links",
@@ -40,16 +46,26 @@
           },
           {
             "path": "$._links.taskList",
-            "hasProperties": ["href", "method"]
+            "hasProperties": [
+              "href",
+              "method"
+            ]
           },
           {
             "path": "$._links.createTask",
-            "hasProperties": ["href", "method", "args"]
+            "hasProperties": [
+              "href",
+              "method",
+              "args"
+            ]
           },
           {
             "path": "$._links",
             "eachProperty": {
-              "hasProperties": ["href", "method"]
+              "hasProperties": [
+                "href",
+                "method"
+              ]
             }
           }
         ]
@@ -59,7 +75,11 @@
       "name": "Task collection has array shape",
       "description": "Confirms the task collection is an array of task-shaped resources.",
       "enabled": true,
-      "tags": ["level-1", "shape", "collection"],
+      "tags": [
+        "level-1",
+        "shape",
+        "collection"
+      ],
       "method": "GET",
       "path": "/tasks",
       "expect": {
@@ -77,7 +97,9 @@
           },
           {
             "path": "$",
-            "minLength": 1
+            "length": {
+              "min": 1
+            }
           },
           {
             "path": "$",
@@ -127,7 +149,10 @@
             "each": {
               "path": "$._links",
               "eachProperty": {
-                "hasProperties": ["href", "method"]
+                "hasProperties": [
+                  "href",
+                  "method"
+                ]
               }
             }
           }
@@ -138,7 +163,11 @@
       "name": "Task item has resource shape",
       "description": "Confirms a known task has the expected task resource properties and link structure.",
       "enabled": true,
-      "tags": ["level-1", "shape", "item"],
+      "tags": [
+        "level-1",
+        "shape",
+        "item"
+      ],
       "method": "GET",
       "path": "/tasks/${data.knownTaskId}",
       "expect": {
@@ -211,7 +240,10 @@
           {
             "path": "$._links",
             "eachProperty": {
-              "hasProperties": ["href", "method"]
+              "hasProperties": [
+                "href",
+                "method"
+              ]
             }
           },
           {
@@ -227,6 +259,88 @@
               "path": "$.method",
               "type": "string"
             }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Task collection has consistent property types",
+      "description": "Checks remaining task field types across collection members.",
+      "enabled": true,
+      "tags": [
+        "level-1",
+        "shape",
+        "collection"
+      ],
+      "method": "GET",
+      "path": "/tasks",
+      "expect": {
+        "status": 200,
+        "body": [
+          {
+            "path": "$",
+            "each": {
+              "property": "description",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "dueDate",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "assignedUser",
+              "type": "string"
+            }
+          },
+          {
+            "path": "$",
+            "each": {
+              "property": "_links",
+              "type": "object"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "Task affordance arguments have array shape",
+      "description": "Checks that advertised affordance argument lists are arrays.",
+      "enabled": true,
+      "tags": [
+        "level-1",
+        "shape",
+        "affordances"
+      ],
+      "method": "GET",
+      "path": "/tasks/${data.knownTaskId}",
+      "expect": {
+        "status": 200,
+        "body": [
+          {
+            "path": "$._links.edit.args",
+            "isArray": true
+          },
+          {
+            "path": "$._links.updateStatus.args",
+            "isArray": true
+          },
+          {
+            "path": "$._links.assignUser.args",
+            "isArray": true
+          },
+          {
+            "path": "$._links.setDueDate.args",
+            "isArray": true
+          },
+          {
+            "path": "$._links.goFilteredTasks.args",
+            "isArray": true
           }
         ]
       }

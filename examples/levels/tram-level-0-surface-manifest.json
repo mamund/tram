@@ -33,7 +33,13 @@
       "method": "GET",
       "path": "/",
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -44,7 +50,13 @@
       "method": "GET",
       "path": "/tasks",
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -55,7 +67,13 @@
       "method": "GET",
       "path": "/tasks/${data.knownTaskId}",
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -68,7 +86,13 @@
       "bodyType": "json",
       "body": "$data.newTask",
       "expect": {
-        "status": 201
+        "status": 201,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -85,7 +109,13 @@
         }
       },
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -102,7 +132,13 @@
         }
       },
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -119,7 +155,13 @@
         }
       },
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
@@ -136,12 +178,18 @@
         }
       },
       "expect": {
-        "status": 200
+        "status": 200,
+        "headers": [
+          {
+            "name": "content-type",
+            "contains": "application/json"
+          }
+        ]
       }
     },
     {
-      "name": "Remove Task item not supported (Express reports 404 instead of 405)",
-      "description": "Confirms that attempts to remove/delete known task resource is not supported (Express reports 404 instead of 405).",
+      "name": "DELETE task operation returns 405 Method Not Allowed",
+      "description": "Confirms that attempts to remove/delete known task resource returns 405 Method Not Allowed.",
       "enabled": true,
       "tags": ["level-0", "surface"],
       "method": "DELETE",

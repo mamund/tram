@@ -76,6 +76,20 @@ app.get('/tasks/:id', (req, res) => {
   res.json({ ...task, _links: generateTaskLinks(task) });
 });
 
+// DELETE is not supported for task resources.
+app.delete('/tasks/:id', (req, res) => {
+  const task = tasks.find(t => t.id === req.params.id);
+
+  if (!task) {
+    return res.status(404).json({ error: 'Task not found' });
+  }
+
+  res.set('Allow', 'GET, HEAD');
+  return res.status(405).json({
+    error: 'Method not allowed'
+  });
+});
+
 app.post('/tasks', (req, res) => {
   const { task } = req.body;
   const required = ['id', 'title', 'status'];
