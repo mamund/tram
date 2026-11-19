@@ -2,12 +2,12 @@
 'use strict';
 
 /**
- * tram.js v0.1
+ * tram
  *
  * Dependency-free HTTP API test runner.
  *
  * Usage:
- *   tram api-tests.json --validate
+ *   tram api-tests.json --validate      (or -c)
  *   tram api-tests.json
  *   tram api-tests.json --verbose
  *   tram api-tests.json --report results.json
@@ -15,7 +15,7 @@
  *
  * Requires:
  *   Node.js 18+
- *   ./assertions.js
+ *   ../lib/manifest.js, ../lib/runner.js, ../lib/reports.js
  */
 
 const fs = require('fs');

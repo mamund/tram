@@ -43,3 +43,8 @@ Thumbs.db
 ##########################
 *.postman_environment.json
 *.env
+
+# just recipes: packed tarballs and sample-API evidence #
+#########################################################
+dist/
+.tram/

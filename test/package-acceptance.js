@@ -1,12 +1,15 @@
 'use strict';
-// Run: node test/package-acceptance.js [path/to/tram-0.1.0.tgz]
+// Run: node test/package-acceptance.js [path/to/mamund-tram-<version>.tgz]
+// Default tarball: the name `npm pack` writes for the version in package.json.
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 const http = require('node:http');
 const {spawn, spawnSync} = require('node:child_process');
-const tarball = path.resolve(process.argv[2] || 'tram-0.1.0.tgz');
+const pkg = require('../package.json');
+const defaultTarball = `${pkg.name.replace(/^@/, '').replace('/', '-')}-${pkg.version}.tgz`;
+const tarball = path.resolve(process.argv[2] || defaultTarball);
 const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'tram-package-acceptance-'));
 function run(cli, args) {
   return new Promise((resolve, reject) => {

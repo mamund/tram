@@ -7,7 +7,7 @@ This tutorial uses the local Tasks API included in the [TRAM source repository](
 ## Prerequisites
 
 - Node.js 18 or later and npm.
-- TRAM installed from npm (`npm install -g @mamund/tram@beta` after publication), or linked from a source checkout with `npm link`.
+- TRAM installed from npm (`npm install -g @mamund/tram@beta`), or linked from a source checkout with `npm link`.
 - A local checkout of the repository, because the Tasks API and its manifest are not included in the npm package.
 
 ```bash
@@ -27,13 +27,15 @@ npm install
 npm start
 ```
 
+With [`just`](https://github.com/casey/just) installed, `just sample serve tasks` does the same from the repository root.
+
 Keep this terminal open. The server listens at `http://localhost:3000`. In a second terminal, check it:
 
 ```bash
 curl http://localhost:3000/
 ```
 
-The root response includes `_links` with `taskList` and `createTask` affordances. If port 3000 is occupied, stop the conflicting service; the sample currently uses a fixed port.
+The root response includes `_links` with `taskList` and `createTask` affordances. If port 3000 is occupied, stop the conflicting service (`just sample stop` lists and stops it); the sample currently uses a fixed port.
 
 ## 2. Inspect the supplied manifest
 

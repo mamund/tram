@@ -18,7 +18,7 @@ Check the command:
 tram --help
 ```
 
-Before npm publication, use the source checkout instead: `npm link` from the repository root.
+To use a source checkout instead, run `npm link` (or `just link`) from the repository root.
 
 ## 2. Create a manifest
 

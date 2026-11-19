@@ -1,0 +1,389 @@
+{
+  "$schema": "https://raw.githubusercontent.com/igorlino/justz/main/schema/commands.schema.json",
+  "name": "tram",
+  "tagline": "Test Runner for Assertion Manifests: develop, test and release",
+  "groups": {
+    "core": {
+      "label": "Core",
+      "commands": {
+        "check": {
+          "desc": "Offline gate: unit tests, manifest corpus, assertion smoke test, command docs",
+          "detail": "Run it before every commit. It needs no network and no free port.\n\nThe command-docs part runs `justz check` and the `justz fmt` order check: it fails when a recipe and its entry in config/commands.json disagree. Run `justz fmt` to fix the order.",
+          "tags": [
+            "idempotent",
+            "read-only"
+          ],
+          "seeAlso": [
+            "core.ci"
+          ]
+        },
+        "ci": {
+          "desc": "Full gate: check, packed-package test, then the Tasks API integration test on port 3000",
+          "detail": "What the GitHub Actions test workflow runs. It adds the slow parts that `just check` leaves out: it packs the tarball into dist/ and installs it in a temporary project, then starts the Tasks sample API and runs its manifest.\n\nFails at once when port 3000 is in use; free it with `just sample stop`.",
+          "tags": [
+            "long-running"
+          ],
+          "seeAlso": [
+            "core.check",
+            "release.accept"
+          ]
+        },
+        "clean": {
+          "desc": "Delete dist/ and .tram/ (packed tarballs and sample evidence)",
+          "tags": [
+            "destructive",
+            "idempotent"
+          ]
+        },
+        "doctor": {
+          "desc": "Check node, npm, just, justz and the other tools a contributor needs",
+          "detail": "Also reports whether port 3000 is free and whether the sample API dependencies are installed. Optional tools (gh, python3, shellcheck) only warn.",
+          "exits": {
+            "0": "every required tool is present",
+            "1": "a required tool is missing, or node is older than 18"
+          },
+          "tags": [
+            "read-only"
+          ]
+        },
+        "help": {
+          "desc": "Full command reference, or the focused docs of one group or command (help [group] [term]); -b browses, -j emits JSON",
+          "tags": [
+            "read-only"
+          ]
+        },
+        "link": {
+          "desc": "Link this checkout as the global tram command (npm link)",
+          "detail": "After this, `tram` in any directory runs this checkout. Undo with `just unlink`. Not needed for `just run`.",
+          "tags": [
+            "idempotent"
+          ],
+          "seeAlso": [
+            "core.run",
+            "core.unlink"
+          ]
+        },
+        "run": {
+          "desc": "Run tram from this checkout; all args go to bin/tram (manifest first, then flags)",
+          "detail": "Same CLI as the published `tram` command, run from source, so no `npm link` is needed. The target API must already be up: for a sample API, start it first with `just sample serve <name>` in another terminal.",
+          "args": [
+            {
+              "name": "<manifest>",
+              "desc": "The manifest file to run"
+            },
+            {
+              "name": "-c, --validate",
+              "desc": "Validate the manifest only; sends no HTTP requests"
+            },
+            {
+              "name": "-r, --report <file>",
+              "desc": "Write the JSON behavioral report to <file>"
+            },
+            {
+              "name": "-t, --transcript <file>",
+              "desc": "Write the HTTP transcript to <file>"
+            },
+            {
+              "name": "-v, --verbose",
+              "desc": "Print passing assertion details"
+            }
+          ],
+          "example": "… api-samples/tasks/api-tests.json -v -r report.json -t transcript.http",
+          "exits": {
+            "0": "every test passed, or the manifest is valid with -c",
+            "1": "a test failed, or a manifest or usage error"
+          },
+          "seeAlso": [
+            "core.validate",
+            "sample.serve",
+            "sample.test"
+          ]
+        },
+        "test": {
+          "desc": "Run the unit tests in test/*.test.js; extra args go to node --test",
+          "args": [
+            {
+              "name": "[node-test-args...]",
+              "desc": "Forwarded to node --test, such as --test-name-pattern=<regex>"
+            }
+          ],
+          "example": "… --test-name-pattern=capture",
+          "tags": [
+            "idempotent",
+            "read-only"
+          ],
+          "seeAlso": [
+            "core.check"
+          ]
+        },
+        "unlink": {
+          "desc": "Remove the global tram link made by just link",
+          "detail": "Also removes a globally installed @mamund/tram from npm, if there is one instead of a link.",
+          "seeAlso": [
+            "core.link"
+          ]
+        },
+        "validate": {
+          "desc": "Validate one or more manifests without sending HTTP requests",
+          "args": [
+            {
+              "name": "<manifest...>",
+              "desc": "One or more manifest files"
+            }
+          ],
+          "example": "… examples/levels/*.json",
+          "exits": {
+            "0": "every manifest is valid",
+            "1": "at least one manifest is invalid",
+            "2": "no manifest given"
+          },
+          "tags": [
+            "idempotent",
+            "read-only"
+          ],
+          "seeAlso": [
+            "examples.check"
+          ]
+        }
+      }
+    },
+    "examples": {
+      "label": "Manifest corpus and example programs",
+      "commands": {
+        "check": {
+          "desc": "Validate every manifest in examples/ and api-samples/; must-fail manifests must be rejected",
+          "detail": "Must-fail manifests are examples/bad-manifests/*.json and examples/capture/bad-*.json. Files named *-report.json are TRAM output and are skipped. Sends no HTTP requests.\n\nPut a new must-fail manifest in examples/bad-manifests/ so this check expects it to fail.",
+          "exits": {
+            "0": "every manifest behaved as expected",
+            "1": "a good manifest failed or a must-fail manifest passed"
+          },
+          "tags": [
+            "idempotent",
+            "read-only"
+          ],
+          "seeAlso": [
+            "core.validate"
+          ]
+        },
+        "node-api": {
+          "desc": "Run the Node.js API example against a temporary Tasks server on port 3000",
+          "detail": "Runs examples/node-api/run-tasks.cjs, which uses the public `loadManifest()` and `run()` API. Stops the server afterwards. Fails at once when port 3000 is in use.",
+          "seeAlso": [
+            "sample.test"
+          ]
+        },
+        "smoke": {
+          "desc": "Run the assertion engine smoke test against fake responses (no HTTP)",
+          "tags": [
+            "idempotent",
+            "read-only"
+          ]
+        }
+      }
+    },
+    "release": {
+      "label": "npm package: pack, accept, version, tag, publish",
+      "commands": {
+        "accept": {
+          "desc": "Pack the tarball into dist/ and test it installed in a clean temporary project",
+          "detail": "Replaces dist/ on every run. The test installs the tarball with npm, then checks the installed CLI and the public Node.js API against a local HTTP server.",
+          "tags": [
+            "idempotent"
+          ],
+          "seeAlso": [
+            "release.contents",
+            "release.publish"
+          ]
+        },
+        "bump": {
+          "desc": "Raise the version in package.json; does not commit, tag or edit CHANGELOG.md",
+          "detail": "Prints the next steps: add the CHANGELOG.md section, commit, then `just release tag`. Undo with `git checkout package.json`.",
+          "args": [
+            {
+              "name": "<level>",
+              "desc": "Which part of the version to raise",
+              "values": [
+                "patch",
+                "minor",
+                "major"
+              ]
+            }
+          ],
+          "example": "… minor",
+          "seeAlso": [
+            "release.tag"
+          ]
+        },
+        "contents": {
+          "desc": "List the files the npm tarball would contain, without writing it",
+          "detail": "Use it after changing the files list in package.json.",
+          "tags": [
+            "idempotent",
+            "read-only"
+          ],
+          "seeAlso": [
+            "release.accept"
+          ]
+        },
+        "publish": {
+          "desc": "Publish to npm under the beta dist-tag after the acceptance test; extra args go to npm publish",
+          "detail": "Runs `just release accept` first and asks before it publishes. Uses the npm login on this machine (`npm login`); never pass a token as an argument. A published version cannot be reused, even after `npm unpublish`.",
+          "args": [
+            {
+              "name": "[npm-publish-args...]",
+              "desc": "Forwarded to npm publish, such as --dry-run or --otp <code>"
+            }
+          ],
+          "example": "… --dry-run",
+          "tags": [
+            "asks-first",
+            "production"
+          ],
+          "seeAlso": [
+            "release.accept",
+            "release.tag"
+          ]
+        },
+        "tag": {
+          "desc": "Create the local git tag v<version> from package.json; refuses on a dirty tree; does not push",
+          "detail": "Also refuses when the tag exists or when CHANGELOG.md has no section for the version. Undo by deleting the local tag with git. Push with `git push origin v<version>`.",
+          "exits": {
+            "0": "tag created",
+            "1": "dirty tree, tag exists, or no CHANGELOG.md section"
+          },
+          "seeAlso": [
+            "release.bump"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "cmd": "just release bump patch",
+          "desc": "Start a patch release"
+        },
+        {
+          "cmd": "just release publish --dry-run",
+          "desc": "Show what npm would publish, without publishing"
+        }
+      ]
+    },
+    "sample": {
+      "label": "Tasks and Pokemon sample APIs on port 3000",
+      "commands": {
+        "install": {
+          "desc": "Install the npm dependencies of one sample API (npm ci)",
+          "detail": "Optional: serve and test install the dependencies on first use.",
+          "args": [
+            {
+              "name": "<name>",
+              "desc": "The sample API",
+              "values": [
+                "pokemon",
+                "tasks"
+              ]
+            }
+          ],
+          "tags": [
+            "idempotent"
+          ]
+        },
+        "serve": {
+          "desc": "Serve one sample API in the foreground on port 3000; Ctrl-C stops it",
+          "detail": "Then run its manifest from another terminal: `just run api-samples/tasks/api-tests.json` or `just run api-samples/pokemon/tram.json`.",
+          "args": [
+            {
+              "name": "<name>",
+              "desc": "The sample API",
+              "values": [
+                "pokemon",
+                "tasks"
+              ]
+            }
+          ],
+          "tags": [
+            "needs-terminal"
+          ],
+          "seeAlso": [
+            "core.run",
+            "sample.stop"
+          ]
+        },
+        "stop": {
+          "desc": "Kill every process that listens on port 3000, sample API or not",
+          "detail": "Prints each process before it sends SIGTERM, and asks first. Use it when a sample recipe reports that port 3000 is in use.",
+          "exits": {
+            "0": "port 3000 is free",
+            "1": "port 3000 is still in use"
+          },
+          "tags": [
+            "asks-first",
+            "destructive"
+          ]
+        },
+        "test": {
+          "desc": "Start a sample API, run its manifest, save the report and transcript under .tram/",
+          "detail": "Writes .tram/<name>/report.json and .tram/<name>/transcript.http, overwriting the last run, and stops the server afterwards. Fails at once when port 3000 is in use. `just ci` runs the stricter test/tasks-integration.js instead, which also checks the expected counts.",
+          "args": [
+            {
+              "name": "<name>",
+              "desc": "The sample API",
+              "values": [
+                "pokemon",
+                "tasks"
+              ]
+            }
+          ],
+          "exits": {
+            "0": "every test passed",
+            "1": "a test failed, or the server did not start"
+          },
+          "seeAlso": [
+            "core.ci",
+            "core.run"
+          ]
+        }
+      },
+      "examples": [
+        {
+          "cmd": "just sample serve tasks",
+          "desc": "Serve the Tasks API for manual runs with just run"
+        },
+        {
+          "cmd": "just sample test pokemon",
+          "desc": "Run the Pokemon manifest and keep the evidence in .tram/pokemon/"
+        }
+      ],
+      "footer": "Both sample APIs listen on port 3000, so only one runs at a time."
+    },
+    "site": {
+      "label": "Landing page in site/ (GitHub Pages)",
+      "commands": {
+        "deploy": {
+          "desc": "Start the GitHub Pages workflow that publishes site/ from main",
+          "detail": "Publishes what is on origin/main, not your working tree. A push to main that changes site/ starts the same workflow by itself. Needs `gh auth login`.",
+          "tags": [
+            "asks-first",
+            "production"
+          ],
+          "seeAlso": [
+            "site.serve"
+          ]
+        },
+        "serve": {
+          "desc": "Serve site/ at http://localhost:8080 for a local preview",
+          "args": [
+            {
+              "name": "[port]",
+              "desc": "Port to listen on (default 8080)"
+            }
+          ],
+          "example": "… 9000",
+          "tags": [
+            "needs-terminal",
+            "read-only"
+          ]
+        }
+      }
+    }
+  }
+}

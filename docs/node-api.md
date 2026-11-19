@@ -1,13 +1,13 @@
 # Using TRAM as a Node.js module
 
-TRAM supports a command-line interface and a public CommonJS Node.js API. Both use the same manifest format and execution engine. The API is available in the development branch following the 0.1.0 beta release; it is **not included in the published npm 0.1.0 package**.
+TRAM supports a command-line interface and a public CommonJS Node.js API. Both use the same manifest format and execution engine. The API is available from version 0.2.0, published under the `beta` distribution tag; the `latest` tag can still point to 0.1.0, which **does not include the API**.
 
 ## Installation
 
-Once a version containing the public API is published:
+Install the beta, which contains the public API:
 
 ```bash
-npm install @mamund/tram
+npm install @mamund/tram@beta
 ```
 
 Import the module with `require`:

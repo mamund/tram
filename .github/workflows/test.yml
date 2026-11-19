@@ -1,0 +1,50 @@
+name: Test TRAM
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  JUSTZ_VERSION: 0.10.0
+  JUSTZ_SHA256: 8d6ee3140ecd8b047c88b9509988c18de9368be661415d005ff4519f22b25109 # linux-amd64
+
+jobs:
+  ci:
+    name: just ci (node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - name: Install just
+        uses: extractions/setup-just@v2
+        with:
+          just-version: 1.59.0
+      - name: Install justz
+        run: |
+          url="https://github.com/igorlino/justz/releases/download/v${JUSTZ_VERSION}/justz-${JUSTZ_VERSION}-linux-amd64.tar.gz"
+          curl -fsSL -o /tmp/justz.tar.gz "$url"
+          echo "${JUSTZ_SHA256}  /tmp/justz.tar.gz" | sha256sum -c -
+          mkdir -p "$HOME/.local/bin"
+          tar -xzf /tmp/justz.tar.gz -C "$HOME/.local/bin" justz
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+      - name: Check the tools
+        run: just doctor
+      - name: Run the full gate
+        run: just ci

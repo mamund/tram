@@ -1,6 +1,6 @@
-# TRAM 0.1.0 beta status
+# TRAM beta status
 
-TRAM 0.1.0 is an initial beta release of the Test Runner for Assertion Manifests. It is intended for testing observable HTTP API behavior using declarative manifests.
+TRAM, the Test Runner for Assertion Manifests, is in beta: 0.1.0 was the initial release and 0.2.0 adds the public Node.js API. It is intended for testing observable HTTP API behavior using declarative manifests.
 
 ## Supported environment
 
@@ -8,6 +8,7 @@ TRAM 0.1.0 is an initial beta release of the Test Runner for Assertion Manifests
 - No third-party runtime dependencies.
 - Manifest formats `0.1` and `0.2`. Package version and manifest version are independent.
 - CLI invocation: `tram <manifest-file> [options]`.
+- Node.js API: `loadManifest()`, `validateManifest()` and `run()` (0.2.0 and later; see the [Node.js API guide](node-api.md)).
 
 ## Current capabilities
 

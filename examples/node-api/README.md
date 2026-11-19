@@ -2,11 +2,17 @@
 
 This example executes the **existing** Tasks API manifest through TRAM's public Node.js API. The manifest is also used by the CLI; no separate Node-specific manifest is needed.
 
-Requires Node.js 18+ and a source checkout that includes `index.js` (the public API is not yet in npm 0.1.0).
+Requires Node.js 18+ and a source checkout. The public API ships in npm `@mamund/tram@beta` (0.2.0 and later); this example imports the checkout instead.
 
 ## Run
 
-From the repository root, install the sample service dependencies once:
+From the repository root, one command starts a temporary Tasks server, runs this example and stops the server:
+
+```bash
+just examples node-api
+```
+
+To run the steps by hand instead, install the sample service dependencies once:
 
 ```bash
 cd api-samples/tasks

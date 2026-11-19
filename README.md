@@ -331,15 +331,17 @@ Current implementation includes:
 
 ```text
 .
-├── README.md
-├── package.json
-├── api-tests.json
-├── bin/
-│   └── tram
-├── lib/
-│   └── assertions.js
-├── docs/
-└── sample-api/
+├── bin/tram            CLI entry point
+├── index.js            public Node.js API
+├── lib/                assertions, manifest, runner, reports
+├── test/               unit, integration and package-acceptance tests
+├── api-samples/        Tasks and Pokemon sample APIs with their manifests
+├── examples/           example manifests, must-fail manifests, Node.js API example
+├── docs/               guides, specification and archive
+├── site/               landing page (GitHub Pages)
+├── justfile, just/     development tasks (run `just`)
+├── config/             commands.json: descriptions shown by `just`
+└── scripts/            shell scripts behind the just recipes
 ```
 
 ---
@@ -367,7 +369,7 @@ Options:
 
 ## CLI installation
 
-TRAM 0.1.0 beta is distributed through npm as @mamund/tram using the beta distribution tag. The following installation commands apply after publication.
+TRAM is distributed through npm as `@mamund/tram`. Beta releases use the `beta` distribution tag; install with `@beta` to get the current beta, which includes the Node.js API.
 
 ### Install from npm
 
@@ -403,16 +405,27 @@ The manifest is supplied by your project; the npm package does not install a sam
 
 ### Local development setup
 
-To work on TRAM itself, clone the source repository:
+To work on TRAM itself, clone the source repository. Development tasks use [`just`](https://github.com/casey/just), and their help is rendered by [`justz`](https://github.com/igorlino/justz) (`brew install just igorlino/tap/justz`):
 
 ```bash
 git clone https://github.com/mamund/tram.git
 cd tram
-npm test
-npm link
+just doctor        # check node, npm, just, justz and port 3000
+just               # list every task
+just check         # offline gate: unit tests, manifest corpus, smoke test, command docs
+just link          # optional: make `tram` run this checkout
 ```
 
-The `npm link` command is for developing TRAM from source. It is not required for npm consumers.
+Other common tasks:
+
+```bash
+just run api-samples/tasks/api-tests.json -v   # run tram from source
+just validate examples/levels/*.json          # validate manifests, no HTTP
+just sample test tasks                        # start a sample API, run its manifest, keep the evidence in .tram/
+just ci                                       # full gate, as run in GitHub Actions
+```
+
+`just help <group> <command>` shows the options, exit codes and safety notes of one task. Without `just`, the npm scripts still work: `npm test`, `npm run test:integration`. The `just link` (`npm link`) step is for developing TRAM from source. It is not required for npm consumers.
 
 ---
 
